@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>HAMICHEE — Tra mã quà (thu ngân)</title>
+<style>
+  :root{ --green:#00783E; --green-dark:#00542b; --orange:#FAA627; --yellow:#FFCC4E; --cream:#F1E5D6; --red:#d93a3a; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:var(--cream); font-family:'Segoe UI', Roboto, Arial, sans-serif; color:#222; }
+  main{ max-width:480px; margin:0 auto; padding:16px 16px calc(24px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:14px; }
+  header{ background:var(--green); color:#fff; border-radius:16px; padding:14px 16px; }
+  header .brand{ color:var(--yellow); font-weight:bold; font-size:13px; letter-spacing:.06em; }
+  header h1{ margin:2px 0 0; font-size:22px; }
+  .card{ background:#fff; border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:10px; }
+  label{ font-size:13px; font-weight:bold; color:#444; }
+  input{ width:100%; font-size:20px; padding:10px 12px; border:2px solid #cdbfa9; border-radius:12px; background:#fffdf9; }
+  input:focus{ outline:none; border-color:var(--orange); }
+  #code{ font-size:28px; font-weight:bold; letter-spacing:3px; text-transform:uppercase; text-align:center; }
+  .row{ display:flex; gap:8px; }
+  .row input{ flex:1; }
+  button{ font:inherit; cursor:pointer; }
+  .btn{ background:var(--green); color:#fff; border:none; border-radius:12px; padding:12px 18px; font-size:17px; font-weight:bold; box-shadow:0 3px 0 var(--green-dark); }
+  .btn:disabled{ background:#aaa; box-shadow:none; }
+  .btn.big{ font-size:20px; padding:16px; }
+  .link{ background:none; border:none; color:var(--green-dark); text-decoration:underline; font-size:13px; padding:0; align-self:flex-start; }
+  #result{ display:none; border-radius:16px; padding:16px; gap:8px; flex-direction:column; border:3px solid; background:#fff; }
+  #result.show{ display:flex; }
+  #result.ok{ border-color:var(--green); }
+  #result.warn{ border-color:var(--orange); }
+  #result.bad{ border-color:var(--red); }
+  .status{ font-size:22px; font-weight:bold; }
+  #result.ok .status{ color:var(--green); }
+  #result.warn .status{ color:#c7801a; }
+  #result.bad .status{ color:var(--red); }
+  .detail{ font-size:15px; color:#333; line-height:1.5; }
+  .msg{ font-size:14px; font-weight:bold; color:var(--red); min-height:0; }
+  .rules{ font-size:13.5px; line-height:1.55; color:#333; margin:0; padding-left:20px; }
+  table{ width:100%; border-collapse:collapse; font-size:13px; font-variant-numeric:tabular-nums; }
+  th, td{ padding:6px 4px; text-align:right; border-bottom:1px solid #eee; }
+  th:first-child, td:first-child{ text-align:left; }
+  th{ font-size:12px; color:#666; }
+  tr.total td{ font-weight:bold; border-top:2px solid #ccc; }
+  .hint{ font-size:12px; color:#666; margin:0; }
+  [hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand">HAMICHEE · GAME HỨNG HẠT ĐÁC</div>
+    <h1>Tra mã quà — thu ngân</h1>
+  </header>
+
+  <!-- PIN -->
+  <form class="card" id="pin-box" autocomplete="off">
+    <label for="pin">Mã PIN nhân viên</label>
+    <div class="row">
+      <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••••">
+      <button class="btn" type="submit">Vào</button>
+    </div>
+    <div class="msg" id="pin-msg"></div>
+  </form>
+
+  <div id="work" hidden>
+    <!-- Look up a code -->
+    <form class="card" id="code-box" autocomplete="off">
+      <label for="code">Mã khách đưa</label>
+      <input id="code" maxlength="12" placeholder="G2709-548" autocapitalize="characters" autocomplete="off">
+      <button class="btn big" type="submit" id="check-btn">Tra mã</button>
+      <div class="msg" id="code-msg"></div>
+    </form>
+
+    <section id="result" aria-live="polite">
+      <div class="status" id="r-status"></div>
+      <div class="detail" id="r-detail"></div>
+      <button class="btn big" type="button" id="use-btn" hidden>✅ Xác nhận đã dùng</button>
+    </section>
+
+    <div class="card">
+      <ol class="rules">
+        <li><b>T</b> = tặng 1 topping · <b>W</b> = quà nhiệm vụ tuần, tặng 1 topping · <b>G</b> = giảm 10% (tối đa 10.000đ, hóa đơn từ 40.000đ).</li>
+        <li>Chỉ áp cho đơn đang gọi, <b>trước khi thanh toán</b>. 1 mã/hóa đơn, không cộng dồn.</li>
+        <li>Chỉ bấm "Xác nhận đã dùng" khi đã áp ưu đãi trên iPOS.</li>
+      </ol>
+    </div>
+
+    <!-- Stats -->
+    <div class="card">
+      <button class="btn" type="button" id="stats-btn">📊 Thống kê 7 ngày</button>
+      <div id="stats"></div>
+      <p class="hint">Lượt chơi = số lần chơi xong (ẩn danh). Mã phát = mã đã cấp cho khách đã điền thông tin. Mã dùng = mã thu ngân đã xác nhận.</p>
+    </div>
+
+    <button class="link" type="button" id="logout">Đăng xuất</button>
+  </div>
+</main>
+
+<script>
+(function(){
+  // Same Google Apps Script endpoint as the game (the PIN is checked there, not in this page).
+  var API = 'https://script.google.com/macros/s/AKfycbz53HiMjoKMbZh6ZBtPu6DHh9YEdgP-ro5ubKj-cOmN2J27RpvKFAB-Jei7Mum6KveeWA/exec';
+  var PIN_KEY = 'hamichee_staff_pin';
+  function $(id){ return document.getElementById(id); }
+  function dmy(iso){ if (!iso) return ''; var p = iso.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
+  // Kept in memory; sessionStorage only restores it after a reload (it can be blocked).
+  var pinMem = '';
+  function getPin(){ if (pinMem) return pinMem; try { return sessionStorage.getItem(PIN_KEY) || ''; } catch(e){ return ''; } }
+  function setPin(v){ pinMem = v || ''; try { if (v) sessionStorage.setItem(PIN_KEY, v); else sessionStorage.removeItem(PIN_KEY); } catch(e){} }
+  // Device key the server hands out after a correct PIN: this device stays logged in (even while
+  // strangers typing wrong PINs have locked PIN entry). Changing the PIN on the server revokes it.
+  var DEV_KEY = 'hamichee_staff_dev', devMem = '';
+  function getDev(){ if (devMem) return devMem; try { return localStorage.getItem(DEV_KEY) || ''; } catch(e){ return ''; } }
+  function setDev(v){ devMem = v || ''; try { if (v) localStorage.setItem(DEV_KEY, v); else localStorage.removeItem(DEV_KEY); } catch(e){} }
+  function loggedIn(){ return !!(getPin() || getDev()); }
+
+  // Google now and then turns the POST into a GET (nothing is done): send it once more.
+  function call(payload, retried){
+    if (payload.pin !== undefined && !payload.dev) payload.dev = getDev();
+    return Promise.race([
+      fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(payload) })
+        .then(function(r){ return r.json(); })
+        .catch(function(){ return { reason:'retry' }; }),
+      new Promise(function(res){ setTimeout(function(){ res(null); }, 15000); })
+    ]).then(function(res){
+      if (res && res.reason === 'retry') return retried ? null : call(payload, true);
+      if (res && res.ok === false && res.error) return null; // server error → "không kết nối được, thử lại"
+      if (res && res.dev) setDev(res.dev);
+      return res;
+    });
+  }
+
+  function showWork(on){
+    $('pin-box').hidden = on; $('work').hidden = !on;
+    if (on) $('code').focus(); else $('pin').focus();
+  }
+  function pinRejected(){
+    setPin(''); setDev(''); showWork(false);
+    $('pin-msg').textContent = 'PIN không đúng, nhập lại nha.';
+  }
+
+  // Log in: the PIN is verified by asking for the stats (cheap, needs the PIN).
+  $('pin-box').addEventListener('submit', function(e){
+    e.preventDefault();
+    var pin = $('pin').value.trim();
+    if (!pin){ $('pin-msg').textContent = 'Nhập mã PIN.'; return; }
+    $('pin-msg').textContent = 'Đang kiểm tra…';
+    call({ action:'stats', pin:pin }).then(function(res){
+      if (!res){ $('pin-msg').textContent = 'Không kết nối được, kiểm tra mạng rồi thử lại.'; return; }
+      if (res.ok === false && res.reason === 'locked'){ $('pin-msg').textContent = 'Nhập sai PIN quá nhiều lần — đợi 15 phút rồi thử lại.'; return; }
+      if (res.ok === false && res.reason === 'pin'){ $('pin-msg').textContent = 'PIN không đúng.'; return; }
+      $('pin-msg').textContent = '';
+      $('pin').value = '';
+      setPin(pin);
+      showWork(true);
+    });
+  });
+  $('logout').addEventListener('click', function(){ setPin(''); setDev(''); current = null; $('result').className = ''; $('stats').innerHTML = ''; showWork(false); });
+
+  // Look up a code
+  var current = null;
+  function render(info){
+    var box = $('result'), st = $('r-status'), dt = $('r-detail'), use = $('use-btn');
+    use.hidden = true;
+    var range = info.validFrom ? 'Hạn dùng: ' + dmy(info.validFrom) + ' – ' + dmy(info.validTo) : '';
+    var prize = (info.code ? '<span class="r-code">Mã ' + escapeHtml(info.code) + '</span><br>' : '') +
+                (info.prize ? '<b>' + escapeHtml(info.prize) + '</b><br>' : '') +
+                (info.owner ? 'Của khách: <b>' + escapeHtml(info.owner) + '</b> · SĐT đuôi <b>' + escapeHtml(info.phoneEnd) + '</b> — hỏi khách đọc 3 số cuối SĐT để đối chiếu<br>' : '');
+    if (!info.found){
+      box.className = 'show bad';
+      st.textContent = '❌ Không có mã này';
+      dt.innerHTML = 'Kiểm tra lại có gõ nhầm không. Mã không có trong hệ thống thì <b>KHÔNG áp dụng ưu đãi</b>. ' +
+        'Nếu khách nhận mã lúc mất mạng: nhờ khách bật mạng, mở lại game (mã tự gửi lên), đợi vài giây rồi tra lại.';
+    } else if (info.status === 'ok'){
+      box.className = 'show ok';
+      st.textContent = '✅ Hợp lệ — dùng được hôm nay';
+      dt.innerHTML = prize + range;
+      use.hidden = false;
+    } else if (info.status === 'justUsed'){
+      box.className = 'show ok';
+      st.textContent = '✅ Đã xác nhận dùng';
+      dt.innerHTML = prize + 'Lúc ' + escapeHtml(info.usedAt) + '. Nhớ áp ưu đãi trên iPOS.';
+    } else if (info.status === 'soon'){
+      box.className = 'show warn';
+      st.textContent = '⏳ Chưa tới ngày dùng';
+      dt.innerHTML = prize + 'Mã chơi ngày ' + dmy(info.playDate) + ' chỉ dùng từ ' + dmy(info.validFrom) + ' (lần ghé sau).<br>' + range;
+    } else if (info.status === 'expired'){
+      box.className = 'show bad';
+      st.textContent = '❌ Mã đã hết hạn';
+      dt.innerHTML = prize + range;
+    } else if (info.status === 'used'){
+      box.className = 'show bad';
+      st.textContent = '❌ Mã đã được dùng';
+      dt.innerHTML = prize + 'Đã dùng lúc ' + escapeHtml(info.usedAt) + '.';
+    }
+  }
+  function escapeHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+
+  function clearResult(){ current = null; $('result').className = ''; $('use-btn').hidden = true; }
+  $('code').addEventListener('input', function(){ this.value = this.value.toUpperCase().replace(/\s/g, ''); clearResult(); });
+  $('code-box').addEventListener('submit', function(e){
+    e.preventDefault();
+    clearResult();
+    var code = $('code').value.trim().toUpperCase();
+    if (!/^[TGW]\d{4}-\d{3}$/.test(code)){ $('code-msg').textContent = 'Mã có dạng T2709-548, G2709-548 hoặc W2709-548.'; $('result').className = ''; return; }
+    $('code-msg').textContent = ''; $('check-btn').disabled = true; $('check-btn').textContent = 'Đang tra…';
+    call({ action:'check', code:code, pin:getPin() }).then(function(res){
+      $('check-btn').disabled = false; $('check-btn').textContent = 'Tra mã';
+      if (!res){ $('code-msg').textContent = 'Không kết nối được, thử lại nha.'; return; }
+      if (res.ok === false && res.reason === 'locked'){ $('code-msg').textContent = 'Hệ thống tạm khóa do nhập sai PIN nhiều lần — thử lại sau 15 phút.'; return; }
+      if (res.ok === false && res.reason === 'pin'){ pinRejected(); return; }
+      if (code !== $('code').value.trim().toUpperCase()) return; // typed another code meanwhile
+      current = code;
+      render(res);
+    });
+  });
+  $('use-btn').addEventListener('click', function(){
+    if (!current) return;
+    var b = this, code = current; b.disabled = true; b.textContent = 'Đang xác nhận…';
+    call({ action:'staffUse', code:code, pin:getPin() }).then(function(res){
+      b.disabled = false; b.textContent = '✅ Xác nhận đã dùng';
+      if (!res){ $('code-msg').textContent = 'Không kết nối được, chưa xác nhận. Thử lại nha.'; return; }
+      if (res.ok === false && res.reason === 'locked'){ $('code-msg').textContent = 'Hệ thống tạm khóa do nhập sai PIN nhiều lần — thử lại sau 15 phút.'; return; }
+      if (res.ok === false && res.reason === 'pin'){ pinRejected(); return; }
+      if (code !== current) return;
+      render(res);
+    });
+  });
+
+  // Stats
+  $('stats-btn').addEventListener('click', function(){
+    var b = this; b.disabled = true; b.textContent = 'Đang tải…';
+    call({ action:'stats', pin:getPin() }).then(function(res){
+      b.disabled = false; b.textContent = '📊 Thống kê 7 ngày';
+      if (!res){ $('stats').textContent = 'Không kết nối được.'; return; }
+      if (res.ok === false && res.reason === 'locked'){ $('code-msg').textContent = 'Hệ thống tạm khóa do nhập sai PIN nhiều lần — thử lại sau 15 phút.'; return; }
+      if (res.ok === false && res.reason === 'pin'){ pinRejected(); return; }
+      var pct = function(a, n){ return n ? Math.round(a * 100 / n) + '%' : '–'; };
+      var t = { plays:0, pass2:0, win:0, issued:0, used:0 };
+      var rows = res.days.slice().reverse().map(function(d){
+        ['plays','pass2','win','issued','used'].forEach(function(k){ t[k] += d[k]; });
+        return '<tr><td>' + d.date.slice(8,10) + '/' + d.date.slice(5,7) + '</td><td>' + d.plays + '</td><td>' + pct(d.pass2, d.plays) +
+               '</td><td>' + pct(d.win, d.plays) + '</td><td>' + d.issued + '</td><td>' + d.used + '</td></tr>';
+      }).join('');
+      $('stats').innerHTML = '<table><thead><tr><th>Ngày</th><th>Lượt chơi</th><th>Qua màn 2</th><th>Cứu vợ</th><th>Mã phát</th><th>Mã dùng</th></tr></thead><tbody>' +
+        rows + '<tr class="total"><td>7 ngày</td><td>' + t.plays + '</td><td>' + pct(t.pass2, t.plays) + '</td><td>' + pct(t.win, t.plays) +
+        '</td><td>' + t.issued + '</td><td>' + t.used + '</td></tr></tbody></table>';
+    });
+  });
+
+  showWork(loggedIn());
+})();
+</script>
+</body>
+</html>
