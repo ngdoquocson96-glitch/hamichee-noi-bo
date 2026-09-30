@@ -381,6 +381,15 @@
   #cert-cf span{ position:absolute; top:-30px; font-size:20px; animation:fall linear forwards; }
   .foot{ display:flex; flex-wrap:wrap; justify-content:center; gap:4px 14px; }
   @media (prefers-reduced-motion: reduce){ #cup.none, #g-hand, .g-focus, #queue .qc{ animation:none; } }
+  /* easier to read in daylight, easier to hit with one thumb */
+  .bin .nm{ font-size:13.5px; color:#222; }
+  .tag{ font-size:13px; }
+  #hud{ font-size:14px; }
+  #hud button{ min-width:40px; min-height:34px; font-size:15px; }
+  .chip{ font-size:13.5px; }
+  .mode span, .lv .t span, .daily span, .install .t span, .tut .t span{ color:#5a4a36; }
+  #bowl-text, #cup-label{ font-size:12.5px; }
+  .bd{ font-size:11.5px; } .bd small{ color:#7a6850; }
 </style>
 </head>
 <body>
@@ -909,7 +918,7 @@
     Object.keys(by).forEach(function(ing){
       if (!items.some(function(it){ return matches(it, ing); })){ ok = false; lines.push({ ok:false, label:ing, text:'Thừa ' + ing, sub:'Món này không có ' + ing }); }
     });
-    if (dish.rule && by['Cốt dừa']){
+    if (dish.rule && by['Cốt dừa'] && o.added.some(function(a){ return a.ing !== 'Cốt dừa'; })){
       // every pour of cốt dừa must be before (or after) everything else — pouring at both ends does not pass
       var pos = [], n = o.added.length;
       o.added.forEach(function(a, i){ if (a.ing === 'Cốt dừa') pos.push(i); });
@@ -1252,6 +1261,7 @@
       hand.style.left = (r.left - app.left + r.width / 2) + 'px';
       hand.style.top = (down ? r.top - app.top - 40 : r.bottom - app.top - 4) + 'px';
       var low = r.top + r.height / 2 - app.top > app.height * 0.5;
+      if (document.querySelector('.modal.on')) low = true; // a sheet is open at the bottom: keep the tip above it
       tip.style.top = low ? '52px' : ''; tip.style.bottom = low ? '' : '86px';
     } else { hand.hidden = true; tip.style.top = '52px'; tip.style.bottom = ''; }
   }
@@ -1759,7 +1769,7 @@
     R.forEach(function(r){ var b = mistakesOf(r); if (b.length && (!r.ok || r.late || r.pauses)) mist.push(r.dish.name + ' – ' + (r.where === 'in' ? 'tại chỗ' : 'mang về') + ': ' + b.join('; ')); });
     var payload = { action:'train', name:P.name, mode:(P.mode === 'thi' ? 'Thi' : 'Học') + (quit ? ' (bỏ dở)' : ''), level:P.level,
                     orders:n, correct:ok, onTime:onTime, score:P.score, avgSec:avg, mistakes:mist.join(' | '), app:appName(),
-                    id:Date.now().toString(36) + Math.random().toString(36).slice(2, 7), // lets the sheet ignore a repeated send
+                    id:Date.now().toString(36) + Math.random().toString(36).slice(2, 7), at:Date.now(), // id: the sheet ignores a repeat · at: play time
                     detail:R.map(function(r){ return { code:r.dish.code, name:r.dish.name, where:r.where, ok:r.ok, onTime:!r.late, sec:Math.round(r.sec),
                                                        err:mistakesOf(r).slice(0, 4).join('; ') }; }) };
     if (P.lv.kind !== 'tut') send(payload, quit); // the tutorial is not sent to the manager
@@ -1801,6 +1811,7 @@
     show('end');
     // stars light up one by one, confetti for a perfect round
     var spans = $('end-stars').children;
+    $('end-stars').hidden = tut;
     for (var i = 0; i < 3; i++){ spans[i].className = ''; spans[i].textContent = i < stars ? '★' : '☆'; }
     for (var j = 0; j < stars; j++) (function(k){ setTimeout(function(){ spans[k].className = 'on'; beep(true, false, k); }, 400 + k * 380); })(j);
     $('confetti').innerHTML = '';
@@ -1820,14 +1831,14 @@
   // Results wait in an outbox until the sheet says ok (the sheet ignores a repeat thanks to p.id).
   function outboxAdd(p){ var b = loadJSON(K.outbox, []); if (!b.some(function(x){ return x.id === p.id; })){ b.push(p); saveJSON(K.outbox, b); } }
   function outboxDrop(id){ saveJSON(K.outbox, loadJSON(K.outbox, []).filter(function(x){ return x.id !== id; })); }
+  // Every result goes through the outbox and is sent oldest first (with the time it was played),
+  // so a result saved while offline can never land after a newer one.
+  var saveNote = null;
   function send(p, quiet){
     outboxAdd(p);
+    saveNote = quiet ? null : p.id;
     if (!quiet) $('end-save').textContent = 'Đang gửi kết quả cho quản lý…';
-    call(p).then(function(res){
-      if (res && res.ok){ outboxDrop(p.id); boardAt = 0; if (!quiet) $('end-save').textContent = '✅ Đã gửi kết quả cho quản lý'; return; }
-      if (!quiet) $('end-save').textContent = res && res.reason === 'pin' ? 'Chưa gửi được: PIN đào tạo đã đổi — mở lại game và nhập PIN mới.'
-        : 'Chưa gửi được (mất mạng) — sẽ tự gửi lại lần sau mở game.';
-    });
+    flushOutbox();
   }
   var flushing = false;
   function flushOutbox(){
@@ -1838,9 +1849,16 @@
     delete p.pin; // results queued before the PIN was dropped
     call(p).then(function(res){
       flushing = false;
-      if (res && res.ok){ outboxDrop(p.id); flushOutbox(); }
+      var mine = saveNote && loadJSON(K.outbox, []).some(function(x){ return x.id === saveNote; });
+      if (res && res.ok){
+        outboxDrop(p.id); boardAt = 0;
+        if (saveNote === p.id){ saveNote = null; if (P && P.done) $('end-save').textContent = '✅ Đã gửi kết quả cho quản lý'; }
+        flushOutbox(); return;
+      }
+      if (mine && P && P.done) $('end-save').textContent = res && res.reason === 'limit' ? 'Gửi nhiều quá, lát nữa game tự gửi lại nha.' : 'Chưa gửi được (mất mạng) — sẽ tự gửi lại khi có mạng.';
     });
   }
+  window.addEventListener('online', function(){ flushOutbox(); });
   function appName(){
     var ua = navigator.userAgent || '';
     return /Zalo/i.test(ua) ? 'Zalo' : /FBAN|FBAV|FB_IAB|Messenger/i.test(ua) ? 'Facebook' : 'Trình duyệt';
