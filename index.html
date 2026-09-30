@@ -386,15 +386,13 @@
 <body>
 <div id="app">
 
-  <!-- PIN (recipes are private: they come from the shop's Google Sheet) -->
+  <!-- Loading the recipes from the shop's Google Sheet (no PIN) -->
   <div class="screen pad" id="screen-pin">
     <div class="brand">HAMICHEE · ĐÀO TẠO PHA CHẾ</div>
     <h1>Tiệm Chè Hami 🍧</h1>
     <form class="card" id="pin-form" autocomplete="off">
-      <div class="label">Nhập PIN đào tạo (quản lý đưa)</div>
-      <input class="field" id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••••">
-      <div class="msg" id="pin-msg"></div>
-      <button class="btn" type="submit">Vào bếp ▶</button>
+      <div class="msg" id="pin-msg" style="color:#555">Đang mở bếp…</div>
+      <button class="btn" type="submit">Thử lại ▶</button>
     </form>
   </div>
 
@@ -1014,10 +1012,10 @@
   // Leaderboards (from the manager's sheet)
   var boardAt = 0;
   function loadBoard(){
-    if (Date.now() - boardAt < 60000 || !load(K.pin)) return;
+    if (Date.now() - boardAt < 60000) return;
     boardAt = Date.now();
     var who = playerName();
-    call({ action:'trainTop', pin:load(K.pin), name:who }).then(function(res){
+    call({ action:'trainTop', name:who }).then(function(res){
       if (!res || !res.ok || !res.board) return;
       if (res.ready && typeof res.ready === 'object' && who){ saveJSON(K.ready, { name:who, map:res.ready, at:Date.now() }); if ($('screen-home').classList.contains('active')){ renderLevels(); renderBadges(); } }
       var me = playerName(), b = res.board;
@@ -1257,25 +1255,22 @@
       tip.style.top = low ? '52px' : ''; tip.style.bottom = low ? '' : '86px';
     } else { hand.hidden = true; tip.style.top = '52px'; tip.style.bottom = ''; }
   }
-  $('pin-form').addEventListener('submit', function(e){
-    e.preventDefault();
-    var pin = $('pin').value.trim();
-    if (!pin){ $('pin-msg').textContent = 'Nhập PIN nha.'; return; }
-    var btn = this.querySelector('button');
+  // No PIN any more: the recipes load straight from the sheet (first time needs the network)
+  function openKitchen(){
+    var btn = $('pin-form').querySelector('button');
     if (btn.disabled) return;
-    btn.disabled = true;
+    btn.disabled = true; btn.hidden = true;
     $('pin-msg').textContent = 'Đang mở bếp…';
-    call({ action:'recipes', pin:pin }).then(function(res){
+    call({ action:'recipes' }).then(function(res){
       btn.disabled = false;
-      if (!res){ $('pin-msg').textContent = 'Không kết nối được, thử lại nha.'; return; }
-      if (res.reason === 'locked'){ $('pin-msg').textContent = 'Nhập sai PIN quá nhiều lần — đợi 15 phút rồi thử lại.'; return; }
-      if (!res.ok){ $('pin-msg').textContent = 'PIN không đúng.'; return; }
-      store(K.pin, pin); saveJSON(K.rows, res.rows); saveJSON(K.staff, res.staff || []);
-      $('pin-msg').textContent = ''; $('pin').value = '';
-      ready(res.rows);
-      flushOutbox(); // results waiting since the PIN changed
+      if (!res || !res.ok){ btn.hidden = false; $('pin-msg').textContent = 'Không kết nối được — kiểm tra mạng rồi bấm Thử lại nha.'; return; }
+      saveJSON(K.rows, res.rows); saveJSON(K.staff, res.staff || []);
+      $('pin-msg').textContent = '';
+      if (ready(res.rows)) flushOutbox();
+      else { btn.hidden = false; }
     });
-  });
+  }
+  $('pin-form').addEventListener('submit', function(e){ e.preventDefault(); openKitchen(); });
 
   // ---- Play ----
   var P = null, tick = null;
@@ -1762,7 +1757,7 @@
     var avg = n ? Math.round(R.reduce(function(s, r){ return s + r.sec; }, 0) / n) : 0;
     var mist = [];
     R.forEach(function(r){ var b = mistakesOf(r); if (b.length && (!r.ok || r.late || r.pauses)) mist.push(r.dish.name + ' – ' + (r.where === 'in' ? 'tại chỗ' : 'mang về') + ': ' + b.join('; ')); });
-    var payload = { action:'train', pin:load(K.pin), name:P.name, mode:(P.mode === 'thi' ? 'Thi' : 'Học') + (quit ? ' (bỏ dở)' : ''), level:P.level,
+    var payload = { action:'train', name:P.name, mode:(P.mode === 'thi' ? 'Thi' : 'Học') + (quit ? ' (bỏ dở)' : ''), level:P.level,
                     orders:n, correct:ok, onTime:onTime, score:P.score, avgSec:avg, mistakes:mist.join(' | '), app:appName(),
                     id:Date.now().toString(36) + Math.random().toString(36).slice(2, 7), // lets the sheet ignore a repeated send
                     detail:R.map(function(r){ return { code:r.dish.code, name:r.dish.name, where:r.where, ok:r.ok, onTime:!r.late, sec:Math.round(r.sec),
@@ -1840,7 +1835,7 @@
     var p = loadJSON(K.outbox, [])[0];
     if (!p) return;
     flushing = true;
-    p.pin = load(K.pin) || p.pin; // the PIN may have been changed since
+    delete p.pin; // results queued before the PIN was dropped
     call(p).then(function(res){
       flushing = false;
       if (res && res.ok){ outboxDrop(p.id); flushOutbox(); }
@@ -1871,25 +1866,20 @@
   document.addEventListener('touchstart', function(){}, { passive:true }); // makes :active feedback work on iOS
 
   // ---- Startup: cached recipes first, then refresh from the sheet ----
-  var cached = loadJSON(K.rows, []), pin = load(K.pin), started = false;
-  boardAt = Date.now(); // the board waits until the saved PIN is confirmed
-  try { started = cached.length > 0 && !!pin && ready(cached); } catch(e){ started = false; }
+  var cached = loadJSON(K.rows, []), started = false;
+  store(K.pin, ''); // PIN is no longer used
+  boardAt = Date.now(); // the board waits for the fresh recipes
+  try { started = cached.length > 1 && ready(cached); } catch(e){ started = false; }
   if (started){
-    call({ action:'recipes', pin:pin }).then(function(res){
+    call({ action:'recipes' }).then(function(res){
       if (res && res.ok){
         saveJSON(K.rows, res.rows); saveJSON(K.staff, res.staff || []);
         if (!P){ DATA = build(res.rows); renderStaff(); renderLevels(); }
         boardAt = 0; if (!P) loadBoard();
         flushOutbox();
       }
-      else if (res && res.reason === 'pin'){
-        store(K.pin, '');
-        if (P && !P.done) return; // let the level finish; the PIN screen shows next time the game opens
-        clearInterval(tick); P = null; guardBack(false);
-        show('pin'); $('pin-msg').textContent = 'PIN đã đổi, nhập PIN mới nha.';
-      }
     });
-  } else show('pin');
+  } else { show('pin'); openKitchen(); }
 })();
 </script>
 </body>
