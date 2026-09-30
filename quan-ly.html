@@ -55,6 +55,17 @@
   .foot{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .link{ background:none; border:none; color:var(--green-dark); text-decoration:underline; font-size:14px; cursor:pointer; padding:6px 0; }
   @media (max-width:420px){ .kpis{ grid-template-columns:repeat(2, 1fr); } }
+  .weeks{ display:flex; align-items:flex-end; gap:6px; height:130px; padding-top:6px; }
+  .wk{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:3px; height:100%; font-size:11px; color:#777; }
+  .wk i{ display:block; width:100%; border-radius:6px 6px 2px 2px; background:linear-gradient(#34c985, #00783E); min-height:2px; }
+  .wk i.none{ background:#e6dccd; } .wk b{ font-size:11.5px; color:#333; }
+  .warn{ background:#fff3d6; border-radius:12px; padding:8px 10px; font-size:13.5px; color:#7a4a00; }
+  select, textarea{ width:100%; font-size:16px; padding:9px 10px; border:2px solid #cdbfa9; border-radius:12px; background:#fffdf9; font-family:inherit; }
+  .picks{ display:flex; flex-direction:column; gap:3px; max-height:260px; overflow:auto; border:1px dashed #e0d3bd; border-radius:12px; padding:6px 8px; }
+  .picks .g{ font-weight:bold; color:var(--orange); margin-top:6px; font-size:13px; }
+  .picks label{ display:flex; gap:8px; align-items:center; font-weight:normal; color:#333; font-size:14px; padding:3px 0; }
+  .picks input{ width:20px; height:20px; }
+  .btn.soft{ background:linear-gradient(#ffffff, #eef6f1); color:var(--green-dark); box-shadow:0 3px 0 #a9cdb8; border:2px solid var(--green); }
 </style>
 </head>
 <body>
@@ -79,10 +90,14 @@
       <div class="msg" id="status" style="color:#777;font-weight:normal"></div>
     </div>
     <div class="kpis" id="kpis"></div>
+    <div class="card"><label>📈 % đúng SOP theo tuần (8 tuần gần nhất)</label><div class="weeks" id="weeks"></div></div>
+    <div class="warn" id="idle" hidden></div>
+    <button type="button" class="btn soft" id="copy-zalo">📋 Copy tóm tắt để gửi nhóm Zalo</button>
     <div class="tabs" id="tabs">
       <button type="button" class="chip" data-t="dish">🍧 Món hay sai</button>
       <button type="button" class="chip" data-t="staff">👩‍🍳 Nhân viên</button>
       <button type="button" class="chip" data-t="err">⚠️ Lỗi hay gặp</button>
+      <button type="button" class="chip" data-t="task">📌 Giao bài</button>
     </div>
     <div id="panel" style="display:flex;flex-direction:column;gap:8px"></div>
     <p class="hint">Món <b>sẵn sàng</b> = nhân viên làm bài Thi đúng SOP và đúng giờ <b>3 lần liên tiếp</b> (không tính theo khoảng thời gian đang chọn).
@@ -175,7 +190,9 @@
     var p = $('panel');
     if (view.t === 'dish') p.innerHTML = renderDishes();
     else if (view.t === 'err') p.innerHTML = renderErrors();
+    else if (view.t === 'task'){ p.innerHTML = renderTaskPanel(); bindTasks(); }
     else { p.innerHTML = renderStaff(); bindStaff(); }
+    renderWeeks(); renderIdle();
   }
   function renderDishes(){
     if (!DATA.dishes.length) return '<div class="empty">Chưa có ai tập trong khoảng này.</div>';
@@ -188,6 +205,92 @@
         '</div>';
     }).join('');
   }
+  function renderWeeks(){
+    var w = DATA.weeks || [];
+    $('weeks').innerHTML = w.map(function(x){
+      var k = pct(x.ok, x.n);
+      return '<div class="wk"><b>' + (x.n ? k + '%' : '–') + '</b><i class="' + (x.n ? '' : 'none') + '" style="height:' + (x.n ? Math.max(4, k) : 4) + '%"></i><span>' + esc(dm(x.week)) + '</span><span>' + x.n + ' món</span></div>';
+    }).join('');
+  }
+  function idleList(){ // 3 ngày trở lên chưa tập (tính cả người trong danh sách nhân viên chưa tập lần nào)
+    var names = {}, out = [];
+    (DATA.roster || []).forEach(function(n){ names[n] = ''; });
+    DATA.staff.forEach(function(p){ names[p.name] = p.lastAll || ''; });
+    Object.keys(names).forEach(function(n){
+      var last = names[n], days = last ? Math.round((Date.parse(DATA.today) - Date.parse(last)) / 864e5) : null;
+      if (days == null || days >= 3) out.push({ name:n, days:days });
+    });
+    return out.sort(function(a, b){ return (b.days == null ? 999 : b.days) - (a.days == null ? 999 : a.days); });
+  }
+  function renderIdle(){
+    var l = idleList();
+    $('idle').hidden = !l.length;
+    $('idle').innerHTML = '⏰ <b>Lâu không tập:</b> ' + l.map(function(x){ return esc(x.name) + ' (' + (x.days == null ? 'chưa tập lần nào' : x.days + ' ngày') + ')'; }).join(', ');
+  }
+  function renderTaskPanel(){
+    var menu = DATA.menu || [], groups = [], names = {};
+    menu.forEach(function(m){ if (groups.indexOf(m.group) < 0) groups.push(m.group); names[m.code] = m.name; });
+    var people = (DATA.roster || []).slice(); DATA.staff.forEach(function(p){ if (people.indexOf(p.name) < 0) people.push(p.name); });
+    var h = '<div class="card"><label>Giao bài cho nhân viên</label><select id="tk-name"><option value="">— Chọn nhân viên —</option>' +
+      people.map(function(n){ return '<option>' + esc(n) + '</option>'; }).join('') + '</select>' +
+      '<div class="picks" id="tk-picks">' + groups.map(function(g){
+        return '<div class="g">' + esc(g) + '</div>' + menu.filter(function(m){ return m.group === g; }).map(function(m){
+          return '<label><input type="checkbox" value="' + esc(m.code) + '"> ' + esc(m.name) + '</label>'; }).join('');
+      }).join('') + '</div>' +
+      '<textarea id="tk-note" rows="2" maxlength="200" placeholder="Ghi chú (vd: ôn kỹ luật cốt dừa)"></textarea>' +
+      '<button type="button" class="btn" id="tk-send">📌 Giao bài</button><div class="msg" id="tk-msg"></div>' +
+      '<p class="hint">Nhân viên thấy bài ở trang chủ game (đúng tên), làm như bài Thi. Làm xong kết quả tự hiện ở đây.</p></div>';
+    var list = DATA.tasks || [];
+    h += list.length ? list.map(function(t){
+      var st = t.done ? (t.done === 'Đã hủy' ? '<span class="tag">Đã hủy</span>' : '<span class="tag g">✅ Xong ' + esc(t.done) + '</span>') : '<span class="tag y">⏳ Đang chờ làm</span>';
+      return '<div class="row"><div class="top"><b>' + esc(t.name) + '</b><small>giao ' + esc(t.at) + '</small></div>' +
+        '<div style="font-size:13.5px">' + t.codes.map(function(c){ return esc(names[c] || c); }).join(' · ') + '</div>' +
+        (t.note ? '<div style="font-size:13px;color:#8a6a22">“' + esc(t.note) + '”</div>' : '') +
+        '<div class="top">' + st + (t.done ? '' : '<button type="button" class="link" data-cancel="' + esc(t.id) + '">Hủy bài</button>') + '</div></div>';
+    }).join('') : '<div class="empty">Chưa giao bài nào.</div>';
+    return h;
+  }
+  function bindTasks(){
+    $('tk-send').addEventListener('click', function(){
+      var name = $('tk-name').value, codes = [].map.call(document.querySelectorAll('#tk-picks input:checked'), function(x){ return x.value; });
+      if (!name){ $('tk-msg').textContent = 'Chọn nhân viên.'; return; }
+      if (!codes.length){ $('tk-msg').textContent = 'Chọn ít nhất 1 món.'; return; }
+      if (codes.length > 12){ $('tk-msg').textContent = 'Tối đa 12 món mỗi bài.'; return; }
+      var b = this; b.disabled = true; $('tk-msg').textContent = 'Đang giao…';
+      call({ action:'assign', name:name, codes:codes, note:$('tk-note').value.trim() }).then(function(res){
+        b.disabled = false;
+        if (!res || !res.ok){ $('tk-msg').textContent = 'Chưa giao được, thử lại nha.'; return; }
+        $('tk-msg').textContent = ''; load();
+      });
+    });
+    [].forEach.call(document.querySelectorAll('[data-cancel]'), function(x){
+      x.addEventListener('click', function(){
+        x.disabled = true;
+        call({ action:'unassign', id:x.getAttribute('data-cancel') }).then(function(){ load(); });
+      });
+    });
+  }
+  function summary(){
+    var T = DATA.total, lines = ['📊 Đào tạo HAMICHEE (' + DATA.days + ' ngày, từ ' + dm(DATA.since) + ')'];
+    lines.push('• Đã tập ' + T.n + ' món · đúng SOP ' + pct(T.ok, T.n) + '% · đúng giờ ' + pct(T.onTime, T.n) + '%');
+    var bad = DATA.dishes.filter(function(d){ return d.n >= 2; }).slice(0, 3);
+    if (bad.length) lines.push('• Món hay sai: ' + bad.map(function(d){ return d.name + ' (' + pct(d.ok, d.n) + '% đúng)'; }).join(', '));
+    if (DATA.errors.length) lines.push('• Lỗi hay gặp: ' + DATA.errors.slice(0, 3).map(function(e){ return e[0] + ' ×' + e[1]; }).join(', '));
+    var menu = DATA.menu || [];
+    DATA.staff.filter(function(p){ return p.n; }).forEach(function(p){
+      var ready = menu.filter(function(m){ return (p.streaks || {})[m.code] >= DATA.readyStreak; }).length;
+      lines.push('• ' + p.name + ': ' + p.n + ' món, đúng ' + pct(p.ok, p.n) + '%, sẵn sàng ' + ready + '/' + menu.length + ' món');
+    });
+    var idle = idleList();
+    if (idle.length) lines.push('• Lâu không tập: ' + idle.map(function(x){ return x.name; }).join(', ') + ' — vào game tập nha!');
+    return lines.join('\n');
+  }
+  $('copy-zalo').addEventListener('click', function(){
+    if (!DATA) return;
+    var text = summary(), b = this, done = function(){ b.textContent = '✅ Đã copy — dán vào nhóm Zalo'; setTimeout(function(){ b.textContent = '📋 Copy tóm tắt để gửi nhóm Zalo'; }, 2500); };
+    var fallback = function(){ var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch(e){} ta.remove(); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+  });
   function renderErrors(){
     if (!DATA.errors.length) return '<div class="empty">Chưa ghi nhận lỗi nào trong khoảng này 🎉</div>';
     var max = DATA.errors[0][1];
