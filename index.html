@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>HAMICHEE — Tiệm Chè Hami (đào tạo pha chế)</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#00783E">
+<link rel="icon" type="image/png" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Chè Hami">
 <style>
   :root{ --green:#00783E; --green-dark:#00542b; --orange:#FAA627; --yellow:#FFCC4E; --cream:#F1E5D6; --red:#d93a3a; --ink:#2a2a2a; }
   *{ box-sizing:border-box; }
@@ -306,6 +313,74 @@
   img.phi{ display:inline-block; width:20px; height:20px; border-radius:6px; vertical-align:-4px; }
   #kp-emoji img.phi{ width:46px; height:46px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,.2); }
   @media (prefers-reduced-motion: reduce){ .fx, #cupbox{ animation:none; transition:none; } }
+
+  /* ==== v3: ly/tô, tab 1 hàng, khách chờ, hướng dẫn, huy hiệu, cài app ==== */
+  #tabs{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-right:28px; scroll-behavior:smooth;
+         -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image:linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+  #tabs::-webkit-scrollbar{ display:none; }
+  #cupbox{ cursor:pointer; }
+  #cup.none{ width:54px; height:70px; border:2px dashed rgba(255,255,255,.95); border-radius:10px; background:rgba(255,255,255,.14); box-shadow:none; animation:breathe 1.4s ease-in-out infinite; }
+  #cup.none::before, #cup.none::after{ display:none; }
+  @keyframes breathe{ 50%{ transform:scale(1.07); } }
+  #cup.ly.s330{ width:52px; height:66px; } #cup.ly.s500{ width:56px; height:80px; } #cup.ly.s700{ width:60px; height:94px; }
+  #cup.ly.cao{ width:44px; height:94px; border-radius:0 0 8px 8px; }
+  #cup.mam.dia{ width:82px; height:22px; border-radius:0 0 40px 40px; }
+  #vs-list{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+  .vopt{ border:none; border-radius:14px; padding:8px 4px 6px; background:linear-gradient(#ffffff, #f3ede4); box-shadow:0 3px 0 #ddd0bd, 0 5px 8px rgba(0,0,0,.08);
+         display:flex; flex-direction:column; align-items:center; gap:2px; font-size:13px; font-weight:bold; color:#4a3c28; }
+  .vopt:active{ transform:translateY(2px); box-shadow:0 1px 0 #ddd0bd; }
+  .vopt svg{ width:54px; height:46px; }
+  #queue{ display:flex; align-items:center; gap:4px; margin-top:6px; font-size:12px; color:#7a5a20; font-weight:bold; flex-wrap:wrap; min-height:30px; }
+  #queue .qc{ width:30px; height:30px; border-radius:50%; overflow:hidden; border:2px solid #9fd3b3; background:#fff5e8; flex:none; animation:popIn .35s ease-out; }
+  #queue .qc.ok{ border-color:#f5c451; } #queue .qc.worried{ border-color:#f08a3c; } #queue .qc.angry{ border-color:#d93a3a; }
+  #queue .qc svg{ width:100%; height:100%; display:block; }
+  @keyframes popIn{ from{ transform:scale(.3); opacity:0; } to{ transform:scale(1); opacity:1; } }
+  .install, .tut{ display:flex; align-items:center; gap:10px; border-radius:16px; padding:10px 12px; text-align:left; border:none; width:100%; }
+  .install{ background:linear-gradient(135deg, #eaf7ef, #d3eedf); box-shadow:0 4px 0 #a9cdb8, 0 7px 14px rgba(0,80,40,.08); }
+  .install .big-e, .tut .big-e{ font-size:30px; }
+  .install .t, .tut .t{ flex:1; }
+  .install b, .tut b{ display:block; font-size:15px; }
+  .install b{ color:var(--green-dark); } .install .t span{ font-size:12.5px; color:#4d6b5a; }
+  .install .btn{ padding:8px 14px; font-size:14px; }
+  .install .x{ border:none; background:none; color:#6a8a78; font-size:16px; padding:4px 2px; }
+  .tut{ background:linear-gradient(135deg, #fff4d8, #ffe0a3); box-shadow:0 4px 0 #e0a83a, 0 7px 14px rgba(80,50,20,.1); }
+  .tut:active{ transform:translateY(3px); box-shadow:0 1px 0 #e0a83a; }
+  .tut b{ color:#7a4a00; } .tut .t span{ font-size:12.5px; color:#7a5a20; }
+  .badges{ display:grid; grid-template-columns:repeat(4, 1fr); gap:7px; }
+  .bd{ border:none; background:#f7f2ea; border-radius:12px; padding:8px 2px 6px; display:flex; flex-direction:column; align-items:center; gap:2px;
+       font-size:11px; line-height:1.2; color:#8a7b66; text-align:center; font-weight:bold; }
+  .bd .i{ font-size:26px; line-height:1.1; filter:grayscale(1) opacity(.4); }
+  .bd.got{ background:linear-gradient(#fff8e0, #ffe6a6); color:#6b4a00; box-shadow:0 3px 0 #e2c070, 0 5px 8px rgba(120,80,0,.12); }
+  .bd.got .i{ filter:drop-shadow(0 2px 2px rgba(0,0,0,.2)); }
+  .bd small{ font-size:10.5px; color:#a08c70; font-weight:normal; }
+  .lv .rd{ color:var(--green); font-weight:bold; }
+  #guide{ position:absolute; inset:0; z-index:25; pointer-events:none; }
+  #g-hand{ position:absolute; font-size:34px; line-height:1; filter:drop-shadow(0 3px 3px rgba(0,0,0,.35)); animation:tapHint 1s ease-in-out infinite; }
+  @keyframes tapHint{ 0%,100%{ transform:translate(-50%, 5px); } 50%{ transform:translate(-50%, -5px); } }
+  #g-tip{ position:absolute; left:10px; right:10px; background:#fffbe9; border:2px solid var(--orange); border-radius:14px; padding:8px 10px;
+          font-size:14.5px; line-height:1.45; color:#3b2600; box-shadow:0 8px 22px rgba(0,0,0,.28); pointer-events:auto; display:flex; gap:8px; align-items:center; }
+  #g-tip img{ width:30px; height:58px; object-fit:contain; flex:none; }
+  #g-text{ flex:1; }
+  #g-tip .btn{ padding:8px 12px; font-size:14px; flex:none; }
+  .g-focus{ outline:3px solid var(--orange) !important; outline-offset:2px; animation:gGlow 1s ease-in-out infinite; }
+  @keyframes gGlow{ 50%{ outline-color:#ffe08a; } }
+  .modal.center{ align-items:center; padding:16px; }
+  .cert{ position:relative; width:100%; max-width:380px; background:radial-gradient(circle at 50% 0%, #fffef8, #fbf0d8); border-radius:18px; padding:18px 16px 16px; overflow:hidden;
+         text-align:center; border:3px double #c9a24a; box-shadow:0 0 0 6px #fffaf0, 0 0 0 8px #e6cf8f, 0 18px 40px rgba(0,0,0,.35); display:flex; flex-direction:column; gap:6px; align-items:center; }
+  .cert > *{ position:relative; z-index:2; }
+  .cert .c-top{ font-size:11.5px; letter-spacing:.28em; color:var(--green); font-weight:bold; }
+  .cert .c-icon{ font-size:56px; line-height:1.1; filter:drop-shadow(0 4px 4px rgba(0,0,0,.2)); }
+  .cert .c-h{ font-size:13px; letter-spacing:.25em; color:#a07a1f; font-weight:bold; }
+  .cert .c-name{ font-size:24px; font-weight:bold; color:var(--green-dark); font-family:Georgia, 'Times New Roman', serif; }
+  .cert .c-body{ font-size:14.5px; line-height:1.5; color:#4a3c28; }
+  .cert .c-date{ font-size:12px; color:#8a7b66; }
+  .cert .c-list{ text-align:left; font-size:13px; width:100%; max-height:28vh; overflow:auto; }
+  .cert .c-list div{ display:flex; justify-content:space-between; gap:8px; border-bottom:1px dashed #e6d9bf; padding:3px 0; }
+  .cert .btn{ margin-top:4px; min-width:160px; }
+  #cert-cf{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
+  #cert-cf span{ position:absolute; top:-30px; font-size:20px; animation:fall linear forwards; }
+  .foot{ display:flex; flex-wrap:wrap; justify-content:center; gap:4px 14px; }
+  @media (prefers-reduced-motion: reduce){ #cup.none, #g-hand, .g-focus, #queue .qc{ animation:none; } }
 </style>
 </head>
 <body>
@@ -334,6 +409,16 @@
         <p style="font-size:12.5px;color:#666">Học trước cho quen (được xem công thức), đạt 2★ thì mở phần Thi của màn đó.</p>
       </div>
     </div>
+    <button type="button" class="tut" id="btn-tut" hidden>
+      <span class="big-e">👋</span>
+      <span class="t"><b>Lần đầu chơi? Làm thử 1 món</b><span>Chị Chè chỉ từng bước · không tính điểm</span></span>
+    </button>
+    <div class="install" id="install" hidden>
+      <span class="big-e">📲</span>
+      <span class="t"><b>Thêm game ra màn hình chính</b><span>Mở nhanh như app, khỏi tìm link</span></span>
+      <button type="button" class="btn" id="btn-install">Thêm</button>
+      <button type="button" class="x" id="install-x" aria-label="Để sau">✕</button>
+    </div>
     <div class="card">
       <div class="label">Tên của em</div>
       <select class="field" id="name-sel" hidden></select>
@@ -344,17 +429,26 @@
         <button type="button" class="mode" data-mode="thi"><b>⏱️ Thi</b><span>Không xem công thức, tính giờ KPI</span></button>
       </div>
       <div class="msg" id="home-msg"></div>
+      <button type="button" class="link" id="btn-buzz" hidden style="align-self:flex-start;padding:0;font-size:13px"></button>
     </div>
     <button type="button" class="daily" id="btn-daily">
       <span class="big-e">🎯</span>
       <span class="t"><b id="daily-title">Thử thách hôm nay</b><span id="daily-sub">3 món giống nhau cho cả quán · tính như Thi</span></span>
     </button>
     <div class="levels" id="levels"></div>
+    <div class="card" id="badges-card">
+      <div class="label">🏅 Huy hiệu của em <span style="font-weight:normal;color:#999">· bấm để xem</span></div>
+      <div class="badges" id="badges"></div>
+    </div>
     <div class="board" id="board" hidden>
       <div class="col"><b>🏆 Tuần này</b><div id="board-week"></div></div>
       <div class="col"><b>🎯 Thử thách hôm nay</b><div id="board-today"></div></div>
     </div>
-    <button type="button" class="link" id="btn-book">📒 Xem sổ công thức</button>
+    <div class="foot">
+      <button type="button" class="link" id="btn-book">📒 Sổ công thức</button>
+      <button type="button" class="link" id="btn-tut2" hidden>👋 Xem lại hướng dẫn</button>
+      <a class="link" href="quan-ly.html">📊 Trang quản lý</a>
+    </div>
   </div>
 
   <!-- Play -->
@@ -368,6 +462,7 @@
         <div id="order-name"></div>
         <div id="order-meta"></div>
         <div id="timer-row"><div id="timebar"><i></i></div><span id="timetext"></span></div>
+        <div id="queue" hidden></div>
       </div>
     </div>
     <div id="bowl">
@@ -446,6 +541,46 @@
     </div>
   </div>
 
+  <!-- Pick the cup / bowl -->
+  <div class="modal" id="vs">
+    <div class="sheet">
+      <div class="kp-title"><span class="e">🥤</span><b>Lấy ly / tô nào?</b></div>
+      <div id="vs-sub" style="font-size:13.5px;color:#666;margin-top:-4px"></div>
+      <div id="vs-list"></div>
+      <div class="row sticky"><button type="button" class="btn soft" id="vs-cancel">Để sau</button></div>
+    </div>
+  </div>
+
+  <!-- Little info sheet -->
+  <div class="modal" id="info">
+    <div class="sheet">
+      <div class="kp-title"><b id="info-title"></b></div>
+      <div class="note" id="info-body" style="font-size:15px"></div>
+      <div class="row sticky"><button type="button" class="btn" id="info-close">Đã hiểu</button></div>
+    </div>
+  </div>
+
+  <!-- Badge / certificate -->
+  <div class="modal center" id="cert">
+    <div class="cert">
+      <div id="cert-cf"></div>
+      <div class="c-top" id="cert-top">HAMICHEE</div>
+      <div class="c-icon" id="cert-icon">🏅</div>
+      <div class="c-h" id="cert-h"></div>
+      <div class="c-name" id="cert-name"></div>
+      <div class="c-body" id="cert-body"></div>
+      <div class="c-list" id="cert-list"></div>
+      <div class="c-date" id="cert-date"></div>
+      <button type="button" class="btn" id="cert-close">Đóng</button>
+    </div>
+  </div>
+
+  <!-- First-time guide: Chị Chè points at the next step -->
+  <div id="guide" hidden>
+    <div id="g-hand">👆</div>
+    <div id="g-tip"><img src="assets/vo-che-sprite.png?v=2" alt=""><span id="g-text"></span><button type="button" class="btn" id="g-next" hidden>Tiếp ▶</button></div>
+  </div>
+
   <div id="toast" role="status"></div>
   <div id="rotate">📱 Xoay dọc điện thoại để chơi nha</div>
 </div>
@@ -454,7 +589,8 @@
 (function(){
   var API = 'https://script.google.com/macros/s/AKfycbz53HiMjoKMbZh6ZBtPu6DHh9YEdgP-ro5ubKj-cOmN2J27RpvKFAB-Jei7Mum6KveeWA/exec';
   var K = { pin:'hmc_train_pin', dev:'hmc_train_dev', rows:'hmc_train_rows', staff:'hmc_train_staff', name:'hmc_train_name', mode:'hmc_train_mode',
-            best:'hmc_train_best', score:'hmc_train_bestscore', miss:'hmc_train_miss', daily:'hmc_train_daily', outbox:'hmc_train_outbox' };
+            best:'hmc_train_best', score:'hmc_train_bestscore', miss:'hmc_train_miss', daily:'hmc_train_daily', outbox:'hmc_train_outbox',
+            tut:'hmc_train_tut', install:'hmc_train_install', buzz:'hmc_train_buzz', badges:'hmc_train_badges', ready:'hmc_train_ready' };
   var MIN_ORDERS = 6, RUSH_ORDERS = 8, DAILY_ORDERS = 3, TOL = 0.10; // ±10% cho định lượng 1 con số
   var UNITS = ['g', 'ml', 'viên', 'vá', 'miếng', 'trái', 'muỗng', 'xịt', 'gói', 'cái', 'sợi'];
   var UNIT_ALIAS = { gr:'g', gram:'g', gam:'g', v:'viên', vien:'viên', va:'vá', mieng:'miếng', trai:'trái', muong:'muỗng', xit:'xịt', goi:'gói', cai:'cái', soi:'sợi' };
@@ -699,12 +835,59 @@
   var CAT_ORDER = ['Nước & nền', 'Thạch', 'Topping', 'Trái cây & sốt', 'Chè nấu', 'Đá & lắc'];
   function vesselIcon(v){ return /mâm/i.test(v) ? '🍱' : /đĩa/i.test(v) ? '🍽️' : /^ly/i.test(v) ? '🥤' : '🥣'; }
   function vesselClass(v){ return /mâm|đĩa/i.test(v) ? 'mam' : /^ly/i.test(v) ? 'ly' : 'to'; }
+  // Ly/tô theo SOP: "Tô / ly 500ml" = ăn tại chỗ dùng tô, mang về dùng ly 500ml. Không có "/" thì tại chỗ, mang về như nhau.
+  var VESSEL_ORDER = ['Tô', 'Đĩa', 'Mâm 6 chén', 'Ly cao', 'Ly 330ml', 'Ly 500ml', 'Ly 700ml'];
+  function vesselName(v){
+    v = String(v || '').trim();
+    if (/mâm/i.test(v)) return 'Mâm 6 chén';
+    if (/đĩa/i.test(v)) return 'Đĩa';
+    if (/^tô/i.test(v)) return 'Tô';
+    if (/ly cao/i.test(v)) return 'Ly cao';
+    var m = /(\d{3})\s*ml/i.exec(v);
+    return m ? 'Ly ' + m[1] + 'ml' : v.charAt(0).toUpperCase() + v.slice(1);
+  }
+  function vesselFor(dish, where){
+    var p = String(dish.vessel || '').split('/');
+    return vesselName(p.length > 1 ? (where === 'out' ? p[p.length - 1] : p[0]) : p[0]);
+  }
+  function vesselKind(v){
+    var m = /^Ly (\d+)ml$/.exec(v);
+    return v === 'Tô' ? 'to' : v === 'Đĩa' ? 'mam dia' : /^Mâm/.test(v) ? 'mam' : v === 'Ly cao' ? 'ly cao' : m ? 'ly s' + m[1] : 'ly';
+  }
+
+  function vesselOptions(){ // every cup / bowl the shop's recipes use, in a fixed order
+    var seen = {};
+    DATA.dishes.forEach(function(d){ seen[vesselFor(d, 'in')] = 1; seen[vesselFor(d, 'out')] = 1; });
+    return VESSEL_ORDER.filter(function(v){ return seen[v]; }).concat(Object.keys(seen).filter(function(v){ return VESSEL_ORDER.indexOf(v) < 0; }));
+  }
+  function vesselSVG(v){
+    var o = '<svg viewBox="0 0 54 46" xmlns="http://www.w3.org/2000/svg">', m = /^Ly (\d+)ml$/.exec(v);
+    if (v === 'Tô') o += '<ellipse cx="27" cy="15" rx="23" ry="5.5" fill="#e6edf1" stroke="#8fa6b4" stroke-width="1.5"/><path d="M4 15 Q6 38 27 40 Q48 38 50 15 Q27 23 4 15 Z" fill="#fff" stroke="#8fa6b4" stroke-width="1.5"/>' +
+                        '<path d="M7 23 Q27 31 47 23" stroke="#5f9fc4" stroke-width="2" fill="none"/><rect x="20" y="39" width="14" height="4" rx="1.5" fill="#cfd8de"/>';
+    else if (v === 'Đĩa') o += '<ellipse cx="27" cy="29" rx="24" ry="9" fill="#fff" stroke="#8fa6b4" stroke-width="1.5"/><ellipse cx="27" cy="28" rx="14" ry="4.8" fill="#f0f4f6" stroke="#cfd8de"/>' +
+                             '<path d="M20 26 Q27 16 34 26 Z" fill="#f2c14e"/>';
+    else if (/^Mâm/.test(v)) o += '<ellipse cx="27" cy="30" rx="25" ry="11" fill="#c98d56" stroke="#8a5a2e" stroke-width="1.5"/>' +
+                             [[14,27],[27,24],[40,27],[14,34],[27,37],[40,34]].map(function(p){ return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4.6" fill="#fff" stroke="#8fa6b4"/>'; }).join('');
+    else if (v === 'Ly cao') o += '<path d="M18 4 H36 L34 43 H20 Z" fill="rgba(210,236,247,.75)" stroke="#86aebf" stroke-width="1.5"/><path d="M21.5 8 L22.5 39" stroke="#fff" stroke-width="2.5" opacity=".85"/>';
+    else {
+      var ml = m ? +m[1] : 500, h = ml <= 330 ? 26 : ml <= 500 ? 33 : 40, top = 44 - h, w1 = 14 + h / 6, w2 = 9;
+      o += '<path d="M' + (27 - w1) + ' ' + top + ' H' + (27 + w1) + ' L' + (27 + w2) + ' 44 H' + (27 - w2) + ' Z" fill="rgba(235,245,250,.9)" stroke="#86aebf" stroke-width="1.5"/>' +
+           '<rect x="' + (27 - w1 - 1.5) + '" y="' + (top - 2) + '" width="' + (2 * w1 + 3) + '" height="3" rx="1.5" fill="#bcd3de"/>' +
+           '<text x="27" y="' + (top + h / 2 + 4) + '" font-size="10" font-weight="bold" text-anchor="middle" fill="#00783E" font-family="Arial">' + (m ? ml : '') + '</text>';
+    }
+    return o + '</svg>';
+  }
 
   // ---- Grading ----
   function sameUnit(a, b){ a = a === 'ml' ? 'g' : a; b = b === 'ml' ? 'g' : b; return a === b; } // 1 ml ≈ 1 g
   function need(dish, where){ return dish.items.filter(function(it){ return !it.only || it.only === where; }); }
   function grade(o){
     var dish = o.dish, items = need(dish, o.where), lines = [], ok = true, by = {};
+    if (o.vessel !== undefined){ // lấy đúng ly/tô (tại chỗ / mang về) cũng là một phần của SOP
+      var wantV = vesselFor(dish, o.where), vOk = o.vessel === wantV;
+      if (!vOk) ok = false;
+      lines.push({ ok:vOk, label:'Ly/tô', text:'Ly/tô: ' + (o.vessel || 'chưa lấy'), sub:vOk ? '' : 'Chuẩn: ' + wantV });
+    }
     o.added.forEach(function(a){ (by[a.ing] = by[a.ing] || []).push(a); });
     function matches(it, name){ return it.any ? name.indexOf(it.any) === 0 : name === it.ing; }
     items.forEach(function(it){
@@ -777,9 +960,11 @@
       b.innerHTML = '<span class="n"></span><span class="t"><b></b><span></span></span><span class="s"></span>';
       b.querySelector('.n').textContent = locked ? '🔒' : g === RUSH ? '🔥' : i + 1;
       b.querySelector('b').textContent = g;
+      var rd = g !== RUSH && readyMap() ? groupReady(g, readyMap()) : null;
       b.querySelector('.t span').textContent = locked
-        ? (g === RUSH ? 'Mở khi Thi 4 màn đều đạt 2★' : 'Mở khi màn này ở chế độ Học đạt 2★')
-        : count + ' món · ' + levelOrders(g) + ' khách' + (g === RUSH ? ' · trộn mọi món' : '');
+        ? (g === RUSH ? 'Mở khi Thi ' + DATA.groups.length + ' màn đều đạt 2★' : 'Mở khi màn này ở chế độ Học đạt 2★')
+        : count + ' món · ' + levelOrders(g) + ' khách' + (g === RUSH ? ' · 2–3 khách chờ cùng lúc' : '');
+      if (rd && !locked){ var sp = document.createElement('span'); sp.className = 'rd'; sp.textContent = ' · ✅ ' + rd.n + '/' + rd.of + ' sẵn sàng'; b.querySelector('.t span').appendChild(sp); }
       b.querySelector('.s').textContent = starText(starsOf(mode, g));
       b.addEventListener('click', function(){
         if (levelLocked(g)){ toast(g === RUSH ? 'Thi đạt 2★ cả 4 màn để mở Giờ cao điểm nha' : 'Học màn này đạt 2★ trước rồi Thi nha'); return; }
@@ -831,8 +1016,10 @@
   function loadBoard(){
     if (Date.now() - boardAt < 60000 || !load(K.pin)) return;
     boardAt = Date.now();
-    call({ action:'trainTop', pin:load(K.pin) }).then(function(res){
+    var who = playerName();
+    call({ action:'trainTop', pin:load(K.pin), name:who }).then(function(res){
       if (!res || !res.ok || !res.board) return;
+      if (res.ready && typeof res.ready === 'object' && who){ saveJSON(K.ready, { name:who, map:res.ready, at:Date.now() }); if ($('screen-home').classList.contains('active')){ renderLevels(); renderBadges(); } }
       var me = playerName(), b = res.board;
       function rows(list, fn){ return list.length ? list.map(function(x, i){ return '<div class="r' + (x.name === me ? ' me' : '') + '"><span>' + (i < 3 ? ['🥇','🥈','🥉'][i] : (i + 1) + '.') + ' ' + esc(x.name) + '</span><span>' + fn(x) + '</span></div>'; }).join('') : '<div class="r"><span style="color:#999">Chưa có ai</span></div>'; }
       $('board-week').innerHTML = rows(b.week || [], function(x){ return x.acc + '%'; });
@@ -848,7 +1035,228 @@
     goHome();
     return true;
   }
-  function goHome(){ renderModes(); renderStaff(); renderLevels(); show('home'); loadBoard(); }
+  function goHome(){ stopGuide(); renderModes(); renderStaff(); renderLevels(); show('home'); renderHomeExtras(); loadBoard(); }
+  function renderHomeExtras(){
+    var newbie = load(K.tut) !== 'done';
+    $('btn-tut').hidden = !newbie; $('btn-tut2').hidden = newbie;
+    renderInstall(); renderBuzz(); renderBadges();
+  }
+  var nameT = null;
+  function nameChanged(){ boardAt = 0; clearTimeout(nameT); nameT = setTimeout(function(){ renderLevels(); renderBadges(); loadBoard(); }, 700); }
+  $('name').addEventListener('input', nameChanged);
+  $('name-sel').addEventListener('change', nameChanged);
+
+  // ---- 4. Rung (Android) ----
+  function buzz(p){ if (load(K.buzz) === 'off') return; try { if (navigator.vibrate) navigator.vibrate(p); } catch(e){} }
+  function renderBuzz(){
+    var b = $('btn-buzz');
+    b.hidden = !navigator.vibrate;
+    b.textContent = '📳 Rung khi làm sai / sắp hết giờ: ' + (load(K.buzz) === 'off' ? 'Tắt (bấm để bật)' : 'Bật (bấm để tắt)');
+  }
+  $('btn-buzz').addEventListener('click', function(){ store(K.buzz, load(K.buzz) === 'off' ? 'on' : 'off'); renderBuzz(); buzz(40); });
+
+  // ---- 3. Thêm ra màn hình chính ----
+  var installEv = null;
+  var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); installEv = e; renderInstall(); });
+  window.addEventListener('appinstalled', function(){ installEv = null; store(K.install, 'done'); renderInstall(); });
+  function renderInstall(){ var v = load(K.install); $('install').hidden = standalone || v === 'done' || Date.now() < (Number(v) || 0); }
+  function showInfo(title, html){ $('info-title').textContent = title; $('info-body').innerHTML = html; openModal('info'); }
+  $('info-close').addEventListener('click', function(){ closeModal('info'); });
+  $('btn-install').addEventListener('click', function(){
+    if (installEv){
+      installEv.prompt();
+      installEv.userChoice.then(function(c){ if (c && c.outcome === 'accepted') store(K.install, 'done'); installEv = null; renderInstall(); }).catch(function(){});
+      return;
+    }
+    var ua = navigator.userAgent || '';
+    if (/Zalo|FBAN|FBAV|FB_IAB|Messenger|Instagram|Line\//i.test(ua))
+      showInfo('📲 Thêm ra màn hình chính', 'Game đang mở trong <b>Zalo/Facebook</b> nên chưa thêm được.<br>Bấm nút <b>⋯</b> ở góc trên → chọn <b>Mở bằng trình duyệt</b> (Chrome hoặc Safari), rồi bấm lại nút <b>Thêm</b> ở trang chủ game.');
+    else if (/iPhone|iPad|iPod/i.test(ua))
+      showInfo('📲 Thêm ra màn hình chính', 'Trên iPhone (mở bằng <b>Safari</b>):<br>1. Bấm nút <b>Chia sẻ</b> (hình vuông có mũi tên ⬆️) ở dưới màn hình.<br>2. Kéo xuống, chọn <b>Thêm vào MH chính</b>.<br>3. Bấm <b>Thêm</b> — icon Chè Hami sẽ nằm trên màn hình.');
+    else
+      showInfo('📲 Thêm ra màn hình chính', 'Bấm nút <b>⋮</b> ở góc trên bên phải của Chrome → chọn <b>Thêm vào màn hình chính</b> (hoặc <b>Cài đặt ứng dụng</b>) → <b>Thêm</b>.');
+  });
+  $('install-x').addEventListener('click', function(){ store(K.install, String(Date.now() + 7 * 864e5)); renderInstall(); });
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(function(){});
+
+  // ---- 8. Huy hiệu + chứng nhận ----
+  function readyMap(){ var r = loadJSON(K.ready, {}); return r.map && r.name && r.name === playerName() ? r.map : null; }
+  function groupReady(g, rm){
+    var ds = DATA.dishes.filter(function(d){ return d.group === g; });
+    return { n:ds.filter(function(d){ return rm && rm[d.code] >= 3; }).length, of:ds.length, ds:ds };
+  }
+  function badgeList(){
+    var b = best(), dl = loadJSON(K.daily, {}), rm = readyMap(), gs = DATA.groups, L = [];
+    var hoc = gs.filter(function(g){ return b['hoc|' + g] >= 2; }).length, thi = gs.filter(function(g){ return b['thi|' + g] >= 2; }).length;
+    L.push({ id:'tut', icon:'🎓', name:'Nhập môn', desc:'Làm xong phần hướng dẫn 1 món.', got:load(K.tut) === 'done' });
+    L.push({ id:'hoc', icon:'📖', name:'Học xong', desc:'Chế độ Học đạt 2★ cả ' + gs.length + ' màn.', got:hoc === gs.length, prog:hoc + '/' + gs.length });
+    L.push({ id:'thi', icon:'⏱️', name:'Qua Thi', desc:'Chế độ Thi đạt 2★ cả ' + gs.length + ' màn.', got:thi === gs.length, prog:thi + '/' + gs.length });
+    L.push({ id:'rush', icon:'🔥', name:'Giờ cao điểm', desc:'Giờ cao điểm (chế độ Thi) đạt 3★: 8 khách, 2–3 người chờ cùng lúc.', got:b['thi|' + RUSH] >= 3 });
+    L.push({ id:'daily7', icon:'🎯', name:'Chăm chỉ', desc:'Chơi Thử thách hôm nay 7 ngày liên tiếp.', got:Math.max(dl.max || 0, dl.streak || 0) >= 7, prog:(dl.streak || 0) + '/7' });
+    gs.forEach(function(g){
+      var r = groupReady(g, rm);
+      L.push({ id:'grp:' + g, icon:'🏅', name:'Thạo ' + g, short:g, cert:true, ds:r.ds, what:'nhóm món <b>' + esc(g) + '</b> (' + r.of + ' món)',
+               desc:'Sẵn sàng làm cả ' + r.of + ' món ' + g + ': mỗi món Thi đúng SOP và đúng giờ 3 lần liên tiếp.', got:!!rm && r.n === r.of, prog:rm ? r.n + '/' + r.of : '' });
+    });
+    var all = rm ? DATA.dishes.filter(function(d){ return rm[d.code] >= 3; }).length : 0;
+    L.push({ id:'master', icon:'👑', name:'Pha chế chính hiệu', short:'Chính hiệu', cert:true, ds:DATA.dishes, what:'<b>tất cả ' + DATA.dishes.length + ' món</b> của quán',
+             desc:'Sẵn sàng làm tất cả ' + DATA.dishes.length + ' món của HAMICHEE.', got:!!rm && all === DATA.dishes.length, prog:rm ? all + '/' + DATA.dishes.length : '' });
+    return L;
+  }
+  function renderBadges(){
+    if (!DATA) return;
+    var list = badgeList(), box = $('badges'); box.innerHTML = '';
+    list.forEach(function(x){
+      var e = document.createElement('button'); e.type = 'button'; e.className = 'bd' + (x.got ? ' got' : '');
+      e.innerHTML = '<span class="i"></span><span class="n"></span>' + (x.prog && !x.got ? '<small></small>' : '');
+      e.querySelector('.i').textContent = x.icon; e.querySelector('.n').textContent = x.short || x.name;
+      if (x.prog && !x.got) e.querySelector('small').textContent = x.prog;
+      e.addEventListener('click', function(){ showBadge(x, false); });
+      box.appendChild(e);
+    });
+    // a badge earned since last time: celebrate it once (only on the home screen, not over a level)
+    var who = playerName() || '?', saved = loadJSON(K.badges, {}), mine = saved[who] || {};
+    var fresh = list.filter(function(x){ return x.got && !mine[x.id]; });
+    if (!fresh.length) return;
+    fresh.forEach(function(x){ mine[x.id] = todayIso(); });
+    saved[who] = mine; saveJSON(K.badges, saved);
+    if ($('screen-home').classList.contains('active') && !document.querySelector('.modal.on')) showBadge(fresh[fresh.length - 1], true);
+  }
+  function dmy(iso){ var p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : ''; }
+  function showBadge(x, fresh){
+    var who = playerName(), when = ((loadJSON(K.badges, {})[who || '?'] || {})[x.id]) || '';
+    $('cert-top').textContent = x.cert ? 'HAMICHEE · CHỨNG NHẬN' : 'HAMICHEE · HUY HIỆU';
+    $('cert-icon').textContent = x.icon;
+    $('cert-h').textContent = !x.got ? 'CHƯA ĐẠT' : fresh ? 'CHÚC MỪNG!' : x.cert ? 'CHỨNG NHẬN' : 'ĐÃ ĐẠT';
+    $('cert-name').textContent = x.got && x.cert && who ? who : x.name;
+    $('cert-body').innerHTML = x.got && x.cert ? 'đã thành thạo ' + x.what + ' theo SOP HAMICHEE:<br>đúng ly/tô, đúng định lượng, đúng thứ tự và đúng giờ KPI.'
+      : esc(x.desc) + (x.got ? '' : x.prog ? '<br><b>Tiến độ: ' + esc(x.prog) + '</b>' : '');
+    var l = $('cert-list'); l.innerHTML = '';
+    if (x.ds && !x.got){
+      var rm = readyMap();
+      if (!rm) l.innerHTML = '<div><span>Đang tải tiến độ từ Sheet… (cần mạng)</span></div>';
+      else x.ds.forEach(function(d){
+        var k = rm[d.code], row = document.createElement('div');
+        row.innerHTML = '<span></span><b></b>';
+        row.querySelector('span').textContent = d.name;
+        row.querySelector('b').textContent = k >= 3 ? '✅' : k == null ? 'chưa thi' : k + '/3';
+        l.appendChild(row);
+      });
+    }
+    $('cert-date').textContent = x.got && when ? 'Ngày ' + dmy(when) : '';
+    $('cert-close').textContent = fresh ? 'Tuyệt vời! 🎉' : 'Đóng';
+    $('cert-cf').innerHTML = '';
+    openModal('cert');
+    if (fresh){ beep(true, true); confetti($('cert-cf')); }
+  }
+  $('cert-close').addEventListener('click', function(){ closeModal('cert'); });
+
+  // ---- 6. Hướng dẫn lần đầu: làm mẫu 1 món, Chị Chè chỉ từng bước ----
+  function tutDish(){
+    var c = DATA.dishes.filter(function(d){
+      var it = need(d, 'out');
+      return d.rule && it.length >= 3 && it.length <= 6 && it.some(function(x){ return x.ing === 'Cốt dừa'; }) &&
+             it.some(function(x){ return readable(x.alts).length; }) && !it.some(function(x){ return x.any; });
+    }).sort(function(a, b){ return a.size - b.size; });
+    return c[0] || DATA.dishes.slice().sort(function(a, b){ return a.size - b.size; })[0];
+  }
+  function startTut(){ var d = tutDish(); startLevel({ kind:'tut', group:'Hướng dẫn', dish:d }); }
+  $('btn-tut').addEventListener('click', startTut);
+  $('btn-tut2').addEventListener('click', startTut);
+  var G = null, gKey = '';
+  function startGuide(){ stopGuide(); G = { step:0, iv:setInterval(guideUpdate, 250) }; }
+  function stopGuide(){
+    if (G) clearInterval(G.iv);
+    G = null; gKey = '';
+    $('guide').hidden = true;
+    Array.prototype.forEach.call(document.querySelectorAll('.g-focus'), function(e){ e.classList.remove('g-focus'); });
+  }
+  $('g-next').addEventListener('click', function(){ if (G){ G.step++; guideUpdate(); } });
+  function ingMatch(it, name){ return it.any ? name.indexOf(it.any) === 0 : name === it.ing; }
+  function guideOrder(c){ // needed items in the order Chị Chè shows them (cốt dừa first / last by the rule)
+    var items = need(c.dish, c.where).slice(), co = items.filter(function(it){ return it.ing === 'Cốt dừa'; })[0];
+    if (co && c.dish.rule){ items.splice(items.indexOf(co), 1); if (c.dish.rule === 'inout' && c.where === 'in') items.unshift(co); else items.push(co); }
+    return items;
+  }
+  function guideUpdate(){
+    if (!G || !P || !P.cur || P.lv.kind !== 'tut' || P.done){ if (G && P && P.done) stopGuide(); return; }
+    var c = P.cur, t = null, html = '', next = false;
+    var on = function(id){ return $(id).classList.contains('on'); };
+    if (G.step === 0){ t = $('bubble'); next = true;
+      html = 'Khách vừa gọi món này, <b>' + (c.where === 'in' ? 'ăn tại chỗ' : 'mang về') + '</b>. Thanh màu là thời gian chuẩn (KPI) — làm xong trước khi hết thanh nha.'; }
+    else if (G.step === 1){ t = $('btn-recipe'); next = true;
+      html = 'Quên công thức thì bấm <b>SOP</b> để xem. Chế độ Học mới được xem — vào Thi là phải thuộc nha!'; }
+    else if (on('rv')){ t = $('rv-next'); html = 'Đây là phần chấm: mục sai hiện màu đỏ kèm định lượng chuẩn. Bấm <b>' + esc($('rv-next').textContent) + '</b> để xong.'; }
+    else if (on('rc')){ t = $('rc-close'); html = 'Xem xong bấm <b>Đóng</b>.'; }
+    else if (on('info') || on('cert')){ t = null; html = ''; }
+    else {
+      var wantV = vesselFor(c.dish, c.where);
+      if (!c.vessel || c.vessel !== wantV){
+        if (on('vs')){ t = document.querySelector('#vs-list [data-v="' + wantV.replace(/"/g, '') + '"]');
+          html = 'Bước 1: lấy đúng ly/tô. Món này ' + (c.where === 'in' ? 'ăn tại chỗ' : 'mang về') + ' nên dùng <b>' + esc(wantV) + '</b>.'; }
+        else { t = $('cupbox'); html = c.vessel ? 'Lấy nhầm rồi — chạm vào đây để đổi sang <b>' + esc(wantV) + '</b>.' : 'Bước 1: chạm vào đây để <b>lấy ly/tô</b>.'; }
+      } else {
+        var g = grade(c), okBy = {}, items = need(c.dish, c.where), wantLast = !(c.dish.rule === 'inout' && c.where === 'in');
+        g.lines.forEach(function(l){ okBy[l.label] = l.ok; });
+        var left = guideOrder(c).filter(function(it){ return !okBy[it.ing]; }), bad = null;
+        c.added.forEach(function(a, i){
+          if (bad) return;
+          var it = items.filter(function(x){ return ingMatch(x, a.ing); })[0];
+          if (!it) bad = { i:i, html:'Món này không có <b>' + esc(a.ing) + '</b> — bấm ✕ để bỏ ra.' };
+          else if (okBy[it.ing] === false) bad = { i:i, html:'<b>' + esc(a.ing) + '</b> chưa đúng định lượng (chuẩn <b>' + esc(qtyText(it.alts)) + '</b>) — bấm ✕ bỏ ra rồi lấy lại.' };
+          else if (a.ing === 'Cốt dừa' && c.dish.rule && wantLast && left.some(function(x){ return x.ing !== 'Cốt dừa'; }))
+            bad = { i:i, html:'Món này ' + (c.dish.rule === 'last' ? '' : 'mang về ') + '<b>cốt dừa cho sau cùng</b> — bấm ✕ bỏ ra, lát nữa cho sau.' };
+        });
+        var kpOn = on('kp');
+        if (bad && !kpOn){ t = document.querySelectorAll('#added .chip .x')[bad.i]; html = bad.html; }
+        else if (kpOn){
+          var it2 = left[0], r = it2 && readable(it2.alts)[0];
+          if (!it2 || !ingMatch(it2, kp.ing)){ t = $('kp-cancel'); html = 'Bây giờ chưa cần <b>' + esc(kp.ing) + '</b> — bấm <b>Huỷ</b>.'; }
+          else if (!r){ t = kp.val === 'fill' ? $('kp-ok') : document.querySelector('#kp-keys [data-k="fill"]');
+            html = kp.val === 'fill' ? 'Đúng rồi — bấm <b>Cho vào</b>.' : '<b>' + esc(kp.ing) + '</b> cho <b>vừa đủ</b> — bấm nút <b>Vừa đủ</b>.'; }
+          else {
+            var v = num(kp.val), okV = kp.val !== 'fill' && v > 0 && (r.range ? v >= r.min && v <= r.max : Math.abs(v - r.min) <= r.min * TOL);
+            var want = (r.range ? fmt(r.min) + '–' + fmt(r.max) : fmt(r.min)) + ' ' + r.u;
+            if (okV && sameUnit(kp.unit, r.u)){ t = $('kp-ok'); html = 'Chuẩn <b>' + esc(want) + '</b> rồi — bấm <b>Cho vào</b>.'; }
+            else if (okV){ t = document.querySelector('#kp-units .u:nth-child(' + (UNITS.indexOf(r.u) + 1) + ')'); html = 'Chọn đơn vị <b>' + esc(r.u) + '</b>.'; }
+            else { t = $('kp-display'); html = 'Theo SOP: <b>' + esc(want) + '</b>. Bấm số trên bàn phím (sai thì ⌫ xoá) rồi bấm <b>Cho vào</b>.'; }
+          }
+        }
+        else if (left.length){
+          var it3 = left[0], nm = it3.any ? (P.shelf.filter(function(n){ return n.indexOf(it3.any) === 0; })[0] || it3.any) : it3.ing, ct = cat(nm);
+          var why = it3.ing === 'Cốt dừa' && c.dish.rule ? (wantLast ? ' (cốt dừa cho <b>sau cùng</b>)' : ' (ăn tại chỗ: cốt dừa cho <b>trước</b>)') : '';
+          if (P.tab !== ct){ t = [].filter.call(document.querySelectorAll('#tabs .tab'), function(x){ return x.textContent === ct; })[0];
+            html = '<b>' + esc(nm) + '</b> nằm ở nhóm <b>' + esc(ct) + '</b> — bấm vào đây.'; }
+          else { t = [].filter.call(document.querySelectorAll('#shelf .bin'), function(x){ return x.querySelector('.nm').textContent === nm; })[0];
+            html = 'Tiếp theo: bấm <b>' + esc(nm) + '</b>' + why + '.'; }
+        }
+        else { t = $('btn-serve'); html = 'Đủ hết rồi! Bấm <b>Ra món</b> để đưa khách.'; }
+      }
+    }
+    showGuide(t, html, next);
+  }
+  function showGuide(t, html, next){
+    var box = $('guide');
+    if (!html){ box.hidden = true; return; }
+    box.hidden = false;
+    var key = html + '|' + next;
+    if (key !== gKey){
+      gKey = key;
+      $('g-text').innerHTML = html; $('g-next').hidden = !next;
+      Array.prototype.forEach.call(document.querySelectorAll('.g-focus'), function(e){ e.classList.remove('g-focus'); });
+      if (t){ t.classList.add('g-focus'); if (t.scrollIntoView) try { t.scrollIntoView({ block:'nearest', inline:'nearest' }); } catch(e){} }
+    }
+    var app = $('app').getBoundingClientRect(), hand = $('g-hand'), tip = $('g-tip');
+    if (t){
+      var r = t.getBoundingClientRect(), down = r.bottom - app.top + 46 > app.height;
+      hand.hidden = false; hand.textContent = down ? '👇' : '👆';
+      hand.style.left = (r.left - app.left + r.width / 2) + 'px';
+      hand.style.top = (down ? r.top - app.top - 40 : r.bottom - app.top - 4) + 'px';
+      var low = r.top + r.height / 2 - app.top > app.height * 0.5;
+      tip.style.top = low ? '52px' : ''; tip.style.bottom = low ? '' : '86px';
+    } else { hand.hidden = true; tip.style.top = '52px'; tip.style.bottom = ''; }
+  }
   $('pin-form').addEventListener('submit', function(e){
     e.preventDefault();
     var pin = $('pin').value.trim();
@@ -875,6 +1283,7 @@
   // of the dishes this phone got wrong before; the rush mixes everything, weighted towards past mistakes.
   function makeOrders(lv){
     var miss = misses(), pool, orders;
+    if (lv.kind === 'tut') return [{ dish:lv.dish, where:'out' }];
     if (lv.kind === 'daily'){
       var rnd = seeded(todayIso());
       pool = shuffle(DATA.dishes.slice(), rnd).slice(0, DAILY_ORDERS);
@@ -898,13 +1307,17 @@
   }
   function startLevel(lv){
     var name = playerName();
-    if (name.length < 2){ $('home-msg').textContent = 'Chọn / nhập tên của em trước nha.'; return; }
-    store(K.name, name);
-    var playMode = lv.kind === 'daily' ? 'thi' : mode; // the daily challenge always counts like an exam
+    if (lv.kind === 'tut') name = name.length >= 2 ? name : 'Bạn mới';
+    else if (name.length < 2){ $('home-msg').textContent = 'Chọn / nhập tên của em trước nha.'; return; }
+    else store(K.name, name);
+    var playMode = lv.kind === 'daily' ? 'thi' : lv.kind === 'tut' ? 'hoc' : mode; // the daily challenge always counts like an exam
     var shelfIngs = Object.keys(DATA.ings).filter(function(k){
-      return lv.kind !== 'group' || DATA.ings[k].groups[lv.group];
+      return lv.kind === 'group' ? DATA.ings[k].groups[lv.group] : lv.kind === 'tut' ? DATA.ings[k].groups[lv.dish.group] : true;
     });
-    P = { lv:lv, level:lv.group, name:name, mode:playMode, day:todayIso(), dayBefore:dayIso(-1), orders:makeOrders(lv), idx:-1, results:[], score:0, streak:0, bestStreak:0, shelf:shelfIngs, tab:null };
+    [].forEach.call(document.querySelectorAll('.modal.on'), function(m){ m.classList.remove('on'); }); // nothing left over from the last level
+    P = { lv:lv, level:lv.group, name:name, mode:playMode, day:todayIso(), dayBefore:dayIso(-1), orders:makeOrders(lv), idx:-1, results:[], score:0, streak:0, bestStreak:0, shelf:shelfIngs, tab:null,
+          rush:lv.kind === 'rush', arrived:0, nextArrive:0, pausedAt:0 };
+    if (lv.kind === 'tut') startGuide();
     buildShelf();
     show('play');
     guardBack(true);
@@ -925,6 +1338,8 @@
       b.addEventListener('click', function(){ if (!P) return; P.tab = c.name; renderTabs(); renderShelf(); $('shelf').scrollTop = 0; });
       t.appendChild(b);
     });
+    var on = t.querySelector('.tab.on');
+    if (on){ var x = on.offsetLeft - (t.clientWidth - on.offsetWidth) / 2; t.scrollLeft = Math.max(0, x); }
   }
   // Each bin is a steel topping tub (or a glass jug for liquids) with the ingredient's surface inside.
   function renderShelf(){
@@ -948,22 +1363,87 @@
   function nextOrder(){
     P.idx++;
     if (P.idx >= P.orders.length){ finish(); return; }
+    var now = Date.now();
+    if (P.rush){
+      if (P.pausedAt){ shiftWaiting(now - P.pausedAt); P.pausedAt = 0; } // reading the review does not count
+      while (P.arrived <= P.idx) arrive(now);                              // nobody waiting: the next one walks in now
+    }
     var o = P.orders[P.idx], dish = o.dish;
-    P.cur = { dish:dish, where:o.where || (Math.random() < 0.5 ? 'in' : 'out'), added:[], start:Date.now(), pauses:0, retry:!!o.retry };
-    P.cur.look = newLook(); P.cur.mood = '';
+    if (!o.where) o.where = Math.random() < 0.5 ? 'in' : 'out';
+    if (!o.look) o.look = newLook();
+    // in the rush the waiting time counts too (the clock started when the customer walked in)
+    P.cur = { dish:dish, where:o.where, added:[], start:o.arrive || now, pauses:0, retry:!!o.retry, vessel:null, look:o.look, mood:'', warned:0 };
     setMood('happy');
     $('cust').className = '';
     var cb = $('cupbox'); cb.style.transition = 'none'; cb.style.transform = ''; cb.className = ''; void cb.offsetWidth; cb.style.transition = '';
     $('say').classList.remove('on');
     $('order-name').textContent = dish.name;
+    // Học: the right cup is shown on the ticket · Thi: the trainee must know it
     $('order-meta').innerHTML = '<span class="tag ' + P.cur.where + '">' + (P.cur.where === 'in' ? '🪑 Ăn tại chỗ' : '🛍️ Mang về') + '</span>' +
-      '<span class="tag v">' + esc(dish.vessel) + '</span><span class="tag v">KPI ' + fmtTime(dish.kpi) + '</span>' +
+      (P.mode === 'hoc' ? '<span class="tag v">' + esc(vesselFor(dish, P.cur.where)) + '</span>' : '') + '<span class="tag v">KPI ' + fmtTime(dish.kpi) + '</span>' +
       (P.cur.retry ? '<span class="tag retry">🔁 Làm lại</span>' : '');
-    $('cup').className = vesselClass(dish.vessel);
-    $('cup-label').textContent = vesselIcon(dish.vessel) + ' ' + dish.vessel;
+    setVessel(null);
     $('btn-recipe').hidden = P.mode !== 'hoc';
-    renderHud(); renderAdded(); renderCup(false); // the new customer gets an empty cup
+    renderHud(); renderAdded(); renderCup(false); renderQueue(); // the new customer gets an empty counter
     clearInterval(tick); tick = setInterval(renderTimer, 250); renderTimer();
+    if (P.lv.kind !== 'tut') setTimeout(function(){ if (P && P.cur && !P.cur.vessel && !P.cur.served && !document.querySelector('.modal.on')) openVessel(); }, 380);
+  }
+  function setVessel(v){
+    P.cur.vessel = v;
+    $('cup').className = v ? vesselKind(v) : 'none';
+    $('cup-label').textContent = v || 'Chạm để lấy ly/tô';
+    renderCup(false);
+  }
+  function openVessel(){
+    if (!P || !P.cur || P.cur.served) return;
+    if (P.cur.added.length){ toast('Đổ ra (🗑) rồi mới đổi ly/tô được nha'); return; }
+    var l = $('vs-list'); l.innerHTML = '';
+    $('vs-sub').textContent = P.cur.dish.name + ' · ' + (P.cur.where === 'in' ? '🪑 ăn tại chỗ' : '🛍️ mang về');
+    vesselOptions().forEach(function(v){
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'vopt'; b.setAttribute('data-v', v);
+      b.innerHTML = vesselSVG(v) + '<span></span>'; b.querySelector('span').textContent = v;
+      b.addEventListener('click', function(){ if (tapLocked()) return; closeModal('vs'); setVessel(v); });
+      l.appendChild(b);
+    });
+    openModal('vs');
+  }
+  $('cupbox').addEventListener('click', function(){ if (P && P.cur && !P.cur.served && !tapLocked()) openVessel(); });
+  $('vs-cancel').addEventListener('click', function(){ closeModal('vs'); });
+
+  // ---- Giờ cao điểm: khách tới liên tục, 2–3 người cùng chờ (thời gian chờ tính vào KPI của từng khách) ----
+  var RUSH_MAX_WAIT = 3;
+  function arrive(now){
+    var o = P.orders[P.arrived++];
+    o.arrive = now;
+    if (!o.where) o.where = Math.random() < 0.5 ? 'in' : 'out';
+    if (!o.look) o.look = newLook();
+    P.nextArrive = now + (P.arrived === 1 ? 7000 : (26 + Math.random() * 22) * 1000); // then one every 26–48 s
+  }
+  function shiftWaiting(ms){ for (var i = P.idx + 1; i < P.arrived; i++) P.orders[i].arrive += ms; P.nextArrive += ms; }
+  function pauseShift(ms){ P.cur.start += ms; if (P.rush) shiftWaiting(ms); }
+  function rushTick(){
+    if (P.arrived < P.orders.length && Date.now() >= P.nextArrive && P.arrived - P.idx - 1 < RUSH_MAX_WAIT){
+      arrive(Date.now()); beep(true, false, 2); buzz(25);
+    }
+    renderQueue();
+  }
+  function renderQueue(){
+    var q = $('queue');
+    if (!P || !P.rush){ q.hidden = true; q.removeAttribute('data-sig'); return; }
+    var now = Date.now(), items = [], sig = '';
+    for (var i = P.idx + 1; i < P.arrived; i++){
+      var o = P.orders[i], frac = 1 - (now - o.arrive) / 1000 / o.dish.kpi;
+      var m = frac >= 0.5 ? 'happy' : frac >= 0.25 ? 'ok' : frac >= 0 ? 'worried' : 'angry';
+      items.push({ o:o, m:m }); sig += i + m + ',';
+    }
+    var later = P.orders.length - P.arrived;
+    sig += later;
+    q.hidden = false;
+    if (q.getAttribute('data-sig') === sig) return;
+    q.setAttribute('data-sig', sig);
+    q.innerHTML = '<span>' + (items.length ? '⏳ Đang chờ:' : '⏳ Chưa ai chờ') + '</span>' +
+      items.map(function(x){ return '<span class="qc ' + x.m + '">' + custSVG(x.o.look, x.m) + '</span>'; }).join('') +
+      (later ? '<span style="color:#aa9">· còn ' + later + ' khách</span>' : '');
   }
   function fmtTime(s){ s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); }
   function elapsed(){ return (Date.now() - P.cur.start) / 1000; }
@@ -974,14 +1454,14 @@
   function onRotate(){
     if (!P || !P.cur || P.done){ rotAt = 0; return; }
     if (rotMq.matches) rotAt = Date.now();
-    else if (rotAt){ if (!$('rv').classList.contains('on')) P.cur.start += Date.now() - rotAt; rotAt = 0; renderTimer(); }
+    else if (rotAt){ if (!$('rv').classList.contains('on')) pauseShift(Date.now() - rotAt); rotAt = 0; renderTimer(); }
   }
   if (rotMq){ if (rotMq.addEventListener) rotMq.addEventListener('change', onRotate); else if (rotMq.addListener) rotMq.addListener(onRotate); }
   document.addEventListener('visibilitychange', function(){
     if (!P || !P.cur || P.done) return;
     if (document.hidden){ hiddenAt = Date.now(); }
     else if (hiddenAt){
-      if (!$('rv').classList.contains('on')){ P.cur.start += Date.now() - hiddenAt; P.cur.pauses++; }
+      if (!$('rv').classList.contains('on')){ pauseShift(Date.now() - hiddenAt); P.cur.pauses++; }
       hiddenAt = 0; renderTimer();
     }
   });
@@ -992,6 +1472,11 @@
     bar.style.background = frac < 0.25 ? 'var(--red)' : frac < 0.5 ? 'var(--orange)' : 'var(--green)';
     if (left >= 0){ t.textContent = '⏱ ' + fmtTime(left); t.classList.remove('late'); }
     else { t.textContent = 'Trễ ' + fmtTime(-left); t.classList.add('late'); }
+    if (P.rush) rushTick();
+    if ((P.mode === 'thi' || P.rush) && !P.cur.served){ // a nudge in the pocket: time is running out
+      if (frac < 0.25 && P.cur.warned < 1){ P.cur.warned = 1; buzz(60); }
+      if (frac < 0 && P.cur.warned < 2){ P.cur.warned = 2; buzz([50, 50, 50]); }
+    }
     if ($('cust').classList.contains('happy')) return;
     // the customer gets impatient as the KPI runs out
     setMood(frac >= 0.5 ? 'happy' : frac >= 0.25 ? 'ok' : frac >= 0 ? 'worried' : 'angry');
@@ -1040,6 +1525,7 @@
   var kp = { ing:null, val:'', unit:'' };
   function pick(ing){
     if (!P || !P.cur || P.done) return;
+    if (!P.cur.vessel){ toast('Lấy ly/tô trước nha 🥤'); openVessel(); return; }
     var info = DATA.ings[ing];
     if (!info.any){ // đá, lắc, đậu phộng…: chỉ cần cho vào, không cân
       addEntry({ ing:ing, qty:null, u:'' });
@@ -1130,10 +1616,14 @@
     P.score += pts;
     P.results.push({ dish:P.cur.dish, where:P.cur.where, ok:g.ok, late:late, sec:sec, lines:g.lines, pauses:P.cur.pauses, retry:P.cur.retry });
     // weak dishes come back more often (stored on this phone)
-    var miss = misses(), c = P.cur.dish.code;
-    miss[c] = g.ok ? Math.max(0, (miss[c] || 0) - 1) : (miss[c] || 0) + 1;
-    saveJSON(K.miss, miss);
+    if (P.lv.kind !== 'tut'){
+      var miss = misses(), c = P.cur.dish.code;
+      miss[c] = g.ok ? Math.max(0, (miss[c] || 0) - 1) : (miss[c] || 0) + 1;
+      saveJSON(K.miss, miss);
+    }
+    if (P.rush) P.pausedAt = Date.now();
     beep(g.ok, combo > 0);
+    buzz(g.ok ? 25 : [90, 60, 90]);
     $('cust').className = g.ok ? 'happy' : '';
     setMood(g.ok ? (lateCounts ? 'ok' : 'love') : 'worried');
     var slow = serveMove();
@@ -1188,12 +1678,14 @@
   $('rv-next').addEventListener('click', function(){ if (tapLocked()) return; closeModal('rv'); nextOrder(); });
   $('rv-retry').addEventListener('click', function(){
     if (tapLocked()) return;
-    P.orders.splice(P.idx + 1, 0, { dish:P.cur.dish, where:P.cur.where, retry:true });
+    var again = { dish:P.cur.dish, where:P.cur.where, retry:true, look:P.cur.look };
+    if (P.rush){ again.arrive = P.pausedAt || Date.now(); P.arrived++; } // already at the counter
+    P.orders.splice(P.idx + 1, 0, again);
     closeModal('rv'); nextOrder();
   });
   $('rv-sop').addEventListener('click', function(){ openRecipe(P.cur.dish, P.cur.where); });
   twice($('btn-quit'), 'Bấm ✕ lần nữa để thoát màn', function(){
-    clearInterval(tick);
+    clearInterval(tick); stopGuide();
     if (P.results.length) sendResult(true); // the manager also sees levels left half-way
     P = null; guardBack(false); goHome();
   });
@@ -1210,6 +1702,8 @@
     try { history.pushState({ hmcGuard:1 }, ''); } catch(e){}
     // Android "Back": close the open sheet (recipe card or keypad) instead of doing nothing
     if ($('rc').classList.contains('on')) closeModal('rc');
+    else if ($('vs').classList.contains('on')) closeModal('vs');
+    else if ($('info').classList.contains('on')) closeModal('info');
     else if ($('kp').classList.contains('on')) closeModal('kp');
     else toast('Vuốt nhầm rồi — vẫn đang trong ca nha!');
   });
@@ -1217,7 +1711,8 @@
   // ---- Recipe card ----
   function openRecipe(dish, where){
     $('rc-name').textContent = dish.name;
-    $('rc-meta').textContent = dish.code + ' · ' + dish.vessel + ' · KPI ' + fmtTime(dish.kpi);
+    var vin = vesselFor(dish, 'in'), vout = vesselFor(dish, 'out');
+    $('rc-meta').textContent = dish.code + ' · ' + (vin === vout ? vin : 'Tại chỗ: ' + vin + ' · Mang về: ' + vout) + ' · KPI ' + fmtTime(dish.kpi);
     var l = $('rc-list'); l.innerHTML = '';
     dish.items.forEach(function(it){
       var d = document.createElement('div');
@@ -1272,7 +1767,7 @@
                     id:Date.now().toString(36) + Math.random().toString(36).slice(2, 7), // lets the sheet ignore a repeated send
                     detail:R.map(function(r){ return { code:r.dish.code, name:r.dish.name, where:r.where, ok:r.ok, onTime:!r.late, sec:Math.round(r.sec),
                                                        err:mistakesOf(r).slice(0, 4).join('; ') }; }) };
-    send(payload, quit);
+    if (P.lv.kind !== 'tut') send(payload, quit); // the tutorial is not sent to the manager
     return { n:n, ok:ok, onTime:onTime, avg:avg, mist:mist };
   }
   function finish(){
@@ -1282,19 +1777,22 @@
     var fOk = F.filter(function(r){ return r.ok; }).length, fOn = F.filter(function(r){ return r.ok && !r.late; }).length;
     var ratio = fOk / n, stars = ratio === 1 && (P.mode === 'hoc' || fOn === n) ? 3 : ratio >= 0.8 ? 2 : ratio >= 0.5 ? 1 : 0;
     var key = P.mode + '|' + P.level, b = best(), scores = loadJSON(K.score, {}), record = false;
-    if (P.lv.kind !== 'daily' && (b[key] == null || stars > b[key])){ b[key] = stars; saveJSON(K.best, b); }
-    if (scores[key] == null || P.score > scores[key]){ record = scores[key] != null; scores[key] = P.score; saveJSON(K.score, scores); }
+    var tut = P.lv.kind === 'tut';
+    if (tut){ store(K.tut, 'done'); stopGuide(); }
+    if (!tut && P.lv.kind !== 'daily' && (b[key] == null || stars > b[key])){ b[key] = stars; saveJSON(K.best, b); }
+    if (!tut && (scores[key] == null || P.score > scores[key])){ record = scores[key] != null; scores[key] = P.score; saveJSON(K.score, scores); }
     if (P.lv.kind === 'daily'){
       var d = loadJSON(K.daily, {}), t = P.day, yIso = P.dayBefore; // the day the challenge was started
-      if (d.last !== t){ d.streak = d.last === yIso ? (d.streak || 0) + 1 : 1; d.last = t; saveJSON(K.daily, d); }
+      if (d.last !== t){ d.streak = d.last === yIso ? (d.streak || 0) + 1 : 1; d.last = t; d.max = Math.max(d.max || 0, d.streak); saveJSON(K.daily, d); }
     }
-    $('end-title').textContent = stars >= 2 ? 'Làm tốt lắm, ' + P.name + '! 🎉' : 'Luyện thêm chút nữa nha 💪';
+    $('end-title').textContent = tut ? 'Xong phần hướng dẫn! 🎉' : stars >= 2 ? 'Làm tốt lắm, ' + P.name + '! 🎉' : 'Luyện thêm chút nữa nha 💪';
     $('end-score').textContent = P.score + ' điểm';
     var nRetry = P.results.length - F.length, okRetry = P.results.filter(function(r){ return r.retry && r.ok; }).length;
     $('end-sub').textContent = 'Đúng SOP ' + fOk + '/' + n + ' món' + (P.mode === 'thi' ? ' · đúng giờ ' + fOn + '/' + n : '') +
       (nRetry ? ' · làm lại đúng ' + okRetry + '/' + nRetry : '') +
       ' · trung bình ' + fmtTime(S.avg) + '/món' + (P.bestStreak >= 2 ? ' · combo dài nhất 🔥' + P.bestStreak : '');
     $('end-record').hidden = !record;
+    if (tut){ $('end-sub').textContent = 'Giờ em vào chế độ Học từng màn nha — đạt 2★ sẽ mở phần Thi. Em nhận được huy hiệu 🎓 Nhập môn!'; $('end-save').textContent = ''; }
     var m = $('end-mist'); m.innerHTML = '';
     var wrong = P.results.filter(function(r){ return !r.ok || (r.late && P.mode === 'thi') || r.pauses; });
     if (!wrong.length) m.innerHTML = '<div class="mcard" style="border-left-color:var(--green)">🎯 Không sai món nào!</div>';
@@ -1311,10 +1809,10 @@
     for (var i = 0; i < 3; i++){ spans[i].className = ''; spans[i].textContent = i < stars ? '★' : '☆'; }
     for (var j = 0; j < stars; j++) (function(k){ setTimeout(function(){ spans[k].className = 'on'; beep(true, false, k); }, 400 + k * 380); })(j);
     $('confetti').innerHTML = '';
-    if (stars === 3) setTimeout(confetti, 400 + 3 * 380);
+    if (stars === 3) setTimeout(function(){ confetti(); }, 400 + 3 * 380);
   }
-  function confetti(){
-    var box = $('confetti'), bits = ['🎉', '✨', '🌸', '⭐', '💚', '🍧'];
+  function confetti(box){
+    box = box || $('confetti'); var bits = ['🎉', '✨', '🌸', '⭐', '💚', '🍧'];
     for (var i = 0; i < 28; i++){
       var s = document.createElement('span');
       s.textContent = bits[i % bits.length];

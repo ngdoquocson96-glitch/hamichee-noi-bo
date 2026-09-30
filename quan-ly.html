@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>HAMICHEE — Quản lý đào tạo</title>
+<link rel="icon" type="image/png" href="assets/icon-192.png">
+<meta name="theme-color" content="#00783E">
+<style>
+  :root{ --green:#00783E; --green-dark:#00542b; --orange:#FAA627; --cream:#F1E5D6; --red:#d93a3a; --ink:#2a2a2a; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--cream); color:var(--ink); font-family:'Segoe UI', Roboto, Arial, sans-serif; -webkit-tap-highlight-color:transparent; }
+  main{ max-width:680px; margin:0 auto; padding:18px 16px calc(24px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:12px; }
+  .brand{ color:var(--green); font-weight:bold; font-size:13px; letter-spacing:.06em; }
+  h1{ margin:0; color:var(--green); font-size:23px; }
+  .card{ background:#fff; border-radius:16px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; box-shadow:0 6px 16px rgba(80,50,20,.08); }
+  label{ font-size:13px; font-weight:bold; color:#555; }
+  input{ width:100%; font-size:18px; padding:10px 12px; border:2px solid #cdbfa9; border-radius:12px; background:#fffdf9; }
+  input:focus{ outline:none; border-color:var(--orange); }
+  .btn{ border:none; border-radius:14px; padding:12px 18px; font-size:16px; font-weight:bold; color:#fff; cursor:pointer;
+        background:linear-gradient(#14a45c, #00783E); box-shadow:0 4px 0 #004a25, 0 7px 12px rgba(0,0,0,.18); }
+  .btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #004a25; }
+  .msg{ color:var(--red); font-weight:bold; font-size:14px; min-height:18px; }
+  [hidden]{ display:none !important; }
+  .chips{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+  .chips span{ font-size:12.5px; color:#777; font-weight:bold; margin-right:2px; }
+  .chip{ border:none; background:#e8dccb; color:#5c4d38; border-radius:14px; padding:6px 12px; font-size:13px; font-weight:bold; cursor:pointer; box-shadow:0 2px 0 rgba(90,70,40,.18); }
+  .chip.on{ background:linear-gradient(#14a45c, #00783E); color:#fff; box-shadow:0 2px 0 #004a25; }
+  .kpis{ display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; }
+  .kpi{ background:#fff; border-radius:14px; padding:10px 8px; text-align:center; box-shadow:0 4px 0 #e2d4bf; }
+  .kpi b{ display:block; font-size:22px; color:var(--green-dark); }
+  .kpi span{ font-size:11.5px; color:#777; }
+  .tabs{ display:flex; gap:6px; }
+  .tabs .chip{ flex:1; padding:9px 6px; }
+  .row{ background:#fff; border-radius:14px; padding:10px 12px; display:flex; flex-direction:column; gap:5px; box-shadow:0 3px 0 #e2d4bf; }
+  .row .top{ display:flex; justify-content:space-between; gap:8px; align-items:baseline; }
+  .row .top b{ font-size:15px; }
+  .row .top small{ color:#888; white-space:nowrap; font-size:12px; }
+  .bar{ height:9px; border-radius:5px; background:#f3dede; overflow:hidden; }
+  .bar i{ display:block; height:100%; background:linear-gradient(90deg, #14a45c, #34c985); border-radius:5px; }
+  .bar.err{ background:#f4efe7; } .bar.err i{ background:linear-gradient(90deg, #f59e1b, #e2566b); }
+  .pct{ font-size:12.5px; font-weight:bold; }
+  .pct.good{ color:var(--green); } .pct.mid{ color:#b8860b; } .pct.bad{ color:var(--red); }
+  .tags{ display:flex; gap:5px; flex-wrap:wrap; }
+  .tag{ font-size:12px; background:#fdeeee; color:#a33; border-radius:10px; padding:2px 8px; }
+  .tag.g{ background:#e9f5ee; color:var(--green-dark); }
+  .tag.y{ background:#fff3d6; color:#8a5a00; }
+  .few{ opacity:.6; }
+  .detail{ border-top:1px dashed #e6d9bf; margin-top:4px; padding-top:6px; font-size:13px; display:flex; flex-direction:column; gap:3px; }
+  .detail .g{ font-weight:bold; color:var(--orange); margin-top:4px; }
+  .detail div.d{ display:flex; justify-content:space-between; gap:8px; }
+  .hint{ font-size:12.5px; color:#777; line-height:1.5; margin:0; }
+  .empty{ text-align:center; color:#888; padding:18px 6px; background:#fff; border-radius:14px; }
+  .foot{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .link{ background:none; border:none; color:var(--green-dark); text-decoration:underline; font-size:14px; cursor:pointer; padding:6px 0; }
+  @media (max-width:420px){ .kpis{ grid-template-columns:repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">HAMICHEE · QUẢN LÝ ĐÀO TẠO</div>
+  <h1>Bảng theo dõi đào tạo 📊</h1>
+
+  <form class="card" id="pin-box" autocomplete="off" hidden>
+    <label for="pin">PIN quản lý (dùng PIN thu ngân)</label>
+    <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••••">
+    <div class="msg" id="pin-msg"></div>
+    <button class="btn" type="submit">Xem bảng ▶</button>
+  </form>
+
+  <section id="work" hidden style="display:flex;flex-direction:column;gap:12px">
+    <div class="card">
+      <div class="chips" id="f-days"><span>Thời gian:</span>
+        <button type="button" class="chip" data-d="7">7 ngày</button><button type="button" class="chip" data-d="14">14 ngày</button>
+        <button type="button" class="chip" data-d="30">30 ngày</button><button type="button" class="chip" data-d="90">90 ngày</button></div>
+      <div class="chips" id="f-mode"><span>Tính:</span>
+        <button type="button" class="chip" data-m="all">Cả Học + Thi</button><button type="button" class="chip" data-m="thi">Chỉ bài Thi</button></div>
+      <div class="msg" id="status" style="color:#777;font-weight:normal"></div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="tabs" id="tabs">
+      <button type="button" class="chip" data-t="dish">🍧 Món hay sai</button>
+      <button type="button" class="chip" data-t="staff">👩‍🍳 Nhân viên</button>
+      <button type="button" class="chip" data-t="err">⚠️ Lỗi hay gặp</button>
+    </div>
+    <div id="panel" style="display:flex;flex-direction:column;gap:8px"></div>
+    <p class="hint">Món <b>sẵn sàng</b> = nhân viên làm bài Thi đúng SOP và đúng giờ <b>3 lần liên tiếp</b> (không tính theo khoảng thời gian đang chọn).
+      Số liệu lấy từ tab “Từng món” trong Google Sheet; phần Hướng dẫn cho người mới không được tính.</p>
+    <div class="foot"><a class="link" href="./">🍧 Về game đào tạo</a><button type="button" class="link" id="logout">Đăng xuất</button></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var API = 'https://script.google.com/macros/s/AKfycbz53HiMjoKMbZh6ZBtPu6DHh9YEdgP-ro5ubKj-cOmN2J27RpvKFAB-Jei7Mum6KveeWA/exec';
+  // Same device key as the cashier page (same site): logged in there = logged in here.
+  var PIN_KEY = 'hamichee_staff_pin', DEV_KEY = 'hamichee_staff_dev', VIEW_KEY = 'hamichee_mgr_view';
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+  var pinMem = '', devMem = '';
+  function getPin(){ if (pinMem) return pinMem; try { return sessionStorage.getItem(PIN_KEY) || ''; } catch(e){ return ''; } }
+  function setPin(v){ pinMem = v || ''; try { if (v) sessionStorage.setItem(PIN_KEY, v); else sessionStorage.removeItem(PIN_KEY); } catch(e){} }
+  function getDev(){ if (devMem) return devMem; try { return localStorage.getItem(DEV_KEY) || ''; } catch(e){ return ''; } }
+  function setDev(v){ devMem = v || ''; try { if (v) localStorage.setItem(DEV_KEY, v); else localStorage.removeItem(DEV_KEY); } catch(e){} }
+  var view = { d:14, m:'all', t:'dish' };
+  try { var sv = JSON.parse(localStorage.getItem(VIEW_KEY) || 'null'); if (sv && typeof sv === 'object') view = { d:sv.d || 14, m:sv.m || 'all', t:sv.t || 'dish' }; } catch(e){}
+  function saveView(){ try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch(e){} }
+
+  function call(payload, retried){
+    payload.pin = getPin(); payload.dev = getDev();
+    return Promise.race([
+      fetch(API, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(payload) })
+        .then(function(r){ return r.json(); }).catch(function(){ return { reason:'retry' }; }),
+      new Promise(function(res){ setTimeout(function(){ res(null); }, 25000); })
+    ]).then(function(res){
+      if (res && res.reason === 'retry') return retried ? null : call(payload, true);
+      if (res && res.ok === false && res.error) return null;
+      if (res && res.dev) setDev(res.dev);
+      return res;
+    });
+  }
+  function showWork(on){ $('pin-box').hidden = on; $('work').hidden = !on; if (!on) $('pin').focus(); }
+  function pinRejected(msg){ setPin(''); setDev(''); showWork(false); $('pin-msg').textContent = msg || 'PIN không đúng, nhập lại nha.'; }
+
+  $('pin-box').addEventListener('submit', function(e){
+    e.preventDefault();
+    var pin = $('pin').value.trim();
+    if (!pin){ $('pin-msg').textContent = 'Nhập mã PIN.'; return; }
+    setPin(pin); setDev('');
+    $('pin-msg').textContent = 'Đang kiểm tra…';
+    load(true);
+  });
+  $('logout').addEventListener('click', function(){ setPin(''); setDev(''); DATA = null; $('panel').innerHTML = ''; $('kpis').innerHTML = ''; showWork(false); });
+
+  var DATA = null, busy = false;
+  function load(fromPin){
+    if (busy) return;
+    busy = true;
+    $('status').textContent = 'Đang tải số liệu…';
+    call({ action:'trainStats', days:view.d, mode:view.m }).then(function(res){
+      busy = false;
+      if (!res){ $('status').textContent = 'Không kết nối được, thử lại nha.'; if (fromPin) $('pin-msg').textContent = 'Không kết nối được, kiểm tra mạng rồi thử lại.'; return; }
+      if (res.ok === false && res.reason === 'locked'){ pinRejected('Nhập sai PIN quá nhiều lần — đợi 15 phút rồi thử lại.'); return; }
+      if (res.ok === false){ pinRejected(fromPin ? 'PIN không đúng.' : ''); return; }
+      $('pin-msg').textContent = ''; $('pin').value = '';
+      showWork(true);
+      DATA = res; render();
+    });
+  }
+  function pct(a, n){ return n ? Math.round(a * 100 / n) : 0; }
+  function cls(p){ return p >= 85 ? 'good' : p >= 60 ? 'mid' : 'bad'; }
+  function mmss(s){ s = Math.round(s || 0); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); }
+  function dm(iso){ var p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '/' + p[1] : ''; }
+  function syncChips(){
+    [].forEach.call(document.querySelectorAll('#f-days .chip'), function(b){ b.classList.toggle('on', +b.getAttribute('data-d') === view.d); });
+    [].forEach.call(document.querySelectorAll('#f-mode .chip'), function(b){ b.classList.toggle('on', b.getAttribute('data-m') === view.m); });
+    [].forEach.call(document.querySelectorAll('#tabs .chip'), function(b){ b.classList.toggle('on', b.getAttribute('data-t') === view.t); });
+  }
+  [].forEach.call(document.querySelectorAll('#f-days .chip'), function(b){ b.addEventListener('click', function(){ view.d = +b.getAttribute('data-d'); saveView(); syncChips(); load(); }); });
+  [].forEach.call(document.querySelectorAll('#f-mode .chip'), function(b){ b.addEventListener('click', function(){ view.m = b.getAttribute('data-m'); saveView(); syncChips(); load(); }); });
+  [].forEach.call(document.querySelectorAll('#tabs .chip'), function(b){ b.addEventListener('click', function(){ view.t = b.getAttribute('data-t'); saveView(); syncChips(); render(); }); });
+
+  function render(){
+    syncChips();
+    if (!DATA) return;
+    var T = DATA.total, active = DATA.staff.filter(function(p){ return p.n > 0; }).length;
+    $('status').textContent = 'Từ ' + dm(DATA.since) + ' đến nay · ' + (view.m === 'thi' ? 'chỉ bài Thi' : 'cả Học và Thi');
+    $('kpis').innerHTML =
+      '<div class="kpi"><b>' + T.n + '</b><span>món đã làm</span></div>' +
+      '<div class="kpi"><b class="pct ' + cls(pct(T.ok, T.n)) + '">' + pct(T.ok, T.n) + '%</b><span>đúng SOP</span></div>' +
+      '<div class="kpi"><b class="pct ' + cls(pct(T.onTime, T.n)) + '">' + pct(T.onTime, T.n) + '%</b><span>đúng SOP + đúng giờ</span></div>' +
+      '<div class="kpi"><b>' + active + '</b><span>nhân viên có tập</span></div>';
+    var p = $('panel');
+    if (view.t === 'dish') p.innerHTML = renderDishes();
+    else if (view.t === 'err') p.innerHTML = renderErrors();
+    else { p.innerHTML = renderStaff(); bindStaff(); }
+  }
+  function renderDishes(){
+    if (!DATA.dishes.length) return '<div class="empty">Chưa có ai tập trong khoảng này.</div>';
+    return DATA.dishes.map(function(d){
+      var k = pct(d.ok, d.n);
+      return '<div class="row' + (d.n < 3 ? ' few' : '') + '"><div class="top"><b>' + esc(d.name) + '</b><small>' + d.n + ' lần · TB ' + mmss(d.avgSec) + '</small></div>' +
+        '<div class="bar"><i style="width:' + k + '%"></i></div>' +
+        '<div class="top"><span class="pct ' + cls(k) + '">' + k + '% đúng SOP</span><small>đúng giờ ' + pct(d.onTime, d.n) + '%' + (d.n < 3 ? ' · ít dữ liệu' : '') + '</small></div>' +
+        (d.errs.length ? '<div class="tags">' + d.errs.map(function(e){ return '<span class="tag">' + esc(e[0]) + ' ×' + e[1] + '</span>'; }).join('') + '</div>' : '') +
+        '</div>';
+    }).join('');
+  }
+  function renderErrors(){
+    if (!DATA.errors.length) return '<div class="empty">Chưa ghi nhận lỗi nào trong khoảng này 🎉</div>';
+    var max = DATA.errors[0][1];
+    return DATA.errors.map(function(e){
+      return '<div class="row"><div class="top"><b>' + esc(e[0]) + '</b><small>' + e[1] + ' lần</small></div><div class="bar err"><i style="width:' + Math.round(e[1] * 100 / max) + '%"></i></div></div>';
+    }).join('');
+  }
+  var open = {};
+  function renderStaff(){
+    if (!DATA.staff.length) return '<div class="empty">Chưa có nhân viên nào tập.</div>';
+    var menu = DATA.menu || [], names = {}, groups = [];
+    menu.forEach(function(m){ names[m.code] = m.name; if (groups.indexOf(m.group) < 0) groups.push(m.group); });
+    return DATA.staff.map(function(p, i){
+      var st = p.streaks || {}, ready = menu.filter(function(m){ return st[m.code] >= DATA.readyStreak; }).length;
+      var badges = groups.filter(function(g){ var ds = menu.filter(function(m){ return m.group === g; }); return ds.length && ds.every(function(m){ return st[m.code] >= DATA.readyStreak; }); });
+      var weak = Object.keys(p.by || {}).map(function(c){ return { c:c, n:p.by[c][0], ok:p.by[c][1] }; })
+        .filter(function(x){ return x.n >= 2 && x.ok / x.n < 0.7; }).sort(function(a, b){ return a.ok / a.n - b.ok / b.n; }).slice(0, 3);
+      var k = pct(p.ok, p.n);
+      var h = '<div class="row" data-i="' + i + '" style="cursor:pointer"><div class="top"><b>' + esc(p.name) + '</b><small>' +
+        (p.n ? p.n + ' món · lần cuối ' + dm(p.last) : 'không tập trong khoảng này') + '</small></div>';
+      if (p.n) h += '<div class="top"><span class="pct ' + cls(k) + '">' + k + '% đúng SOP</span><small>đúng giờ ' + pct(p.onTime, p.n) + '% · TB ' + mmss(p.avgSec) + '/món</small></div>';
+      h += '<div class="top"><span>✅ Sẵn sàng <b>' + ready + '/' + menu.length + '</b> món</span><small>bấm để xem chi tiết</small></div>' +
+        '<div class="bar"><i style="width:' + (menu.length ? Math.round(ready * 100 / menu.length) : 0) + '%"></i></div>';
+      var tags = badges.map(function(g){ return '<span class="tag g">🏅 Thạo ' + esc(g) + '</span>'; }).join('') +
+        weak.map(function(x){ return '<span class="tag y">Cần kèm: ' + esc(names[x.c] || x.c) + ' (' + x.ok + '/' + x.n + ' đúng)</span>'; }).join('');
+      if (tags) h += '<div class="tags">' + tags + '</div>';
+      if (open[p.name]){
+        h += '<div class="detail">' + groups.map(function(g){
+          return '<div class="g">' + esc(g) + '</div>' + menu.filter(function(m){ return m.group === g; }).map(function(m){
+            var s = st[m.code];
+            return '<div class="d"><span>' + esc(m.name) + '</span><b>' + (s >= DATA.readyStreak ? '✅' : s == null ? '<span style="color:#aaa;font-weight:normal">chưa thi</span>' : s + '/' + DATA.readyStreak) + '</b></div>';
+          }).join('');
+        }).join('') + '</div>';
+      }
+      return h + '</div>';
+    }).join('');
+  }
+  function bindStaff(){
+    [].forEach.call(document.querySelectorAll('#panel .row[data-i]'), function(r){
+      r.addEventListener('click', function(){ var p = DATA.staff[+r.getAttribute('data-i')]; open[p.name] = !open[p.name]; render(); });
+    });
+  }
+
+  syncChips();
+  if (getPin() || getDev()){ showWork(true); load(); } else showWork(false);
+})();
+</script>
+</body>
+</html>

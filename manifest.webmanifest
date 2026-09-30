@@ -1,0 +1,17 @@
+{
+  "name": "Tiệm Chè Hami — đào tạo pha chế HAMICHEE",
+  "short_name": "Chè Hami",
+  "description": "Game đào tạo pha chế theo SOP của HAMICHEE",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F1E5D6",
+  "theme_color": "#00783E",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
