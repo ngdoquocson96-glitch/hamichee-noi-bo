@@ -58,6 +58,10 @@
   .weeks{ display:flex; align-items:flex-end; gap:6px; height:130px; padding-top:6px; }
   .wk{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:3px; height:100%; font-size:11px; color:#777; }
   .wk i{ display:block; width:100%; border-radius:6px 6px 2px 2px; background:linear-gradient(#34c985, #00783E); min-height:2px; }
+  .wk .ba{ position:relative; width:100%; height:78px; display:flex; align-items:flex-end; }
+  .wk .ba::after{ content:''; position:absolute; left:-4px; right:-4px; bottom:80%; border-top:2px dashed #f59e1b; } /* mục tiêu 80% */
+  .wk i.low{ background:linear-gradient(#ffb36b, #e2566b); }
+  .quick-as{ margin-top:4px; padding:7px 12px; font-size:13.5px; }
   .wk i.none{ background:#e6dccd; } .wk b{ font-size:11.5px; color:#333; }
   .warn{ background:#fff3d6; border-radius:12px; padding:8px 10px; font-size:13.5px; color:#7a4a00; }
   select, textarea{ width:100%; font-size:16px; padding:9px 10px; border:2px solid #cdbfa9; border-radius:12px; background:#fffdf9; font-family:inherit; }
@@ -90,7 +94,7 @@
       <div class="msg" id="status" style="color:#777;font-weight:normal"></div>
     </div>
     <div class="kpis" id="kpis"></div>
-    <div class="card"><label>📈 % đúng SOP theo tuần (8 tuần gần nhất)</label><div class="weeks" id="weeks"></div></div>
+    <div class="card"><label>📈 % đúng SOP theo tuần (8 tuần gần nhất) <span style="color:#f59e1b;font-weight:normal">– – mục tiêu 80%</span></label><div class="weeks" id="weeks"></div></div>
     <div class="warn" id="idle" hidden></div>
     <button type="button" class="btn soft" id="copy-zalo">📋 Copy tóm tắt để gửi nhóm Zalo</button>
     <div class="tabs" id="tabs">
@@ -209,7 +213,7 @@
     var w = DATA.weeks || [];
     $('weeks').innerHTML = w.map(function(x){
       var k = pct(x.ok, x.n);
-      return '<div class="wk"><b>' + (x.n ? k + '%' : '–') + '</b><i class="' + (x.n ? '' : 'none') + '" style="height:' + (x.n ? Math.max(4, k) : 4) + '%"></i><span>' + esc(dm(x.week)) + '</span><span>' + x.n + ' món</span></div>';
+      return '<div class="wk"><b>' + (x.n ? k + '%' : '–') + '</b><div class="ba"><i class="' + (x.n ? (k < 80 ? 'low' : '') : 'none') + '" style="height:' + (x.n ? Math.max(4, k) : 4) + '%"></i></div><span>' + esc(dm(x.week)) + '</span><span>' + x.n + ' món</span></div>';
     }).join('');
   }
   function idleList(){ // 3 ngày trở lên chưa tập (tính cả người trong danh sách nhân viên chưa tập lần nào)
@@ -317,6 +321,7 @@
       var tags = badges.map(function(g){ return '<span class="tag g">🏅 Thạo ' + esc(g) + '</span>'; }).join('') +
         weak.map(function(x){ return '<span class="tag y">Cần kèm: ' + esc(names[x.c] || x.c) + ' (' + x.ok + '/' + x.n + ' đúng)</span>'; }).join('');
       if (tags) h += '<div class="tags">' + tags + '</div>';
+      if (weak.length) h += '<button type="button" class="btn soft quick-as" data-quick="' + i + '" data-codes="' + esc(weak.map(function(x){ return x.c; }).join(',')) + '">📌 Giao ' + weak.length + ' món cần kèm cho ' + esc(p.name) + '</button>';
       if (open[p.name]){
         h += '<div class="detail">' + groups.map(function(g){
           return '<div class="g">' + esc(g) + '</div>' + menu.filter(function(m){ return m.group === g; }).map(function(m){
@@ -331,6 +336,18 @@
   function bindStaff(){
     [].forEach.call(document.querySelectorAll('#panel .row[data-i]'), function(r){
       r.addEventListener('click', function(){ var p = DATA.staff[+r.getAttribute('data-i')]; open[p.name] = !open[p.name]; render(); });
+    });
+    // giao nhanh các món người đó hay sai (1 chạm)
+    [].forEach.call(document.querySelectorAll('[data-quick]'), function(b){
+      b.addEventListener('click', function(e){
+        e.stopPropagation();
+        var p = DATA.staff[+b.getAttribute('data-quick')], codes = b.getAttribute('data-codes').split(',').filter(String);
+        b.disabled = true; b.textContent = 'Đang giao…';
+        call({ action:'assign', name:p.name, codes:codes, note:'Ôn lại các món hay sai' }).then(function(res){
+          if (!res || !res.ok){ b.disabled = false; b.textContent = 'Chưa giao được — bấm lại'; return; }
+          b.textContent = '✅ Đã giao — ' + p.name + ' sẽ thấy ở trang chủ game'; load();
+        });
+      });
     });
   }
 
