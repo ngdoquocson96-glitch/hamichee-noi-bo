@@ -133,13 +133,14 @@
   });
   $('logout').addEventListener('click', function(){ setPin(''); setDev(''); DATA = null; $('panel').innerHTML = ''; $('kpis').innerHTML = ''; showWork(false); });
 
-  var DATA = null, busy = false;
+  var DATA = null, busy = false, again = false;
   function load(fromPin){
-    if (busy) return;
-    busy = true;
+    if (busy){ again = true; return; } // a filter changed while loading: load again when this one is back
+    busy = true; again = false;
     $('status').textContent = 'Đang tải số liệu…';
     call({ action:'trainStats', days:view.d, mode:view.m }).then(function(res){
       busy = false;
+      if (again){ load(fromPin); return; }
       if (!res){ $('status').textContent = 'Không kết nối được, thử lại nha.'; if (fromPin) $('pin-msg').textContent = 'Không kết nối được, kiểm tra mạng rồi thử lại.'; return; }
       if (res.ok === false && res.reason === 'locked'){ pinRejected('Nhập sai PIN quá nhiều lần — đợi 15 phút rồi thử lại.'); return; }
       if (res.ok === false){ pinRejected(fromPin ? 'PIN không đúng.' : ''); return; }
@@ -206,7 +207,7 @@
         .filter(function(x){ return x.n >= 2 && x.ok / x.n < 0.7; }).sort(function(a, b){ return a.ok / a.n - b.ok / b.n; }).slice(0, 3);
       var k = pct(p.ok, p.n);
       var h = '<div class="row" data-i="' + i + '" style="cursor:pointer"><div class="top"><b>' + esc(p.name) + '</b><small>' +
-        (p.n ? p.n + ' món · lần cuối ' + dm(p.last) : 'không tập trong khoảng này') + '</small></div>';
+        (p.n ? p.n + ' món · lần cuối ' + esc(dm(p.last)) : 'không tập trong khoảng này') + '</small></div>';
       if (p.n) h += '<div class="top"><span class="pct ' + cls(k) + '">' + k + '% đúng SOP</span><small>đúng giờ ' + pct(p.onTime, p.n) + '% · TB ' + mmss(p.avgSec) + '/món</small></div>';
       h += '<div class="top"><span>✅ Sẵn sàng <b>' + ready + '/' + menu.length + '</b> món</span><small>bấm để xem chi tiết</small></div>' +
         '<div class="bar"><i style="width:' + (menu.length ? Math.round(ready * 100 / menu.length) : 0) + '%"></i></div>';
