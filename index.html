@@ -203,6 +203,8 @@
   .btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #004a25, 0 2px 4px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.35); }
   .btn.orange{ background:linear-gradient(#ffc75c, #f59e1b); box-shadow:0 4px 0 #b86f0c, 0 7px 12px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.55); }
   .btn.orange:active{ box-shadow:0 1px 0 #b86f0c, 0 2px 4px rgba(0,0,0,.18); }
+  .btn.orange.off{ background:#d9d1c4; color:#6b6358; box-shadow:none; }
+  .chk.need{ border-color:var(--red); animation:shake .35s; }
   .btn.soft{ background:linear-gradient(#ffffff, #eef6f1); box-shadow:0 3px 0 #a9cdb8, 0 5px 8px rgba(0,0,0,.08); }
   .btn.soft:active{ box-shadow:0 1px 0 #a9cdb8; }
   .card, .hello{ box-shadow:0 6px 16px rgba(80,50,20,.08); }
@@ -619,9 +621,9 @@
   <div class="modal" id="chk">
     <div class="sheet">
       <div class="kp-title"><span class="e">✅</span><b>Kiểm tra trước khi ra món</b></div>
-      <div style="font-size:13.5px;color:#666;margin-top:-4px">Theo SOP — bấm từng mục khi đã làm</div>
+      <div id="chk-sub" style="font-size:13.5px;color:#666;margin-top:-4px">Theo SOP — bấm từng mục khi đã làm</div>
       <div id="chk-list" style="display:flex;flex-direction:column;gap:8px"></div>
-      <div class="row sticky"><button type="button" class="btn soft" id="chk-cancel">Quay lại</button><button type="button" class="btn orange" id="chk-ok" disabled>Ra món ✓</button></div>
+      <div class="row sticky"><button type="button" class="btn soft" id="chk-cancel">Quay lại</button><button type="button" class="btn orange off" id="chk-ok">Ra món ✓</button></div>
     </div>
   </div>
 
@@ -959,10 +961,10 @@
 
   // KPI trong game: SOP tính giờ làm ở quầy; trên điện thoại mỗi nguyên liệu tốn vài lần chạm,
   // nên cho thêm theo số bước (không bao giờ ít hơn KPI của SOP).
-  function gameKpi(dish, where, rush){
-    var t = 18 + (rush ? 8 : 0); // lấy ly/tô + ra món (+ bảng kiểm tra trước khi ra món ở bài Thi / giờ cao điểm)
+  function gameKpi(dish, where, check){
+    var t = 18; // lấy ly/tô + ra món
     need(dish, where).forEach(function(it){ t += it.any || (DATA.ings[it.ing] && DATA.ings[it.ing].any) ? 7 : 4; });
-    return Math.max(dish.kpi, Math.ceil(t / 5) * 5);
+    return Math.max(dish.kpi, Math.ceil(t / 5) * 5) + (check ? 10 : 0); // +10s cho bảng kiểm tra trước khi ra món (bài Thi / giờ cao điểm)
   }
 
   // ---- Grading ----
@@ -1121,7 +1123,8 @@
   // "Chuẩn món" (từ SOP): tiêu chuẩn, decor, lỗi thường gặp, lưu ý — tab riêng trong Sheet
   function stdOf(code){
     var rows = loadJSON(K.std, []);
-    for (var i = 1; i < rows.length; i++) if (rows[i] && rows[i][0] === code)
+    code = String(code || '').trim();
+    for (var i = 1; i < rows.length; i++) if (rows[i] && String(rows[i][0] || '').trim() === code)
       return { std:rows[i][2] || '', decor:rows[i][3] || '', errs:rows[i][4] || '', note:rows[i][5] || '' };
     return null;
   }
@@ -1191,9 +1194,9 @@
     types.push('vessel', 'has');
     if (d.rule) types.push('coco');
     if (fillOf(d.code)) types.push('fill');
-    var sdq = stdOf(d.code), notes = DATA.dishes.map(function(x){ var y = stdOf(x.code); return y && y.note; }).filter(Boolean);
-    if (sdq && sdq.note && notes.filter(function(n){ return n !== sdq.note; }).length >= 3) types.push('note');
-    if (Math.random() < 0.15) return sopQuestion(d);
+    var sdq = stdOf(d.code), notes = sdq && sdq.note && !nameInNote(d, sdq.note) ? noteDistractors(d, sdq.note) : [];
+    if (notes.length >= 3) types.push('note');
+    if (Math.random() < 0.15){ var sq = sopQuestion(d); if (sq) return sq; }
     var ty = pickOne(types), where = Math.random() < 0.5 ? 'in' : 'out', wtxt = where === 'in' ? 'ăn tại chỗ' : 'mang về';
     var q = { dish:d, type:ty };
     if (ty === 'qty'){
@@ -1226,8 +1229,9 @@
       q.why = 'Tiêu chuẩn món này: ' + stdOf(d.code).std + '.';
     }
     if (ty === 'note'){
-      var rn = stdOf(d.code).note, others = shuffle(Array.from(new Set(notes.filter(function(n){ return n !== rn; })))).slice(0, 3);
-      q.text = 'Bước nào <b>đúng với món này</b>?'; q.right = rn; q.opts = others.concat([rn]);
+      var rn = sdq.note;
+      q.text = 'Lưu ý nào <b>đúng với món này</b>?'; q.right = rn; q.opts = shuffle(notes).slice(0, 3).concat([rn]);
+      q.why = 'Lưu ý của món này: ' + rn + '.';
     }
     q.opts = shuffle(q.opts);
     return q;
@@ -1242,9 +1246,25 @@
     ['Thi cuối của nhân viên cần đạt?', 'Đúng công thức – đúng tốc độ – đúng hình ảnh', ['Làm nhanh nhất có thể', 'Đúng công thức là đủ', 'Đẹp là được']],
     ['Lỗi thường gặp khi ra món chè là?', 'Thiếu topping – decor xấu – ly không sạch', ['Ly quá sạch', 'Cho đúng định lượng', 'Làm đúng thời gian KPI']]
   ];
-  function sopQuestion(d){
-    var x = pickOne(SOP_Q);
+  function sopQuestion(d){ // mỗi câu chung hỏi tối đa 1 lần mỗi buổi ôn
+    var seen = Q ? (Q.sop = Q.sop || {}) : {}, left = SOP_Q.filter(function(x){ return !seen[x[0]]; });
+    if (!left.length) return null;
+    var x = pickOne(left); seen[x[0]] = 1;
     return { dish:d, type:'sop', generic:true, text:x[0], right:x[1], opts:shuffle(x[2].concat([x[1]])), why:'Theo SOP ra món HAMICHEE.' };
+  }
+  // Câu "lưu ý của món": đáp án nhiễu lấy từ nhóm món khác và không giống đáp án đúng (tránh 2 đáp án cùng đúng)
+  var NAME_STOP = { 'chè':1, 'trà':1, 'sữa':1, 'hami':1, 'hạt':1, 'đác':1, 'ly':1, 'size':1, 'chua':1, 'truyền':1, 'thống':1, 'full':1, 'topping':1, 'và':1 };
+  function words(t){ return String(t).toLowerCase().split(/[^0-9a-zà-ỹđ]+/i).filter(function(w){ return w.length >= 2 && !NAME_STOP[w]; }); }
+  function nameInNote(d, note){ var nw = words(note); return words(d.name).some(function(w){ return nw.indexOf(w) >= 0; }); } // lưu ý nhắc tên món → lộ đáp án
+  function noteDistractors(d, rn){
+    var rw = words(rn), out = [];
+    DATA.dishes.forEach(function(x){
+      var y = x.group !== d.group && stdOf(x.code), n = y && y.note;
+      if (!n || n === rn || out.indexOf(n) >= 0) return;
+      var nw = words(n), same = nw.filter(function(w){ return rw.indexOf(w) >= 0; }).length;
+      if (same * 2 < Math.max(1, Math.min(nw.length, rw.length))) out.push(n);
+    });
+    return out;
   }
   function startQuiz(){
     if (playerName().length < 2){ $('home-msg').textContent = 'Chọn / nhập tên của em trước nha.'; return; }
@@ -1280,7 +1300,8 @@
       b.classList.add('bad'); buzz(60); beep(false);
       [].forEach.call($('qz-opts').children, function(x){ if (x.textContent === Q.cur.right) x.classList.add('good'); });
       $('qz-fb').innerHTML = '❌ Đáp án: <b>' + esc(Q.cur.right) + '</b>'; $('qz-fb').style.color = 'var(--red)'; $('qz-why').textContent = Q.cur.why || '';
-      if (code){ srsMiss(code); Q.seen[code] = 'miss'; } Q.missed.push({ dish:Q.cur.dish.name, q:Q.cur.text.replace(/<[^>]+>/g, ''), a:Q.cur.right });
+      if (code){ srsMiss(code); Q.seen[code] = 'miss'; } var mq = Q.cur.text.replace(/<[^>]+>/g, ''), md = Q.cur.generic ? '📘 SOP chung' : Q.cur.dish.name;
+      if (!Q.missed.some(function(m){ return m.dish === md && m.q === mq; })) Q.missed.push({ dish:md, q:mq, a:Q.cur.right });
       if (code) Q.queue.push(Q.cur.dish); // ask again a bit later
     }
     $('qz-score').textContent = Q.ok + '/' + Q.n;
@@ -1299,7 +1320,8 @@
     var a = loadJSON(K.qbest, {}), who = playerName() || '?', rec = Q.ok > (a[who] || 0);
     if (rec){ a[who] = Q.ok; saveJSON(K.qbest, a); }
     $('qz-run').hidden = true; $('qz-end').hidden = false;
-    $('qz-end-title').textContent = Q.ok >= 8 ? 'Nhớ giỏi quá! 🎉' : Q.ok >= 4 ? 'Ổn rồi, ôn thêm chút nha 💪' : 'Ôn lại mấy món này nha 📖';
+    var qr = Q.n ? Q.ok / Q.n : 0;
+    $('qz-end-title').textContent = Q.ok >= 5 && qr >= 0.8 ? 'Nhớ giỏi quá! 🎉' : qr >= 0.5 && Q.ok >= 3 ? 'Ổn rồi, ôn thêm chút nha 💪' : 'Ôn lại mấy món này nha 📖';
     $('qz-end-sub').textContent = 'Đúng ' + Q.ok + '/' + Q.n + ' câu' + (rec ? ' · 🏅 kỷ lục mới!' : '') + ' · món trả lời sai sẽ được hỏi lại ở lần ôn sau';
     var l = $('qz-end-list'); l.innerHTML = '';
     Q.missed.forEach(function(m){ var c = document.createElement('div'); c.className = 'mcard'; c.innerHTML = '<b></b><span></span>'; c.firstChild.textContent = m.dish; c.lastChild.textContent = m.q + ' → ' + m.a; l.appendChild(c); });
@@ -1650,7 +1672,7 @@
     if (!o.look) o.look = newLook();
     // in the rush the waiting time counts too (the clock started when the customer walked in)
     P.cur = { dish:dish, where:o.where, added:[], start:o.arrive || now, pauses:0, retry:!!o.retry, vessel:null, look:o.look, mood:'', warned:0,
-              kpi:gameKpi(dish, o.where, P.rush || P.mode === 'thi'), stage:P.mode === 'hoc' ? learnStage(dish.code) : 2, peeked:false, checked:false };
+              kpi:gameKpi(dish, o.where, P.rush || P.mode === 'thi'), stage:P.lv.kind === 'tut' ? 0 : P.mode === 'hoc' ? learnStage(dish.code) : 2, peeked:false, checked:false };
     setMood('happy');
     $('cust').className = '';
     var cb = $('cupbox'); cb.style.transition = 'none'; cb.style.transform = ''; cb.className = ''; void cb.offsetWidth; cb.style.transition = '';
@@ -1893,27 +1915,38 @@
   // Checklist ca trong SOP (đủ topping, đúng định lượng, ly/chén sạch, không thất thoát) + tiêu chuẩn của món
   function checksFor(dish){
     var f = fillOf(dish.code), st = stdOf(dish.code), list = ['✅ Đủ topping', '⚖️ Đúng định lượng', '🧽 Ly/chén sạch, đã lau miệng ly', '🚫 Không rơi vãi, không thất thoát',
-      f ? '📏 Đầy khoảng ' + f + '%, topping nổi đẹp' : '📸 Đúng hình ảnh, topping gọn đẹp'];
+      f && st && st.std ? '📏 ' + st.std : '📸 Đúng hình ảnh, topping gọn đẹp'];
     if (st && st.note) list.push('📌 ' + st.note);
     return list;
   }
-  var CHECKS = [];
+  var CHECKS = [], CHK_DONE = {};
+  function chkLeft(){ return CHECKS.filter(function(x){ return !CHK_DONE[x]; }); }
+  function chkSub(){ return esc(P.cur.dish.name) + ' · ' + (P.cur.where === 'in' ? 'ăn tại chỗ' : 'mang về') + ' — bấm từng mục khi đã làm'; }
   function openCheck(){
-    var l = $('chk-list'); l.innerHTML = ''; var done = {};
+    var l = $('chk-list'); l.innerHTML = ''; CHK_DONE = {};
     CHECKS = checksFor(P.cur.dish);
+    $('chk-sub').innerHTML = chkSub(); $('chk-sub').style.color = '';
     shuffle(CHECKS.slice()).forEach(function(c){
       var b = document.createElement('button'); b.type = 'button'; b.className = 'chk';
-      b.innerHTML = '<span class="bx"></span><span></span>'; b.lastChild.textContent = c;
-      b.addEventListener('click', function(){ done[c] = !done[c]; b.classList.toggle('on', done[c]); b.firstChild.textContent = done[c] ? '✓' : '';
-        $('chk-ok').disabled = CHECKS.some(function(x){ return !done[x]; }); });
+      b.innerHTML = '<span class="bx"></span><span></span>'; b.lastChild.textContent = c; b._c = c;
+      b.addEventListener('click', function(){ CHK_DONE[c] = !CHK_DONE[c]; b.classList.toggle('on', CHK_DONE[c]); b.classList.remove('need'); b.firstChild.textContent = CHK_DONE[c] ? '✓' : '';
+        $('chk-ok').classList.toggle('off', chkLeft().length > 0); });
       l.appendChild(b);
     });
-    $('chk-ok').disabled = true;
+    $('chk-ok').classList.add('off');
     openModal('chk');
   }
   $('chk-cancel').addEventListener('click', function(){ closeModal('chk'); });
   $('chk-ok').addEventListener('click', function(){
-    if (this.disabled || !P || !P.cur) return;
+    if (!P || !P.cur) return;
+    var left = chkLeft();
+    if (left.length){ // chưa kiểm đủ: chỉ ra mục còn thiếu (có thể nằm dưới, phải cuộn)
+      $('chk-sub').textContent = 'Còn ' + left.length + ' mục chưa kiểm — bấm từng mục nha 👇'; $('chk-sub').style.color = 'var(--red)';
+      var first = null;
+      [].forEach.call($('chk-list').children, function(b){ if (!CHK_DONE[b._c]){ b.classList.remove('need'); void b.offsetWidth; b.classList.add('need'); if (!first) first = b; } });
+      if (first) first.scrollIntoView({ block:'nearest', behavior:'smooth' });
+      buzz(40); return;
+    }
     $('chk').classList.remove('on'); P.cur.checked = true; serveNow();
   });
   function serveNow(){
@@ -2039,9 +2072,9 @@
   function openRecipe(dish, where, namesOnly){
     $('rc-name').textContent = dish.name + (namesOnly ? ' · 💡 chỉ tên' : '');
     var vin = vesselFor(dish, 'in'), vout = vesselFor(dish, 'out');
-    var gk = gameKpi(dish, where || 'in');
+    var gk = gameKpi(dish, where || 'in', needCheck() && !P.done);
     $('rc-meta').textContent = dish.code + ' · ' + (vin === vout ? vin : 'Tại chỗ: ' + vin + ' · Mang về: ' + vout) + ' · KPI SOP ' + fmtTime(dish.kpi) +
-      (gk > dish.kpi ? ' (trong game ' + fmtTime(gk) + ' vì phải bấm từng bước)' : '');
+      (gk > dish.kpi ? ' (trong game ' + fmtTime(gk) + ' vì phải bấm từng bước' + (needCheck() && !P.done ? ' + kiểm tra' : '') + ')' : '');
     var ph = dishPhoto(dish.code); $('rc-photo').hidden = !ph; if (ph) $('rc-photo').src = ph;
     var l = $('rc-list'); l.innerHTML = '';
     dish.items.forEach(function(it){
@@ -2199,6 +2232,11 @@
       if (res && res.ok){
         outboxDrop(p.id); boardAt = 0;
         if (saveNote === p.id){ saveNote = null; if (P && P.done) $('end-save').textContent = '✅ Đã gửi kết quả cho quản lý'; }
+        flushOutbox(); return;
+      }
+      if (res && res.ok === false && (res.reason === 'name' || res.reason === 'bad')){
+        outboxDrop(p.id);
+        if (mine && P && P.done) $('end-save').textContent = res.reason === 'name' ? 'Tên này chưa có trong danh sách nhân viên — nhờ quản lý thêm tên vào tab "Nhân viên" rồi chọn đúng tên nha.' : 'Kết quả không hợp lệ nên không gửi.';
         flushOutbox(); return;
       }
       if (mine && P && P.done) $('end-save').textContent = res && res.reason === 'limit' ? 'Gửi nhiều quá, lát nữa game tự gửi lại nha.' : 'Chưa gửi được (mất mạng) — sẽ tự gửi lại khi có mạng.';
