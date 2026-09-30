@@ -37,6 +37,7 @@
   .row .top{ display:flex; justify-content:space-between; gap:8px; align-items:baseline; }
   .row .top b{ font-size:15px; }
   .row .top small{ color:#888; white-space:nowrap; font-size:12px; }
+  .row .top b{ overflow-wrap:anywhere; }
   .bar{ height:9px; border-radius:5px; background:#f3dede; overflow:hidden; }
   .bar i{ display:block; height:100%; background:linear-gradient(90deg, #14a45c, #34c985); border-radius:5px; }
   .bar.err{ background:#f4efe7; } .bar.err i{ background:linear-gradient(90deg, #f59e1b, #e2566b); }
@@ -58,7 +59,8 @@
   .weeks{ display:flex; align-items:flex-end; gap:6px; height:130px; padding-top:6px; }
   .wk{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:3px; height:100%; font-size:11px; color:#777; }
   .wk i{ display:block; width:100%; border-radius:6px 6px 2px 2px; background:linear-gradient(#34c985, #00783E); min-height:2px; }
-  .wk .ba{ position:relative; width:100%; height:78px; display:flex; align-items:flex-end; }
+  .wk .ba{ position:relative; width:100%; height:78px; flex:none; display:flex; align-items:flex-end; }
+  .wk span{ white-space:nowrap; font-size:10.5px; }
   .wk .ba::after{ content:''; position:absolute; left:-4px; right:-4px; bottom:80%; border-top:2px dashed #f59e1b; } /* mục tiêu 80% */
   .wk i.low{ background:linear-gradient(#ffb36b, #e2566b); }
   .quick-as{ margin-top:4px; padding:7px 12px; font-size:13.5px; }
@@ -94,7 +96,7 @@
       <div class="msg" id="status" style="color:#777;font-weight:normal"></div>
     </div>
     <div class="kpis" id="kpis"></div>
-    <div class="card"><label>📈 % đúng SOP theo tuần (8 tuần gần nhất) <span style="color:#f59e1b;font-weight:normal">– – mục tiêu 80%</span></label><div class="weeks" id="weeks"></div></div>
+    <div class="card"><label>📈 % đúng SOP theo tuần (8 tuần gần nhất) <span style="color:#f59e1b;font-weight:normal">– – mục tiêu 80%</span><small style="display:block;color:#999;font-weight:normal;font-size:11.5px">Số dưới cột = số món đã làm · * ít dữ liệu</small></label><div class="weeks" id="weeks"></div></div>
     <div class="warn" id="idle" hidden></div>
     <button type="button" class="btn soft" id="copy-zalo">📋 Copy tóm tắt để gửi nhóm Zalo</button>
     <div class="tabs" id="tabs">
@@ -212,14 +214,15 @@
   function renderWeeks(){
     var w = DATA.weeks || [];
     $('weeks').innerHTML = w.map(function(x){
-      var k = pct(x.ok, x.n);
-      return '<div class="wk"><b>' + (x.n ? k + '%' : '–') + '</b><div class="ba"><i class="' + (x.n ? (k < 80 ? 'low' : '') : 'none') + '" style="height:' + (x.n ? Math.max(4, k) : 4) + '%"></i></div><span>' + esc(dm(x.week)) + '</span><span>' + x.n + ' món</span></div>';
+      var k = pct(x.ok, x.n), low = x.n && x.ok / x.n < 0.8, few = x.n && x.n < 5;
+      return '<div class="wk"' + (few ? ' title="Ít dữ liệu (dưới 5 món)"' : '') + '><b>' + (x.n ? k + '%' : '–') + '</b><div class="ba"><i class="' + (x.n ? (low ? 'low' : '') : 'none') + '" style="height:' + (x.n ? Math.max(4, k) : 4) + '%' + (few ? ';opacity:.55' : '') + '"></i></div><span>' + esc(dm(x.week)) + '</span><span>' + x.n + (few ? '*' : '') + '</span></div>';
     }).join('');
   }
+  function current(n){ var r = DATA.roster || []; return !r.length || r.indexOf(n) >= 0; } // có tên trong tab "Nhân viên" (nếu đã điền)
   function idleList(){ // 3 ngày trở lên chưa tập (tính cả người trong danh sách nhân viên chưa tập lần nào)
     var names = {}, out = [];
     (DATA.roster || []).forEach(function(n){ names[n] = ''; });
-    DATA.staff.forEach(function(p){ names[p.name] = p.lastAll || ''; });
+    DATA.staff.forEach(function(p){ if (current(p.name)) names[p.name] = p.lastAll || ''; });
     Object.keys(names).forEach(function(n){
       var last = names[n], days = last ? Math.round((Date.parse(DATA.today) - Date.parse(last)) / 864e5) : null;
       if (days == null || days >= 3) out.push({ name:n, days:days });
@@ -234,7 +237,7 @@
   function renderTaskPanel(){
     var menu = DATA.menu || [], groups = [], names = {};
     menu.forEach(function(m){ if (groups.indexOf(m.group) < 0) groups.push(m.group); names[m.code] = m.name; });
-    var people = (DATA.roster || []).slice(); DATA.staff.forEach(function(p){ if (people.indexOf(p.name) < 0) people.push(p.name); });
+    var people = (DATA.roster || []).slice(); DATA.staff.forEach(function(p){ if (people.indexOf(p.name) < 0 && current(p.name)) people.push(p.name); });
     var h = '<div class="card"><label>Giao bài cho nhân viên</label><select id="tk-name"><option value="">— Chọn nhân viên —</option>' +
       people.map(function(n){ return '<option>' + esc(n) + '</option>'; }).join('') + '</select>' +
       '<div class="picks" id="tk-picks">' + groups.map(function(g){
@@ -260,8 +263,10 @@
       if (!name){ $('tk-msg').textContent = 'Chọn nhân viên.'; return; }
       if (!codes.length){ $('tk-msg').textContent = 'Chọn ít nhất 1 món.'; return; }
       if (codes.length > 12){ $('tk-msg').textContent = 'Tối đa 12 món mỗi bài.'; return; }
+      var pend = pendingCodes(name), dup = codes.filter(function(c){ return pend[c]; });
+      if (dup.length && !confirm(name + ' đang có bài chưa làm gồm ' + dup.length + ' món này. Vẫn giao thêm?')) return;
       var b = this; b.disabled = true; $('tk-msg').textContent = 'Đang giao…';
-      call({ action:'assign', name:name, codes:codes, note:$('tk-note').value.trim() }).then(function(res){
+      call({ action:'assign', name:name, codes:codes, note:$('tk-note').value.trim(), cid:newId() }).then(function(res){
         b.disabled = false;
         if (!res || !res.ok){ $('tk-msg').textContent = 'Chưa giao được, thử lại nha.'; return; }
         $('tk-msg').textContent = ''; load();
@@ -269,19 +274,24 @@
     });
     [].forEach.call(document.querySelectorAll('[data-cancel]'), function(x){
       x.addEventListener('click', function(){
+        if (!confirm('Hủy bài này?')) return;
         x.disabled = true;
-        call({ action:'unassign', id:x.getAttribute('data-cancel') }).then(function(){ load(); });
+        call({ action:'unassign', id:x.getAttribute('data-cancel') }).then(function(res){
+          if (!res || !res.ok){ x.disabled = false; $('tk-msg').textContent = res && res.reason === 'done' ? 'Bài này đã làm xong hoặc đã hủy.' : 'Chưa hủy được, thử lại nha.'; if (res) load(); return; }
+          load();
+        });
       });
     });
   }
   function summary(){
     var T = DATA.total, lines = ['📊 Đào tạo HAMICHEE (' + DATA.days + ' ngày, từ ' + dm(DATA.since) + ')'];
     lines.push('• Đã tập ' + T.n + ' món · đúng SOP ' + pct(T.ok, T.n) + '% · đúng giờ ' + pct(T.onTime, T.n) + '%');
-    var bad = DATA.dishes.filter(function(d){ return d.n >= 2; }).slice(0, 3);
+    if (view.m === 'thi') lines[0] += ' – chỉ bài Thi';
+    var bad = DATA.dishes.filter(function(d){ return d.n >= 2 && d.ok / d.n < 0.8; }).slice(0, 3);
     if (bad.length) lines.push('• Món hay sai: ' + bad.map(function(d){ return d.name + ' (' + pct(d.ok, d.n) + '% đúng)'; }).join(', '));
     if (DATA.errors.length) lines.push('• Lỗi hay gặp: ' + DATA.errors.slice(0, 3).map(function(e){ return e[0] + ' ×' + e[1]; }).join(', '));
     var menu = DATA.menu || [];
-    DATA.staff.filter(function(p){ return p.n; }).forEach(function(p){
+    DATA.staff.filter(function(p){ return p.n && current(p.name); }).forEach(function(p){
       var ready = menu.filter(function(m){ return (p.streaks || {})[m.code] >= DATA.readyStreak; }).length;
       lines.push('• ' + p.name + ': ' + p.n + ' món, đúng ' + pct(p.ok, p.n) + '%, sẵn sàng ' + ready + '/' + menu.length + ' món');
     });
@@ -302,13 +312,20 @@
       return '<div class="row"><div class="top"><b>' + esc(e[0]) + '</b><small>' + e[1] + ' lần</small></div><div class="bar err"><i style="width:' + Math.round(e[1] * 100 / max) + '%"></i></div></div>';
     }).join('');
   }
+  function pendingCodes(name){ // món đang được giao, chưa làm
+    var m = {};
+    (DATA.tasks || []).forEach(function(t){ if (t.name === name && !t.done) t.codes.forEach(function(c){ m[c] = 1; }); });
+    return m;
+  }
+  function newId(){ return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   var open = {};
   function renderStaff(){
-    if (!DATA.staff.length) return '<div class="empty">Chưa có nhân viên nào tập.</div>';
+    var shown = DATA.staff.filter(function(p){ return p.n || current(p.name); });
+    if (!shown.length) return '<div class="empty">Chưa có nhân viên nào tập.</div>';
     var menu = DATA.menu || [], names = {}, groups = [];
     menu.forEach(function(m){ names[m.code] = m.name; if (groups.indexOf(m.group) < 0) groups.push(m.group); });
-    return DATA.staff.map(function(p, i){
-      var st = p.streaks || {}, ready = menu.filter(function(m){ return st[m.code] >= DATA.readyStreak; }).length;
+    return shown.map(function(p){
+      var i = DATA.staff.indexOf(p), st = p.streaks || {}, ready = menu.filter(function(m){ return st[m.code] >= DATA.readyStreak; }).length;
       var badges = groups.filter(function(g){ var ds = menu.filter(function(m){ return m.group === g; }); return ds.length && ds.every(function(m){ return st[m.code] >= DATA.readyStreak; }); });
       var weak = Object.keys(p.by || {}).map(function(c){ return { c:c, n:p.by[c][0], ok:p.by[c][1] }; })
         .filter(function(x){ return x.n >= 2 && x.ok / x.n < 0.7; }).sort(function(a, b){ return a.ok / a.n - b.ok / b.n; }).slice(0, 3);
@@ -321,7 +338,9 @@
       var tags = badges.map(function(g){ return '<span class="tag g">🏅 Thạo ' + esc(g) + '</span>'; }).join('') +
         weak.map(function(x){ return '<span class="tag y">Cần kèm: ' + esc(names[x.c] || x.c) + ' (' + x.ok + '/' + x.n + ' đúng)</span>'; }).join('');
       if (tags) h += '<div class="tags">' + tags + '</div>';
-      if (weak.length) h += '<button type="button" class="btn soft quick-as" data-quick="' + i + '" data-codes="' + esc(weak.map(function(x){ return x.c; }).join(',')) + '">📌 Giao ' + weak.length + ' món cần kèm cho ' + esc(p.name) + '</button>';
+      var pend = pendingCodes(p.name), todo = weak.filter(function(x){ return !pend[x.c]; });
+      if (todo.length) h += '<button type="button" class="btn soft quick-as" data-quick="' + i + '" data-codes="' + esc(todo.map(function(x){ return x.c; }).join(',')) + '">📌 Giao ' + todo.length + ' món cần kèm cho ' + esc(p.name) + '</button>';
+      else if (weak.length) h += '<div style="font-size:13px;color:#8a6a22;margin-top:4px">⏳ Đã giao các món cần kèm — đang chờ ' + esc(p.name) + ' làm</div>';
       if (open[p.name]){
         h += '<div class="detail">' + groups.map(function(g){
           return '<div class="g">' + esc(g) + '</div>' + menu.filter(function(m){ return m.group === g; }).map(function(m){
@@ -343,7 +362,7 @@
         e.stopPropagation();
         var p = DATA.staff[+b.getAttribute('data-quick')], codes = b.getAttribute('data-codes').split(',').filter(String);
         b.disabled = true; b.textContent = 'Đang giao…';
-        call({ action:'assign', name:p.name, codes:codes, note:'Ôn lại các món hay sai' }).then(function(res){
+        call({ action:'assign', name:p.name, codes:codes, note:'Ôn lại các món hay sai', cid:newId() }).then(function(res){
           if (!res || !res.ok){ b.disabled = false; b.textContent = 'Chưa giao được — bấm lại'; return; }
           b.textContent = '✅ Đã giao — ' + p.name + ' sẽ thấy ở trang chủ game'; load();
         });
