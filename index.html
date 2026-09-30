@@ -408,6 +408,11 @@
   .chk.on .bx{ background:var(--green); border-color:var(--green); color:#fff; }
   .shot{ width:100%; max-height:190px; object-fit:cover; border-radius:14px; box-shadow:0 4px 10px rgba(0,0,0,.15); }
   .hint-tag{ background:#eef3ff; color:#2b4f9c; }
+  /* returning staff: the daily things first (greeting hidden, install card last); toast under the ticket, not over it */
+  #screen-home.returning .hello{ display:none; }
+  #screen-home.returning #install{ order:50; }
+  #toast{ top:auto; bottom:calc(86px + env(safe-area-inset-bottom)); }
+  #qz-why{ font-size:13.5px; color:#555; text-align:center; min-height:18px; }
   /* easier to read in daylight, easier to hit with one thumb */
   .bin .nm{ font-size:13.5px; color:#222; }
   .tag{ font-size:13px; }
@@ -525,6 +530,7 @@
       <div class="card qz-q" style="margin-top:10px"><div id="qz-dish"></div><div id="qz-text"></div></div>
       <div id="qz-opts" style="margin-top:10px"></div>
       <div id="qz-fb" style="margin-top:8px"></div>
+      <div id="qz-why"></div>
     </div>
     <div id="qz-end" hidden style="display:flex;flex-direction:column;gap:10px">
       <h1 id="qz-end-title"></h1>
@@ -752,7 +758,7 @@
     return function(){ h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
   }
   var screens = ['pin', 'home', 'play', 'end', 'quiz'];
-  function show(n){ screens.forEach(function(s){ $('screen-' + s).classList.toggle('active', s === n); }); }
+  function show(n){ screens.forEach(function(s){ $('screen-' + s).classList.toggle('active', s === n); }); $('toast').classList.remove('on'); }
   var toastT = null;
   function toast(m){ var t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove('on'); }, 1700); }
 
@@ -1043,7 +1049,8 @@
       b.querySelector('b').textContent = g;
       var rd = g !== RUSH && readyMap() ? groupReady(g, readyMap()) : null;
       b.querySelector('.t span').textContent = locked
-        ? (g === RUSH ? 'Mở khi Thi ' + DATA.groups.length + ' màn đều đạt 2★' : 'Mở khi màn này ở chế độ Học đạt 2★')
+        ? (g === RUSH ? 'Mở khi Thi cả ' + DATA.groups.length + ' màn đạt 2★ · đang ' + DATA.groups.filter(function(x){ return starsOf('thi', x) >= 2; }).length + '/' + DATA.groups.length
+                      : 'Mở khi Học màn này đạt 2★ · Học đang ' + (starsOf('hoc', g) || 0) + '★')
         : count + ' món · ' + levelOrders(g) + ' khách' + (g === RUSH ? ' · 2–3 khách chờ cùng lúc' : '');
       if (rd && !locked){ var sp = document.createElement('span'); sp.className = 'rd'; sp.textContent = ' · ✅ ' + rd.n + '/' + rd.of + ' sẵn sàng'; b.querySelector('.t span').appendChild(sp); }
       b.querySelector('.s').textContent = starText(starsOf(mode, g));
@@ -1120,11 +1127,12 @@
   function goHome(){ stopGuide(); [].forEach.call(document.querySelectorAll('.modal.on'), function(m){ m.classList.remove('on'); }); renderModes(); renderStaff(); renderLevels(); show('home'); renderHomeExtras(); loadBoard(); }
   function renderHomeExtras(){
     var newbie = load(K.tut) !== 'done';
+    $('screen-home').classList.toggle('returning', !newbie && playerName().length >= 2);
     $('btn-tut').hidden = !newbie; $('btn-tut2').hidden = newbie;
     renderInstall(); renderBuzz(); renderBadges(); renderTasks(); renderQuizCard();
   }
   var nameT = null;
-  function nameChanged(){ boardAt = 0; clearTimeout(nameT); nameT = setTimeout(function(){ renderLevels(); renderBadges(false); loadBoard(); }, 700); }
+  function nameChanged(){ boardAt = 0; clearTimeout(nameT); nameT = setTimeout(function(){ renderLevels(); renderBadges(false); renderTasks(); renderQuizCard(); loadBoard(); }, 700); }
   $('name').addEventListener('input', nameChanged);
   $('name-sel').addEventListener('change', nameChanged);
 
@@ -1139,7 +1147,8 @@
       var e = document.createElement('div'); e.className = 'task';
       e.innerHTML = '<b>📌 Quản lý giao bài</b><span class="d"></span><span class="d" style="color:#8a6a22"></span><button type="button" class="btn orange">Làm bài ▶</button>';
       e.children[1].textContent = ds.map(function(d){ return d.name; }).join(' · ');
-      e.children[2].textContent = x.note ? '“' + x.note + '”' : 'Tính như Thi (có KPI)';
+      var gone = (x.codes || []).length - ds.length;
+      e.children[2].textContent = (x.note ? '“' + x.note + '”' : 'Tính như Thi (có KPI)') + (gone ? ' · ' + gone + ' món không còn trong công thức' : '');
       e.querySelector('button').addEventListener('click', function(){ startLevel({ kind:'task', group:'Bài giao', task:x.id, codes:ds.map(function(d){ return d.code; }) }); });
       box.appendChild(e);
     });
@@ -1179,11 +1188,16 @@
       var it = pickOne(itemsQ), right = qtyText(it.alts), pool = {};
       DATA.dishes.forEach(function(x){ x.items.forEach(function(y){ if (y.ing === it.ing && readable(y.alts).length){ var t = qtyText(y.alts); if (t !== right) pool[t] = 1; } }); });
       var r = readable(it.alts)[0], wrong = Object.keys(pool);
-      [0.5, 1.5, 2, 0.75].forEach(function(f){ var v = Math.round(r.min * f * 2) / 2; if (v > 0){ var t = fmt(v) + ' ' + r.u; if (t !== right && wrong.indexOf(t) < 0) wrong.push(t); } });
-      q.text = '<b>' + esc(it.ing) + '</b> cho bao nhiêu?'; q.right = right; q.opts = shuffle(wrong).slice(0, 3).concat([right]);
+      [0.5, 1.5, 2, 0.75, 3].forEach(function(f){ var v = r.min * f; v = v >= 20 ? Math.round(v / 5) * 5 : Math.round(v * 2) / 2; if (v > 0){ var t = fmt(v) + ' ' + r.u; if (t !== right && wrong.indexOf(t) < 0) wrong.push(t); } });
+      wrong = wrong.filter(function(t){ // an option the game would accept is not a wrong answer (vd "0,5 vá" khi chuẩn là "0,5 vá hoặc 25 g", "9 viên" trong "6–10 viên")
+        return !readable(parseQty(t)).some(function(a){ return readable(it.alts).some(function(al){
+          return sameUnit(a.u, al.u) && (al.range ? a.min >= al.min - 1e-9 && a.min <= al.max + 1e-9 : Math.abs(a.min - al.min) <= al.min * TOL + 1e-9); }); });
+      });
+      q.text = '<b>' + esc(it.ing) + '</b> cho bao nhiêu?'; q.right = right; q.why = 'Định lượng 1 con số được lệch ±10%.'; q.opts = shuffle(wrong).slice(0, 3).concat([right]);
     } else if (ty === 'vessel'){
       var rv = vesselFor(d, where), others = vesselOptions().filter(function(v){ return v !== rv; });
       q.text = 'Khách <b>' + wtxt + '</b>: lấy ly/tô gì?'; q.right = rv; q.opts = shuffle(others).slice(0, 3).concat([rv]);
+      q.why = 'Món này: ăn tại chỗ dùng ' + vesselFor(d, 'in') + ' · mang về dùng ' + vesselFor(d, 'out') + '.';
     } else if (ty === 'has'){
       var inD = d.items.map(function(x){ return x.any || x.ing; }), yes = pickOne(inD);
       var no = shuffle(Object.keys(DATA.ings).filter(function(n){ return DATA.ings[n].groups[d.group] && !inD.some(function(x){ return n.indexOf(x) === 0; }); })).slice(0, 3);
@@ -1191,7 +1205,8 @@
       q.text = 'Nguyên liệu nào <b>có</b> trong món này?'; q.right = yes; q.opts = no.concat([yes]);
     } else {
       var first = d.rule === 'inout' && where === 'in';
-      q.text = 'Khách <b>' + wtxt + '</b>: cốt dừa cho lúc nào?'; q.right = first ? 'Cho đầu tiên' : 'Cho sau cùng'; q.opts = ['Cho đầu tiên', 'Cho sau cùng'];
+      q.text = 'Khách <b>' + wtxt + '</b>: cốt dừa cho lúc nào?'; q.right = first ? 'Cho đầu tiên' : 'Cho sau cùng'; q.opts = ['Cho đầu tiên', 'Cho ở giữa', 'Cho sau cùng'];
+      q.why = d.rule === 'last' ? 'Món này cốt dừa luôn cho sau cùng (cả tại chỗ lẫn mang về).' : 'Ăn tại chỗ: cốt dừa cho trước · Mang về: cốt dừa cho sau cùng.';
     }
     q.opts = shuffle(q.opts);
     return q;
@@ -1201,7 +1216,7 @@
     store(K.name, playerName());
     var q = dueDishes(), queue = q.due.concat(q.fresh.slice(0, 12));
     if (queue.length < 6) queue = queue.concat(shuffle(DATA.dishes.filter(function(d){ return queue.indexOf(d) < 0; })).slice(0, 12));
-    Q = { queue:queue, i:0, ok:0, n:0, end:Date.now() + 60000, missed:[], lock:false, iv:setInterval(quizTick, 200) };
+    Q = { queue:queue, i:0, ok:0, n:0, end:Date.now() + 60000, missed:[], lock:false, seen:{}, iv:setInterval(quizTick, 200) };
     $('qz-run').hidden = false; $('qz-end').hidden = true;
     show('quiz'); guardBack(true); nextQuestion();
   }
@@ -1210,30 +1225,32 @@
     if (!Q.queue.length){ endQuiz(); return; }
     var d = Q.queue[Q.i % Q.queue.length]; Q.i++;
     Q.cur = makeQuestion(d); Q.lock = false;
-    $('qz-dish').textContent = d.name; $('qz-text').innerHTML = Q.cur.text; $('qz-fb').textContent = '';
+    $('qz-dish').textContent = d.name; $('qz-text').innerHTML = Q.cur.text; $('qz-fb').textContent = ''; $('qz-why').textContent = '';
     var box = $('qz-opts'); box.innerHTML = '';
     Q.cur.opts.forEach(function(o){
       var b = document.createElement('button'); b.type = 'button'; b.className = 'qo'; b.textContent = o;
       b.addEventListener('click', function(){ answer(b, o); });
       box.appendChild(b);
     });
-    $('qz-score').textContent = Q.ok + '/' + Q.n;
+    $('qz-score').textContent = Q.n ? Q.ok + '/' + Q.n : 'Câu 1';
   }
   function answer(b, o){
     if (!Q || Q.lock) return;
     Q.lock = true; Q.n++;
     var good = o === Q.cur.right, code = Q.cur.dish.code, cur = srsMine()[code];
     if (good){ Q.ok++; b.classList.add('good'); $('qz-fb').textContent = '✅ Đúng!'; $('qz-fb').style.color = 'var(--green)'; beep(true, false);
-      var nb = Math.min(5, (cur ? cur.b : 0) + 1); srsSave(code, nb, BOX_DAYS[nb]); }
+      if (!Q.seen[code]){ var nb = Math.min(5, (cur ? cur.b : 0) + 1); srsSave(code, nb, BOX_DAYS[nb]); } // lên hộp tối đa 1 lần mỗi buổi ôn
+      if (!Q.seen[code]) Q.seen[code] = 'ok'; }
     else {
       b.classList.add('bad'); buzz(60); beep(false);
       [].forEach.call($('qz-opts').children, function(x){ if (x.textContent === Q.cur.right) x.classList.add('good'); });
-      $('qz-fb').innerHTML = '❌ Đáp án: <b>' + esc(Q.cur.right) + '</b>'; $('qz-fb').style.color = 'var(--red)';
-      srsMiss(code); Q.missed.push({ dish:Q.cur.dish.name, q:Q.cur.text.replace(/<[^>]+>/g, ''), a:Q.cur.right });
+      $('qz-fb').innerHTML = '❌ Đáp án: <b>' + esc(Q.cur.right) + '</b>'; $('qz-fb').style.color = 'var(--red)'; $('qz-why').textContent = Q.cur.why || '';
+      srsMiss(code); Q.seen[code] = 'miss'; Q.missed.push({ dish:Q.cur.dish.name, q:Q.cur.text.replace(/<[^>]+>/g, ''), a:Q.cur.right });
       Q.queue.push(Q.cur.dish); // ask again a bit later
     }
     $('qz-score').textContent = Q.ok + '/' + Q.n;
-    setTimeout(function(){ if (Q) (Date.now() >= Q.end ? endQuiz() : nextQuestion()); }, good ? 550 : 1400);
+    var sess = Q;
+    Q.to = setTimeout(function(){ if (Q && Q === sess) (Date.now() >= Q.end ? endQuiz() : nextQuestion()); }, good ? 550 : 2600); // sai: đủ thời gian đọc đáp án
   }
   function quizTick(){
     if (!Q) return;
@@ -1248,17 +1265,21 @@
     if (rec){ a[who] = Q.ok; saveJSON(K.qbest, a); }
     $('qz-run').hidden = true; $('qz-end').hidden = false;
     $('qz-end-title').textContent = Q.ok >= 8 ? 'Nhớ giỏi quá! 🎉' : Q.ok >= 4 ? 'Ổn rồi, ôn thêm chút nha 💪' : 'Ôn lại mấy món này nha 📖';
-    $('qz-end-sub').textContent = 'Đúng ' + Q.ok + '/' + Q.n + ' câu' + (rec ? ' · 🏅 kỷ lục mới!' : '') + ' · món trả lời sai sẽ được hỏi lại vào hôm sau';
+    $('qz-end-sub').textContent = 'Đúng ' + Q.ok + '/' + Q.n + ' câu' + (rec ? ' · 🏅 kỷ lục mới!' : '') + ' · món trả lời sai sẽ được hỏi lại ở lần ôn sau';
     var l = $('qz-end-list'); l.innerHTML = '';
     Q.missed.forEach(function(m){ var c = document.createElement('div'); c.className = 'mcard'; c.innerHTML = '<b></b><span></span>'; c.firstChild.textContent = m.dish; c.lastChild.textContent = m.q + ' → ' + m.a; l.appendChild(c); });
     if (!Q.missed.length) l.innerHTML = '<div class="mcard" style="border-left-color:var(--green)">🎯 Không sai câu nào!</div>';
     Q.lock = true;
   }
-  function quitQuiz(){ if (Q) clearInterval(Q.iv); Q = null; guardBack(false); goHome(); }
+  function quitQuiz(){ if (Q){ clearInterval(Q.iv); clearTimeout(Q.to); } Q = null; guardBack(false); goHome(); }
+  document.addEventListener('visibilitychange', function(){ // quiz clock pauses while the app is away
+    if (!Q || Q.lock && $('qz-end').hidden === false) return;
+    if (document.hidden) Q.away = Date.now(); else if (Q.away){ Q.end += Date.now() - Q.away; Q.away = 0; }
+  });
   $('btn-quiz').addEventListener('click', startQuiz);
   $('qz-quit').addEventListener('click', quitQuiz);
   $('qz-home').addEventListener('click', quitQuiz);
-  $('qz-again').addEventListener('click', function(){ if (Q) clearInterval(Q.iv); Q = null; startQuiz(); });
+  $('qz-again').addEventListener('click', function(){ if (Q){ clearInterval(Q.iv); clearTimeout(Q.to); } Q = null; startQuiz(); });
 
   // ---- 4. Rung (Android) ----
   function buzz(p){ if (load(K.buzz) === 'off') return; try { if (navigator.vibrate) navigator.vibrate(p); } catch(e){} }
@@ -1538,6 +1559,7 @@
     P = { lv:lv, level:lv.group, name:name, mode:playMode, day:todayIso(), dayBefore:dayIso(-1), orders:makeOrders(lv), idx:-1, results:[], score:0, streak:0, bestStreak:0, shelf:shelfIngs, tab:null,
           rush:lv.kind === 'rush', arrived:0, nextArrive:0, pausedAt:0 };
     if (lv.kind === 'tut') startGuide();
+    rotAt = rotMq && rotMq.matches ? Date.now() : 0; hiddenAt = 0;
     buildShelf();
     show('play');
     guardBack(true);
@@ -1864,7 +1886,7 @@
     P.score += pts;
     P.results.push({ dish:P.cur.dish, where:P.cur.where, ok:g.ok, late:late, sec:sec, lines:g.lines, pauses:P.cur.pauses, retry:P.cur.retry, peeked:P.cur.peeked });
     if (P.lv.kind !== 'tut'){
-      if (g.ok && !P.cur.peeked) learnAdd(P.cur.dish.code);   // hints fade after correct dishes made from memory
+      if (g.ok && (!P.cur.peeked || P.cur.stage < 2)) learnAdd(P.cur.dish.code); // hints fade after correct dishes (peeking still costs the star)
       if (!g.ok) srsMiss(P.cur.dish.code);                    // wrong in the game → asked again in the quick review today
     }
     // weak dishes come back more often (stored on this phone)
