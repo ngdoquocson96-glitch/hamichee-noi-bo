@@ -202,7 +202,7 @@
           <div class="msg" id="home-msg"></div>
         </div>
         <div class="modes">
-          <button type="button" class="mode big" data-part="ca"><span class="e">⭐</span><span><b>Cả ca làm việc</b><br><small>Bước 1 → 17: mở ca, đón 6 khách, kết ca & bàn giao. Tiền thật chạy xuyên suốt ca.</small><br><span class="st" data-best="ca"></span></span></button>
+          <button type="button" class="mode big" data-part="ca"><span class="e">⭐</span><span><b>Cả ca làm việc</b><br><small>Bước 1 → 17: mở ca, đón 5 khách, kết ca & bàn giao. Tiền thật chạy xuyên suốt ca.</small><br><span class="st" data-best="ca"></span></span></button>
           <button type="button" class="mode" data-part="mo"><span class="e">🌅</span><b>Mở ca</b><small>Bước 1–3: sổ giao ca, đếm két 680k, kiểm thiết bị</small><span class="st" data-best="mo"></span></button>
           <button type="button" class="mode" data-part="trong"><span class="e">🧾</span><b>Trong ca</b><small>Bước 4–10: chào khách, nhập bill, thu tiền, thối tiền</small><span class="st" data-best="trong"></span></button>
           <button type="button" class="mode" data-part="ket"><span class="e">🌙</span><b>Kết ca</b><small>Bước 11–17: chốt file, đếm két 2 lần, xử lý lệch, đối soát CK Store Noti, bàn giao</small><span class="st" data-best="ket"></span></button>
@@ -252,6 +252,7 @@
     <div class="q" id="kp-title">Nhập số</div>
     <div class="kp-disp"><span id="kp-val">0</span><small id="kp-unit">đ</small></div>
     <div class="keys" id="kp-keys"></div>
+    <button type="button" class="btn soft small" id="kp-peek">👀 Ẩn bàn phím để xem lại</button>
     <div class="why hidden" id="kp-why"></div>
   </div></div>
   <!-- SOP -->
@@ -260,6 +261,7 @@
     <div class="sop-list" id="sop-list"></div>
     <button type="button" class="btn soft" id="sop-close">Đóng</button>
   </div></div>
+  <button type="button" class="btn orange hidden" id="kp-back" style="position:absolute;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:25">🔢 Nhập tiếp</button>
   <div id="toast"></div>
 </div>
 
@@ -384,7 +386,9 @@
     MENU.forEach(function(m){ BYCODE[m.code] = m; if (GROUPS.indexOf(m.group) < 0) GROUPS.push(m.group); });
     $('price-note').textContent = PRICE_FROM_SHEET ? 'Menu & giá lấy từ tab "Bảng giá" trong Sheet đào tạo (giá đã gồm VAT).' : 'Menu & giá theo menu HAMICHEE (giá đã gồm VAT).';
   }
-  function spoken(m){ return m.name.replace(/\s*\(\d+ bánh\)/i, '').replace(/["“”]/g, '').replace(/\s*Hami(chee)?\b/g, '').replace(/\(size (\w)\)/i, 'size $1').replace(/^(\S)/, function(c){ return c.toLowerCase(); }).replace(/\s+/g, ' ').trim(); }
+  function selfP(name){ var p = String(name).split(' ')[0].toLowerCase(); return p === 'bạn' ? 'mình' : p; } // khách tự xưng theo tên: chị/anh/cô/chú/mình
+  function cap(t){ return t.charAt(0).toUpperCase() + t.slice(1); }
+  function spoken(m){ return m.name.replace(/\s*\(\d+ bánh\)/i, '').replace(/["“”]/g, '').replace(/\s+Hami\b/g, '').replace(/\(size (\w)\)/i, 'size $1').replace(/^(\S)/, function(c){ return c.toLowerCase(); }).replace(/\s+/g, ' ').trim(); }
   var AMB = [ { say:'trà sữa', codes:['HMC-SUA-01','HMC-SUA-02','HMC-SUA-03','HMC-SUA-04'], ask:'trà sữa vị gì, size nào' },
               { say:'chè sầu riêng', codes:['HMC-HĐ-01','HMC-HĐ-02','HMC-HĐ-06'], ask:'chè sầu riêng loại nào' },
               { say:'flan', codes:['HMC-FLAN-01','HMC-FLAN-02'], ask:'flan truyền thống hay flan hạt đác' },
@@ -416,7 +420,10 @@
   }
   function payWith(total, drawer){ // tiền khách đưa: vừa đủ hoặc tờ chẵn lớn hơn (thối được bằng tiền trong két)
     var opts = [];
-    [10000, 20000, 50000, 100000, 200000, 500000].forEach(function(d){ var n = Math.ceil(total / d); if (n * d - total < 300000 && n <= 3) opts.push(n === 1 ? [d] : Array(n).fill(d)); });
+    [10000, 20000, 50000, 100000, 200000, 500000].forEach(function(d){ var n = Math.ceil(total / d); if (n * d - total < 480000 && n <= 3) opts.push(n === 1 ? [d] : Array(n).fill(d)); });
+    var odd = total % 10000; // khách đưa thêm tiền lẻ cho chẵn: bill 62.000 → đưa 100.000 + 2.000, thối 40.000
+    if (odd){ var ol = makeChange(odd, { 5000:1, 2000:2, 1000:2 }); if (ol){ var lo = []; DEN.forEach(function(d){ for (var k = 0; k < (ol[d] || 0); k++) lo.push(d); });
+      [50000, 100000].forEach(function(d){ var base = Math.ceil((total - odd) / d) * d; if (base > total - odd) opts.push(Array(base / d).fill(d).concat(lo)); }); } }
     var exact = makeChange(total, { 500000:1, 200000:2, 100000:3, 50000:1, 20000:2, 10000:2, 5000:1, 2000:2, 1000:2 });
     if (exact){ var e = []; DEN.forEach(function(d){ for (var k = 0; k < (exact[d] || 0); k++) e.push(d); }); opts.push(e); }
     shuffle(opts);
@@ -509,11 +516,13 @@
   function askNumber(title, unit, check){
     var id = RUN;
     return new Promise(function(resolve){
-      KP = { v:'', unit:unit == null ? 'đ' : unit, check:check, resolve:resolve, id:id };
+      KP = { v:'', unit:unit == null ? 'đ' : unit, check:check, resolve:resolve, id:id }; $('kp-back').classList.add('hidden');
       $('kp-title').innerHTML = title; $('kp-unit').textContent = KP.unit; $('kp-why').classList.add('hidden'); kpDraw();
       $('kp').classList.add('on');
     });
   }
+  $('kp-peek').addEventListener('click', function(){ if (!KP) return; $('kp').classList.remove('on'); $('kp-back').classList.remove('hidden'); });
+  $('kp-back').addEventListener('click', function(){ $('kp-back').classList.add('hidden'); if (KP && KP.id === RUN) $('kp').classList.add('on'); });
   function kpDraw(){ $('kp-val').textContent = KP.v ? money(Number(KP.v)) : '0'; }
   (function(){
     var keys = ['1','2','3','4','5','6','7','8','9', '000','0','⌫'];
@@ -525,7 +534,7 @@
       else if (k === 'ok'){
         var n = Number(KP.v || 0), r = KP.check ? KP.check(n) : true;
         if (r !== true){ $('kp-why').textContent = '✗ ' + r; $('kp-why').classList.remove('hidden'); $('kp-val').parentNode.classList.remove('shake'); void $('kp-val').offsetWidth; $('kp-val').parentNode.classList.add('shake'); KP.v = ''; kpDraw(); return; }
-        var kp = KP; KP = null; $('kp').classList.remove('on'); if (kp.id === RUN) kp.resolve(n); return;
+        var kp = KP; KP = null; $('kp').classList.remove('on'); $('kp-back').classList.add('hidden'); if (kp.id === RUN) kp.resolve(n); return;
       } else if (KP.v.length < 10) KP.v = (KP.v + k).replace(/^0+/, '');
       kpDraw();
     });
@@ -572,20 +581,27 @@
   }
 
   // ---------------- PHASE 1: Mở ca ----------------
-  var BOOK = [
-    { txt:'Ca chiều 30/09 — CHT: Mai\n• Tiền bàn giao két: 680.000đ\n• Máy in bill kẹt giấy 1 lần, đã xử lý\n• Thiếu thẻ bàn số 7 và 8 (chưa tìm thấy)', right:'Thiếu thẻ bàn số 7 và 8', wrong:['Máy POS bị hỏng', 'Két bàn giao 700.000đ'] },
-    { txt:'Ca sáng 01/10 — CHP: Hoa\n• Tiền bàn giao két: 680.000đ\n• Mã QR dán quầy bị bong góc, đã dán tạm\n• Khách bàn 3 để quên áo khoác — cất ở tủ quầy', right:'Mã QR bị bong góc, khách để quên áo ở tủ quầy', wrong:['Két chỉ còn 600.000đ', 'Máy in hết giấy'] },
-    { txt:'Ca tối 30/09 — CHT: Lan\n• Tiền bàn giao két: 680.000đ\n• Cuộn giấy in còn ít, chưa thay\n• Hết túi mang về size lớn, đã báo bếp', right:'Giấy in còn ít, hết túi mang về size lớn', wrong:['Mã QR không quét được', 'Không có gì cần lưu ý'] }
+  var BOOK = [ // ghi chú ca trước; đáp án nhiễu = ghi chú của sổ khác (đều hợp lý, phải đọc kỹ mới phân biệt)
+    { lines:['Máy in bill kẹt giấy 1 lần, đã xử lý', 'Thiếu thẻ bàn số 7 và 8, chưa tìm thấy'], right:'Thiếu thẻ bàn số 7 và 8' },
+    { lines:['Mã QR dán quầy bị bong góc, đã dán tạm', 'Khách bàn 3 để quên áo khoác, cất ở tủ quầy'], right:'Mã QR bị bong góc, có áo khách để quên ở tủ quầy', fault:'qr' },
+    { lines:['Cuộn giấy in còn ít, chưa thay', 'Hết túi mang về size lớn, đã báo bếp'], right:'Giấy in còn ít, hết túi mang về size lớn', fault:'printer' },
+    { lines:['Bill #18: khách hẹn mai ghé lấy hóa đơn đỏ', 'Tiền lẻ 5.000đ còn ít, đã đổi thêm'], right:'Khách bill #18 hẹn mai lấy hóa đơn, tiền lẻ 5k còn ít' },
+    { lines:['Loa báo chuyển khoản lúc được lúc không, xem Store Noti cho chắc', 'Hết ống hút lớn'], right:'Loa báo chuyển khoản chập chờn, hết ống hút lớn' },
+    { lines:['Máy POS bị treo 1 lần, khởi động lại thì chạy', 'Khách đặt 10 ly trà dâu tằm, lấy 15h mai'], right:'POS từng bị treo, có đơn 10 ly trà dâu tằm lấy 15h mai', fault:'pos' }
   ];
+  var WHO = ['CHT Mai', 'CHP Hoa', 'CHT Lan', 'CHP Thảo'];
+  function prevShift(){ var o = ['Ca sáng', 'Ca chiều', 'Ca tối'], i = o.indexOf(G.shift); return i > 0 ? [o[i - 1], dayStr(0)] : ['Ca tối', dayStr(-1)]; }
   async function phaseMo(){
     var id = RUN;
     G.from = 1; G.to = G.part === 'ca' ? 17 : 3; $('hd-title').textContent = G.part === 'ca' ? '⭐ Cả ca' : '🌅 Mở ca';
     // Bước 1
     setStep(1); clearStage();
-    var bk = pick(BOOK);
+    var bk = pick(BOOK), ps = prevShift();
+    bk.txt = ps[0] + ' ' + ps[1] + ' — ' + pick(WHO) + '\n• Tiền bàn giao két: 680.000đ\n• ' + bk.lines.join('\n• ');
     add('<h3>📒 Sổ giao ca</h3><div class="book">' + esc(bk.txt) + '</div>', 'info');
     await button('Em đã đọc sổ giao ca ▶'); live(id);
-    await choose(1, 'Ca trước có lưu ý gì cho ca của em?', [ { t:bk.right, ok:true } ].concat(bk.wrong.map(function(w){ return { t:w, why:'Đọc kỹ sổ giao ca: ' + bk.right.toLowerCase() + '.' }; }))); live(id);
+    clearStage(); add('<h3>📒 Sổ giao ca</h3><i style="color:#7a6a55">(đã gấp sổ — nhớ lại ghi chú của ca trước)</i>', 'info');
+    await choose(1, 'Ca trước có lưu ý gì cho ca của em?', [ { t:bk.right, ok:true } ].concat(shuffle(BOOK.filter(function(x){ return x !== bk; })).slice(0, 2).map(function(x){ return { t:x.right, why:'Sổ giao ca ghi: ' + bk.lines.join('; ') + '.' }; }))); live(id);
     G.book = bk;
     // Bước 2
     setStep(2); clearStage();
@@ -604,33 +620,31 @@
     if (!tries){ G.ok++; gain(20); }
     if (kind === 'ok'){
       await choose(2, 'Két đủ ' + vnd(real) + ', tiền lẻ đủ. Làm gì tiếp?', [
-        { t:'Ghi vào sổ: ngày, ca, tiền đầu ca 680.000đ', ok:true },
-        { t:'Không cần ghi, đúng 680k là được', why:'Bắt buộc ghi sổ: Ngày / Ca / Tiền đầu ca — làm căn cứ chốt ca.' },
-        { t:'Để cuối ca ghi một lần cho tiện', why:'Ghi ngay đầu ca; cuối ca mới ghi thì không còn căn cứ đối chiếu.' } ]);
+        { t:'Ghi sổ ngay: ngày, ca, tiền đầu ca 680.000đ', ok:true },
+        { t:'Không cần ghi sổ vì két đã đúng chuẩn 680.000đ rồi', why:'Bắt buộc ghi sổ: Ngày / Ca / Tiền đầu ca — làm căn cứ chốt ca.' },
+        { t:'Ghi tiền đầu ca vào sổ lúc kết ca luôn', why:'Ghi ngay đầu ca; cuối ca mới ghi thì không còn căn cứ đối chiếu.' } ]);
     } else if (kind === 'short'){
       await choose(2, 'Sổ ghi bàn giao 680.000đ nhưng em đếm được ' + vnd(real) + '. Làm gì?', [
-        { t:'Ghi đúng ' + vnd(real) + ' vào sổ, báo ngay CHT/CHP ca trước và quản lý', ok:true, why:'Ghi đúng số đếm được và báo ngay để làm rõ trước khi nhận ca.' },
-        { t:'Ghi 680.000đ cho khớp sổ', why:'Không ghi số khác thực tế: lệch sẽ thành của ca em.' },
-        { t:'Bỏ 10.000đ tiền túi vào cho đủ rồi ghi 680.000đ', why:'Không bù tiền cá nhân: phải ghi đúng và báo quản lý để tìm nguyên nhân.' } ]);
+        { t:'Ghi đúng ' + vnd(real) + ', báo ca trước và quản lý', ok:true, why:'Ghi đúng số đếm được và báo ngay để làm rõ trước khi nhận ca.' },
+        { t:'Ghi 680.000đ cho khớp với sổ giao ca', why:'Không ghi số khác thực tế: lệch sẽ thành của ca em.' },
+        { t:'Bù 10.000đ tiền mình rồi ghi 680.000đ', why:'Không bù tiền cá nhân: phải ghi đúng và báo quản lý để tìm nguyên nhân.' } ]);
     } else {
       await choose(2, 'Két đủ ' + vnd(real) + ' nhưng gần như toàn tờ lớn. Làm gì?', [
-        { t:'Đổi thêm tiền lẻ (5k, 10k, 20k) trước khi đón khách, rồi ghi sổ', ok:true },
-        { t:'Cứ mở bán, khách đưa tiền lớn thì nhờ khách chuyển khoản', why:'Phải đủ tiền lẻ ngay từ đầu ca (Bước 2) để thối đúng cho khách.' },
-        { t:'Ghi sổ là xong, tiền lẻ không quan trọng', why:'Bước 2 yêu cầu: đủ tiền lẻ. Thiếu lẻ dễ thối sai, khách chờ lâu.' } ]);
+        { t:'Đổi thêm tiền lẻ trước khi đón khách, rồi ghi sổ', ok:true },
+        { t:'Mở bán, khách đưa tờ lớn thì mời chuyển khoản', why:'Phải đủ tiền lẻ ngay từ đầu ca (Bước 2) để thối đúng cho khách.' },
+        { t:'Ghi sổ 680.000đ, thiếu lẻ thì đổi sau', why:'Bước 2 yêu cầu: đủ tiền lẻ trước khi đón khách — thiếu lẻ dễ thối sai, khách chờ lâu.' } ]);
       dc = STD_FLOAT(); toast('Đã đổi tiền lẻ — két vẫn 680.000đ');
     }
     live(id);
     G.float0 = real; G.drawer = dc;
     // Bước 3
     setStep(3); clearStage();
-    var fault = pick(['pos', 'printer', 'qr']);
-    if (bk.txt.indexOf('giấy in còn ít') >= 0) fault = 'printer';
-    if (bk.txt.indexOf('QR') >= 0) fault = 'qr';
+    var fault = bk.fault || pick(['pos', 'printer', 'qr']);
     add('<h3>🖨️ Kiểm tra thiết bị</h3>Bấm vào từng thiết bị để kiểm tra trước khi đón khách.', 'info');
     var g2 = add('', 'grid2'); g2.style.gridTemplateColumns = 'repeat(3, 1fr)';
     var devs = { pos:['🖥️', 'Máy POS', 'Đang chạy, đã đăng nhập ca', 'Chưa đăng nhập tài khoản ca'],
                  printer:['🧾', 'Máy in bill', 'Còn giấy, in thử rõ', 'Cuộn giấy sắp hết (vạch đỏ)'],
-                 qr:['📱', 'Mã QR', 'Quét thử được, đúng tài khoản quán', 'Mã QR bong góc, quét không ăn'] };
+                 qr:['📱', 'Mã QR', 'Quét thử được, đúng tài khoản quán', 'Bị bong góc, quét không được'] };
     var checked = {};
     await new Promise(function(resolve){
       Object.keys(devs).forEach(function(k){
@@ -646,17 +660,17 @@
       });
       dock.innerHTML = '<div class="q">Kiểm tra đủ 3 thiết bị: máy POS, máy in bill, mã QR.</div>';
     }); live(id);
-    var fixes = { pos:['Đăng nhập POS bằng tài khoản ca, in thử 1 bill nháp', ['Cứ bán, ghi giấy rồi nhập sau', 'Dùng tài khoản của ca trước cho nhanh']],
-                  printer:['Thay cuộn giấy mới ngay, in thử', ['Hết giấy thì không in bill cho khách', 'Đợi hết hẳn mới thay']],
-                  qr:['Thay mã QR in mới (hoặc mở mã trên POS), quét thử trước khi bán', ['Khách chuyển khoản thì đọc số tài khoản', 'Để vậy, khách tự chỉnh điện thoại']] };
+    var fixes = { pos:['Đăng nhập POS tài khoản ca, in thử bill nháp', ['Bán trước, ghi giấy rồi nhập POS sau', 'Dùng tạm tài khoản POS của ca trước cho nhanh']],
+                  printer:['Thay cuộn giấy mới ngay rồi in thử', ['Cứ dùng tới hết hẳn cuộn giấy rồi mới thay', 'Hết giấy thì khỏi in bill cho khách']],
+                  qr:['Thay mã QR in mới, quét thử trước khi bán', ['Để vậy, khách canh đúng góc thì vẫn quét được', 'Đọc số tài khoản cho khách tự gõ']] };
     var fx = fixes[fault];
-    await choose(3, devs[fault][1] + ': ' + devs[fault][3].toLowerCase() + '. Xử lý thế nào?', [ { t:fx[0], ok:true } ].concat(fx[1].map(function(x){ return { t:x, why:'Thiết bị phải sẵn sàng trước khi đón khách để không gián đoạn giao dịch (Bước 3).' }; }))); live(id);
+    await choose(3, devs[fault][1] + ' ' + devs[fault][3].charAt(0).toLowerCase() + devs[fault][3].slice(1) + '. Xử lý thế nào?', [ { t:fx[0], ok:true } ].concat(fx[1].map(function(x){ return { t:x, why:'Thiết bị phải sẵn sàng trước khi đón khách để không gián đoạn giao dịch (Bước 3).' }; }))); live(id);
     add('<b class="ok-t">✅ Sẵn sàng đón khách!</b> Két ' + vnd(sumOf(G.drawer)) + ' · POS · máy in · QR đều ổn.', 'info');
     await wait(700); live(id);
   }
 
   // ---------------- PHASE 2: Trong ca ----------------
-  function newLedger(){ return { float0:G.float0 || FLOAT, cash:0, transfer:0, chi:[], bills:0, pos:0, disc:0, cashBills:[] }; }
+  function newLedger(){ return { float0:G.float0 || FLOAT, cash:0, transfer:0, chi:[], bills:0, pos:0, disc:0, cashBills:[], qr:[] }; }
   function orderOf(){
     var n = pick([1, 1, 2, 2, 3]), items = {}, codes = shuffle(MENU.map(function(m){ return m.code; }));
     for (var i = 0; i < n; i++) items[codes[i]] = Math.random() < 0.8 ? 1 : 2;
@@ -683,7 +697,7 @@
     var id = RUN;
     if (G.part !== 'ca'){ G.from = 4; G.to = 10; $('hd-title').textContent = '🧾 Trong ca'; G.float0 = FLOAT; G.drawer = STD_FLOAT(); }
     G.led = newLedger();
-    var custs = makeCustomers(G.part === 'ca' ? 6 : 5), evAt = rnd(1, custs.length - 1), ev2At = custs.length > 4 ? rnd(2, custs.length - 1) : -1;
+    var custs = makeCustomers(5), evAt = rnd(1, custs.length - 1), ev2At = custs.length > 4 ? rnd(2, custs.length - 1) : -1;
     if (ev2At === evAt) ev2At = -1;
     for (var i = 0; i < custs.length; i++){
       if (i === evAt) await eventChi(); live(id);
@@ -701,10 +715,12 @@
     c.look.mood = 'happy';
     scene(c.look, c.name, '<i>(bước tới quầy)</i>', null);
     await wait(400); live(id);
-    await choose(4, 'Khách vừa tới quầy. Em nói gì?', [
+    if (k <= 2) await choose(4, 'Khách vừa tới quầy. Em nói gì?', [
       { t:'"Hamichee xin chào ạ, anh/chị dùng tại đây hay mang về ạ?"', ok:true },
-      { t:'"Dạ anh/chị uống gì ạ?"', why:'Câu chào chuẩn phải hỏi rõ dùng tại đây hay mang về ngay từ đầu (Bước 4).' },
-      { t:'"Mình xem menu rồi gọi nha."', why:'Thiếu lời chào thương hiệu và chưa hỏi tại đây hay mang về (Bước 4).' } ]); live(id);
+      { t:'"Hamichee xin chào ạ, anh/chị muốn dùng món gì hôm nay ạ?"', why:'Câu chào chuẩn phải hỏi rõ dùng tại đây hay mang về ngay từ đầu (Bước 4).' },
+      { t:'"Dạ chào anh/chị, mình dùng tại đây hay mang về ạ?"', why:'Thiếu lời chào thương hiệu "Hamichee xin chào ạ" (Bước 4).' } ]);
+    else { scene(null, 'Em', 'Hamichee xin chào ạ, ' + selfP(c.name) + ' dùng tại đây hay mang về ạ?'); await wait(900); }
+    live(id);
     scene(null, c.name, c.where === 'in' ? 'Ngồi đây nha em.' : 'Mang về nha em.', c.where === 'in' ? '🪑 Tại chỗ' : '🛍️ Mang về');
     await wait(650); live(id);
     // Bước 5–6 (+9)
@@ -719,7 +735,7 @@
     }
     if (c.type === 'voucher') while (cartTotal(items) < 40000){ var top = pick(MENU.filter(function(m){ return m.price >= 25000; })); items[top.code] = (items[top.code] || 0) + 1; }
     c.items = items; c.amb = amb;
-    var say = 'Cho ' + (c.where === 'in' ? 'chị' : 'anh') + ' ' + orderText(items, amb) + '.';
+    var me = selfP(c.name), say = pick(['Cho ' + me + ' ', 'Lấy cho ' + me + ' ', cap(me) + ' lấy ']) + orderText(items, amb) + '.';
     c.say = say;
     if (c.type === 'voucher'){ c.vcode = 'G' + ('0' + new Date().getDate()).slice(-2) + ('0' + (new Date().getMonth() + 1)).slice(-2) + '-' + rnd(100, 999); c.vexpired = Math.random() < 0.35; say += ' Có mã quà game nè: <b>' + c.vcode + '</b>'; c.say += ' Có mã quà game nè: ' + c.vcode; }
     setStep(5);
@@ -730,40 +746,44 @@
       add('<b>👩‍🍳 Bạn pha chế:</b> "Khách quen đó chị, em làm trước luôn nha, nhập bill sau cũng được!"', 'info');
       await choose(6, 'Bạn pha chế muốn làm món trước khi có bill. Em trả lời?', [
         { t:'"Đợi chị nhập bill xong đã nha — không nhập là không làm."', ok:true },
-        { t:'"Ừ làm trước đi, lát chị nhập."', why:'RULE Bước 6: không nhập = không làm. Làm trước dễ sót bill → lệch quỹ.' },
+        { t:'"Ừ khách quen thì em làm trước đi, lát nữa chị nhập bill sau."', why:'RULE Bước 6: không nhập = không làm. Làm trước dễ sót bill → lệch quỹ.' },
         { t:'"Khách quen thì khỏi nhập bill."', why:'Cấm: không nhập bill khi phát sinh giao dịch. Mỗi đơn = 1 bill.' } ]); live(id);
       stage.lastChild.remove();
     }
     if (c.type === 'voucher'){
       await choose(9, 'Khách đưa mã quà game <b>' + c.vcode + '</b>. Em làm gì trước?', [
-        { t:'Kiểm tra mã trên trang Thu ngân HAMICHEE, còn hạn mới áp chương trình trên POS', ok:true },
-        { t:'Áp luôn giảm 10% trên POS', why:'Phải kiểm tra mã (còn hạn, chưa dùng) trên trang Thu ngân trước khi áp.' },
-        { t:'Giảm tay 10.000đ cho nhanh', why:'Cấm tự ý giảm giá ngoài hệ thống — chỉ áp đúng chương trình trên POS (Bước 9).' } ]); live(id);
+        { t:'Kiểm tra mã trên trang Thu ngân, còn hạn mới áp trên POS', ok:true },
+        { t:'Áp luôn chương trình giảm 10% trên POS vì khách đã có mã quà', why:'Phải kiểm tra mã (còn hạn, chưa dùng) trên trang Thu ngân trước khi áp.' },
+        { t:'Giảm tay 10.000đ trên POS cho nhanh, cuối ca báo lại quản lý', why:'Cấm tự ý giảm giá ngoài hệ thống — chỉ áp đúng chương trình trên POS (Bước 9).' } ]); live(id);
       add(c.vexpired ? '<h3>🔎 Trang Thu ngân</h3><span class="bad-t">❌ Mã ' + c.vcode + ' đã hết hạn</span>' : '<h3>🔎 Trang Thu ngân</h3><span class="ok-t">✅ Mã ' + c.vcode + ' hợp lệ</span> · Giảm 10% hóa đơn (tối đa 10.000đ, hóa đơn từ 40.000đ)', 'info');
       if (c.vexpired){
         await choose(9, 'Mã đã hết hạn. Em nói với khách?', [
           { t:'"Dạ mã này hết hạn rồi ạ, em xin lỗi mình chưa áp dụng được ạ."', ok:true },
-          { t:'"Thôi em giảm luôn cho chị nha."', why:'Mã hết hạn không được áp — tự giảm là giảm giá không được phê duyệt.' },
-          { t:'"Em nhập mã khác vào cho chị."', why:'Không dùng mã/chương trình khác để giảm — chỉ áp đúng chương trình hợp lệ.' } ]); live(id);
+          { t:'"Dạ mã hết hạn rồi, nhưng em vẫn giảm 10% cho mình luôn nha."', why:'Mã hết hạn không được áp — tự giảm là giảm giá không được phê duyệt.' },
+          { t:'"Dạ mã này hết hạn rồi, em nhập tạm một mã khác cho mình nha."', why:'Không dùng mã/chương trình khác để giảm — chỉ áp đúng chương trình hợp lệ.' } ]); live(id);
       }
     }
     if (c.type === 'discount'){
-      scene(null, c.name, say + ' Bớt cho ' + (c.where === 'in' ? 'chị' : 'anh') + ' 5 nghìn nha em!');
+      scene(null, c.name, say + ' Bớt cho ' + me + ' 5 nghìn nha em!');
       await choose(9, 'Khách xin bớt 5.000đ. Em trả lời?', [
-        { t:'"Dạ em không tự giảm được ạ, quán chỉ áp dụng chương trình có trên máy ạ."', ok:true },
-        { t:'"Dạ được, em bớt 5 nghìn."', why:'Cấm tự ý giảm giá không qua hệ thống, không được phê duyệt (Bước 9).' },
-        { t:'"Em bớt, phần thiếu em bù tiền túi."', why:'Không bù tiền túi, không giảm ngoài hệ thống — tiền phải khớp bill.' } ]); live(id);
+        { t:'"Dạ em không tự giảm được, quán chỉ áp chương trình trên máy ạ."', ok:true },
+        { t:'"Dạ được ạ, em bớt 5 nghìn cho mình, lần sau ủng hộ quán nha."', why:'Cấm tự ý giảm giá không qua hệ thống, không được phê duyệt (Bước 9).' },
+        { t:'"Dạ em bớt 5 nghìn cho mình, phần thiếu đó em tự bù vào két sau ạ."', why:'Không bù tiền túi, không giảm ngoài hệ thống — tiền phải khớp bill.' } ]); live(id);
     }
     setStep(6);
     var bill = await posEntry(c); live(id);
     // Bước 7
     setStep(7);
     var total = bill.total, line = itemsLine(items);
-    var opts7 = [ { t:'"Dạ của mình ' + esc(line) + (bill.disc ? ', giảm ' + money(bill.disc) : '') + ' — tổng <b>' + money(total) + '</b> ạ."', ok:true },
-                  { t:'"Dạ tổng ' + money(total) + ' ạ."', why:'Phải nhắc lại món để khách xác nhận đúng nội dung, rồi mới báo tổng (Bước 7).' } ];
-    var wrongT = bill.disc ? total + bill.disc : total + pick([5000, 10000]);
-    opts7.push({ t:'"Dạ của mình ' + esc(line) + ' — tổng ' + money(wrongT) + ' ạ."', why:'Báo đúng số trên bill POS (đã trừ khuyến mãi nếu có): ' + money(total) + '.' });
-    await choose(7, 'Bill đã lưu: <b>' + vnd(total) + '</b>. Em xác nhận với khách thế nào?', opts7); live(id);
+    var dtxt = bill.disc ? ', giảm ' + money(bill.disc) : '';
+    var opts7 = [ { t:'"Dạ của mình ' + esc(line) + dtxt + ' — tổng ' + money(total) + ' ạ."', ok:true } ];
+    var wrongT = bill.disc ? total + bill.disc : total + pick([5000, 10000, -5000].filter(function(x){ return total + x > 0; }));
+    opts7.push({ t:'"Dạ của mình ' + esc(line) + (bill.disc ? '' : dtxt) + ' — tổng ' + money(wrongT) + ' ạ."', why:'Báo đúng số trên bill POS (đã trừ khuyến mãi nếu có): ' + money(total) + '.' });
+    var ks = Object.keys(items);
+    if (ks.length > 1){ var miss = {}; ks.slice(1).forEach(function(x){ miss[x] = items[x]; });
+      opts7.push({ t:'"Dạ của mình ' + esc(itemsLine(miss)) + dtxt + ' — tổng ' + money(total) + ' ạ."', why:'Nhắc lại đủ món trên bill để khách xác nhận (Bước 7) — đang thiếu ' + BYCODE[ks[0]].name + '.' }); }
+    else opts7.push({ t:'"Dạ tổng của mình là ' + money(total) + ' ạ."', why:'Mới báo tổng — phải nhắc lại món trước rồi mới báo tổng (Bước 7).' });
+    await choose(7, 'Bill đã lưu. Em xác nhận với khách thế nào?', opts7); live(id);
     scene(null, c.name, 'Đúng rồi em.');
     // Bước 8
     setStep(8);
@@ -775,7 +795,7 @@
     var inO = { t:'Gửi thẻ bàn + bill cho khách, cảm ơn khách', why:'Khách ' + (c.where === 'in' ? 'dùng tại chỗ' : 'mang về') + ' — làm theo hình thức đã hỏi ở Bước 4.' };
     var outO = { t:'Mời khách qua quầy chờ, phục vụ sẽ gửi món mang về', why:inO.why };
     if (c.where === 'in') inO.ok = true; else outO.ok = true;
-    await choose(10, 'Đã thu đủ tiền. Hướng dẫn khách tiếp theo?', [ inO, outO, { t:'Đưa bill rồi để khách tự đi tìm chỗ', why:'Phải hướng dẫn đúng nơi chờ/nhận món, không để khách chờ hoặc nhầm lẫn (Bước 10).' } ]); live(id);
+    await choose(10, 'Đã thu đủ tiền. Hướng dẫn khách tiếp theo?', k <= 2 ? [ inO, outO, { t:'Đưa bill, mời khách tự chọn chỗ ngồi chờ', why:'Phải hướng dẫn đúng nơi chờ/nhận món theo hình thức đã hỏi ở Bước 4.' } ] : [ inO, outO ]); live(id);
     c.look.mood = 'wow'; scene(c.look, c.name, 'Cảm ơn em nha! 😊');
     gain(20);
     await wait(700); live(id);
@@ -843,7 +863,7 @@
         if (!Object.keys(cart).length){ toast('Chưa nhập món nào'); return; }
         var problems = [];
         if (c.amb && !asked){ problems.push([5, 'Khách gọi "' + c.amb.say + '" chưa rõ (' + c.amb.ask + ') — phải hỏi lại trước khi nhập.']); asked = true;
-          var t3 = 'Ủa, ' + (c.where === 'in' ? 'chị' : 'anh') + ' gọi ' + spoken(BYCODE[c.amb.code]) + ' mà em!'; scene(null, c.name, esc(t3)); said(esc(c.say) + '<br>→ ' + esc(t3)); }
+          var t3 = 'Ủa, ' + selfP(c.name) + ' gọi ' + spoken(BYCODE[c.amb.code]) + ' mà em!'; scene(null, c.name, esc(t3)); said(esc(c.say) + '<br>→ ' + esc(t3)); }
         else if (!sameCart(cart, c.items)){ problems.push([6, 'Bill nhập sai món/số lượng so với order.']); var t4 = 'Không phải em ơi: ' + orderText(c.items, null) + '.'; scene(null, c.name, esc(t4)); said(esc(t4)); }
         var needG = c.type === 'voucher' && !c.vexpired && cartTotal(c.items) >= 40000;
         if (!problems.length && needG && promo !== 'G') problems.push([9, 'Khách có mã quà G hợp lệ — phải áp đúng chương trình trên POS.']);
@@ -851,6 +871,7 @@
         if (problems.length){ G.steps += firstSave ? 1 : 0; problems.forEach(function(p){ if (firstSave) mistake(p[0], p[1]); toast('✗ ' + p[1]); }); firstSave = false; pos.classList.remove('shake'); void pos.offsetWidth; pos.classList.add('shake'); return; }
         if (firstSave){ G.steps++; G.ok++; gain(20); }
         beep(true);
+        pos.querySelector('.scr').style.pointerEvents = 'none';
         var d = disc(); pos.querySelector('.acts').innerHTML = '<div style="grid-column:1/-1;text-align:center;font-weight:bold;color:#7be3a9">✅ Đã lưu bill · ' + vnd(cartTotal(cart) - d) + '</div>';
         resolve({ total:cartTotal(cart) - d, disc:d });
       });
@@ -868,63 +889,74 @@
     var w = work();
     var hand = document.createElement('div'); hand.className = 'info'; hand.innerHTML = '<h3>💵 Bill ' + vnd(total) + ' · khách đưa (đặt trên quầy)</h3><div class="hand">' + notes.map(noteHTML).join('') + '</div>'; w.appendChild(hand);
     var amounts = [paid, paid + pick([10000, 50000, 100000]), Math.max(total, paid - pick([10000, 20000]))].filter(function(v, i, a){ return a.indexOf(v) === i; });
-    var opt8 = [ { t:'"Em nhận ' + money(paid) + ' ạ." — đặt tiền trên quầy', ok:true } ];
+    var opt8 = [ { t:'"Em nhận ' + money(paid) + ' ạ."', ok:true } ];
     amounts.slice(1).forEach(function(v){ opt8.push({ t:'"Em nhận ' + money(v) + ' ạ."', why:'Đếm đúng tiền khách đưa: ' + money(paid) + '. Nói rõ số tiền nhận để tránh nhầm lẫn.' }); });
-    opt8.push({ t:'"Dạ em cảm ơn." — cất tiền luôn', why:'Phải nói rõ số tiền nhận và để tiền trên quầy tới khi thối xong (Bước 8).' });
-    await choose(8, 'Tổng bill ' + vnd(total) + '. Khách đưa tiền — em nói gì?', opt8); live(id);
+    opt8.push({ t:'"Dạ em cảm ơn ạ."', why:'Phải nói rõ số tiền nhận ("Em nhận …") để tránh nhầm lẫn (Bước 8).' });
+    await choose(8, 'Khách đưa tiền. Em đặt tiền trên quầy và nói:', opt8); live(id);
+    if (change === 0) G.cashN++;
     if (change > 0){
       var tray = {}, trayEl = document.createElement('div'); trayEl.className = 'tray';
-      var drw;
+      var drw, given = false;
       function drawTray(){
         var s = sumOf(tray), h = '<div class="lbl"><span>🤲 Tiền thối (bấm tờ để trả lại két)</span><b>' + vnd(s) + '</b></div>';
         trayEl.innerHTML = h;
-        DEN.forEach(function(x){ for (var k = 0; k < (tray[x] || 0); k++){ var sp = document.createElement('span'); sp.innerHTML = noteHTML(x); sp.style.cursor = 'pointer'; sp.addEventListener('click', function(){ tray[x]--; d[x] = (d[x] || 0) + 1; drawTray(); drw.redraw(); }); trayEl.appendChild(sp); } });
+        DEN.forEach(function(x){ for (var k = 0; k < (tray[x] || 0); k++){ var sp = document.createElement('span'); sp.innerHTML = noteHTML(x); sp.style.cursor = 'pointer'; sp.addEventListener('click', function(){ if (given || id !== RUN) return; tray[x]--; d[x] = (d[x] || 0) + 1; drawTray(); drw.redraw(); }); trayEl.appendChild(sp); } });
       }
       w.appendChild(trayEl);
-      drw = drawerUI(w, d, 'pick', function(x){ d[x]--; tray[x] = (tray[x] || 0) + 1; drawTray(); drw.redraw(); });
+      drw = drawerUI(w, d, 'pick', function(x){ if (given || id !== RUN) return; d[x]--; tray[x] = (tray[x] || 0) + 1; drawTray(); drw.redraw(); });
       drawTray(); scrollEnd();
       var tries = 0;
       while (true){
         await button('Đưa tiền thối cho khách ▶', 'orange'); live(id);
         var s = sumOf(tray);
-        if (s === change) break;
+        if (s === change){ given = true; trayEl.style.opacity = '.6'; drw.style.opacity = '.6'; drw.style.pointerEvents = 'none'; break; }
         tries++;
         if (tries === 1){ G.steps++; mistake(8, 'Thối sai tiền (đưa ' + vnd(s) + ', đúng phải là ' + vnd(change) + ').'); }
         toast(s > change ? 'Thối dư rồi! Khách đưa ' + money(paid) + ' − bill ' + money(total) + ' = ?' : 'Thối thiếu rồi! Khách đưa ' + money(paid) + ' − bill ' + money(total) + ' = ?');
       }
       if (!tries){ G.steps++; G.ok++; gain(20); }
-      await choose(8, 'Đưa tiền thối, em nói:', [
+      if (++G.cashN <= 2) await choose(8, 'Đưa tiền thối, em nói:', [
         { t:'"Em gửi lại ' + money(change) + ' ạ."', ok:true },
-        { t:'"Dạ đây ạ."', why:'Nói rõ số tiền thối để khách kiểm cùng — tránh tranh cãi (Bước 8).' },
-        { t:'"Em gửi lại ' + money(change + 5000) + ' ạ."', why:'Nói đúng số tiền thối: ' + money(change) + '.' } ]); live(id);
+        { t:'"Dạ tiền thối của mình ạ."', why:'Nói rõ số tiền thối để khách kiểm cùng — tránh tranh cãi (Bước 8).' },
+        { t:'"Em gửi lại ' + money(change + 5000) + ' ạ."', why:'Nói đúng số tiền thối: ' + money(change) + '.' } ]);
+      else { scene(null, 'Em', 'Em gửi lại ' + money(change) + ' ạ.'); await wait(700); }
+      live(id);
       L.cashBills.push({ no:L.bills + 1, total:total, paid:paid, change:change });
     } else L.cashBills.push({ no:L.bills + 1, total:total, paid:paid, change:0 });
-    await choose(8, 'Tiền khách đưa vẫn đang trên quầy. Làm gì?', [
-      { t:'Cất ngay vào két, đóng két', ok:true },
-      { t:'Để tạm trên quầy, lát rảnh cất', why:'Cấm giữ tiền ngoài két — cất ngay sau khi thối (Bước 8).' },
-      { t:'Bỏ vào túi tạp dề cho nhanh', why:'Cấm giữ tiền ngoài két: tiền ngoài két là nguyên nhân lệch quỹ hàng đầu.' } ]); live(id);
+    if (G.cashN <= 2) await choose(8, 'Tiền khách đưa vẫn đang trên quầy. Làm gì?', [
+      { t:'Cất ngay vào két rồi đóng két', ok:true },
+      { t:'Để tạm trên quầy, xong khách cất', why:'Cấm giữ tiền ngoài két — cất ngay sau khi thối (Bước 8).' },
+      { t:'Kẹp dưới máy POS, cuối giờ cất', why:'Cấm giữ tiền ngoài két: tiền ngoài két là nguyên nhân lệch quỹ hàng đầu.' } ]);
+    else await choose(8, 'Xong phần tiền. Bấm việc tiếp theo:', [
+      { t:'🗄️ Cất tiền vào két', ok:true },
+      { t:'👉 Mời khách tiếp theo', why:'Tiền khách còn trên quầy — cấm giữ tiền ngoài két, cất ngay (Bước 8).' } ]);
+    live(id);
     notes.forEach(function(x){ d[x] = (d[x] || 0) + 1; });
   }
   async function payQR(c, total, type){
     var id = RUN;
     resetWork();
     var w = work();
-    scene(null, c.name, 'Chị chuyển khoản nha.');
+    scene(null, c.name, cap(selfP(c.name)) + ' chuyển khoản nha.');
     var qr = document.createElement('div'); qr.className = 'info'; qr.innerHTML = '<h3>📱 Khách quét mã QR</h3>Số tiền: <b>' + vnd(total) + '</b>'; w.appendChild(qr);
     await wait(900); live(id);
-    var shot = document.createElement('div'); shot.className = 'phone pop'; shot.innerHTML = '<div class="scr2">✅ <b>Chuyển tiền thành công</b><br>' + vnd(total) + '<br><small>tới HAMICHEE</small></div>'; w.appendChild(shot); scrollEnd();
-    scene(null, c.name, 'Chuyển rồi nè em, em xem nè!');
-    await choose(8, 'Khách đưa ảnh màn hình "chuyển thành công". Em làm gì?', [
-      { t:'Đợi máy/loa báo ngân hàng đã nhận tiền rồi mới xác nhận', ok:true },
-      { t:'Thấy ảnh thành công là được, xác nhận luôn', why:'Chỉ xác nhận khi có thông báo từ ngân hàng — KHÔNG chấp nhận ảnh chụp màn hình (Bước 8).' },
-      { t:'Chụp lại ảnh của khách rồi cho làm món', why:'Ảnh chụp không phải bằng chứng tiền đã về — phải chờ thông báo ngân hàng.' } ]); live(id);
+    var showShot = type === 'qrLate' || !G.shotSeen || Math.random() < 0.35;
+    if (showShot){
+      G.shotSeen = true;
+      var shot = document.createElement('div'); shot.className = 'phone pop'; shot.innerHTML = '<div class="scr2">✅ <b>Chuyển tiền thành công</b><br>' + vnd(total) + '<br><small>tới HAMICHEE</small></div>'; w.appendChild(shot); scrollEnd();
+      scene(null, c.name, 'Chuyển rồi nè em, em xem nè!');
+      await choose(8, 'Khách đưa ảnh màn hình "chuyển thành công". Em làm gì?', [
+        { t:'Đợi máy báo ngân hàng nhận tiền rồi mới xác nhận', ok:true },
+        { t:'Ảnh đã báo thành công rồi, xác nhận cho khách luôn', why:'Chỉ xác nhận khi có thông báo từ ngân hàng — KHÔNG chấp nhận ảnh chụp màn hình (Bước 8).' },
+        { t:'Chụp lại ảnh của khách rồi cho làm món', why:'Ảnh chụp không phải bằng chứng tiền đã về — phải chờ thông báo ngân hàng.' } ]); live(id);
+    } else { scene(null, c.name, 'Chuyển rồi đó em.'); }
     if (type === 'qrLate'){
       await wait(1200); live(id);
       scene(null, c.name, 'Chuyển rồi mà em, làm món luôn đi cho nhanh!');
       await choose(8, 'Chưa có thông báo ngân hàng, khách giục. Em làm gì?', [
-        { t:'"Dạ mình đợi em chút, máy chưa báo tiền về ạ" — chưa làm món', ok:true },
-        { t:'Cho làm món trước, lát tiền về sau', why:'Thu tiền trước khi thực hiện món — chưa có báo ngân hàng thì chưa xác nhận.' },
-        { t:'Nhận ảnh màn hình cho khách vui', why:'KHÔNG chấp nhận ảnh chụp màn hình thay cho thông báo ngân hàng.' } ]); live(id);
+        { t:'Mời khách đợi chút, mở Store Noti kiểm tra tiền về chưa', ok:true },
+        { t:'Cho làm món trước, lát tiền về sau cũng được', why:'Thu tiền trước khi thực hiện món — chưa có báo ngân hàng thì chưa xác nhận.' },
+        { t:'Khách đã cho xem ảnh chuyển khoản thành công, xác nhận luôn', why:'KHÔNG chấp nhận ảnh chụp màn hình thay cho thông báo ngân hàng.' } ]); live(id);
     }
     var shortBy = pick([20000, 27000, 9000, 5000].filter(function(x){ return x < total; }).concat([Math.floor(total / 2000) * 1000]));
     var first = type === 'qrShort' && shortBy > 0 ? total - shortBy : total;
@@ -933,25 +965,27 @@
     if (first < total){
       await choose(8, 'Ngân hàng báo <b>+' + vnd(first) + '</b>, bill ' + vnd(total) + '. Em làm gì?', [
         { t:'Báo khách: mình mới nhận ' + money(first) + ', còn thiếu ' + money(total - first) + ', nhờ chuyển thêm', ok:true },
-        { t:'Xác nhận luôn, chênh chút không sao', why:'Thu đúng, đủ tiền theo bill — thiếu là lệch doanh thu chuyển khoản.' },
-        { t:'Lấy tiền két bù phần thiếu', why:'Không lấy tiền két bù — phải thu đủ của khách.' } ]); live(id);
+        { t:'Xác nhận đã nhận đủ, chênh chút không sao, cuối ca báo quản lý', why:'Thu đúng, đủ tiền theo bill — thiếu là lệch doanh thu chuyển khoản.' },
+        { t:'Lấy tiền mặt trong két bù phần còn thiếu cho đủ bill', why:'Không lấy tiền két bù — phải thu đủ của khách.' } ]); live(id);
       await wait(900); live(id);
       var bk2 = document.createElement('div'); bk2.className = 'bank pop'; bk2.innerHTML = '🔔<div>Ngân hàng: TK HAMICHEE<br><b>+' + vnd(total - first) + '</b></div>'; w.appendChild(bk2); scrollEnd(); beep(true);
     }
     await button('✅ Xác nhận đã nhận đủ ' + vnd(total)); live(id);
+    G.led.qr.push(first); if (first < total) G.led.qr.push(total - first); // giao dịch thật cho Store Noti cuối ca
   }
   async function eventChi(){
     var id = RUN, d = G.drawer;
     clearStage(); setStep(8);
-    var cands = shuffle([['🧊 Anh giao đá', '2 bao đá', 40000], ['🥤 Shop bao bì', '1 lốc ly 500ml', 35000], ['🛵 Anh giao trái cây', 'xoài, chanh dây', 60000]]);
+    var cands = shuffle([['🧊 Anh giao đá', '2 bao đá', pick([30000, 40000])], ['🥤 Shop bao bì', '1 lốc ly 500ml', pick([35000, 45000])], ['🛵 Anh giao trái cây', 'xoài, chanh dây', pick([55000, 60000, 75000])],
+                         ['🥥 Cô bán dừa', '10 trái dừa', pick([80000, 90000])], ['🧻 Tạp hóa', 'khăn giấy, ống hút', pick([25000, 32000])], ['🍋 Chợ', '1kg tắc', pick([20000, 25000])]]);
     var it = cands.filter(function(x){ return makeChange(x[2], d); })[0];
     if (!it) return;
     scene({ skin:'#d9a273', hair:'#2b1d14', shirt:'#7f8c8d', long:false, glasses:false, mood:'happy' }, it[0], 'Giao hàng nè em: ' + it[1] + ', ' + money(it[2]) + ', trả tiền mặt nha.');
     $('hd-title').textContent = (G.part === 'ca' ? '⭐ ' : '🧾 ') + 'Chi tiền trong ca';
     await choose('Ghi nhận trong ca', 'Phải trả ' + vnd(it[2]) + ' tiền mặt cho người giao hàng. Làm thế nào?', [
-      { t:'Lấy tiền két trả, ghi ngay khoản chi vào ghi chú ca, giữ phiếu/hóa đơn chi', ok:true },
-      { t:'Lấy tiền két trả, cuối ca nhớ ghi lại', why:'Ghi ngay khi chi — để cuối ca dễ quên, file sẽ báo LỆCH (Bước 12 lấy số từ ghi chú trong ca).' },
-      { t:'Lấy tiền khách vừa đưa chưa cất để trả', why:'Cấm giữ/tiêu tiền ngoài két — tiền khách phải cất vào két trước.' } ]); live(id);
+      { t:'Lấy tiền két trả, ghi ngay vào ghi chú ca, giữ phiếu', ok:true },
+      { t:'Lấy tiền két trả, giữ phiếu lại, cuối ca ghi chú một lần', why:'Ghi ngay khi chi — để cuối ca dễ quên, file sẽ báo LỆCH (Bước 12 lấy số từ ghi chú trong ca).' },
+      { t:'Lấy tiền khách vừa đưa trên quầy để trả cho nhanh', why:'Cấm giữ/tiêu tiền ngoài két — tiền khách phải cất vào két trước.' } ]); live(id);
     var out = makeChange(it[2], d); DEN.forEach(function(x){ if (out[x]) d[x] -= out[x]; });
     G.led.chi.push({ what:it[1], amount:it[2] });
     add('📝 <b>Ghi chú ca:</b> Chi ' + esc(it[1]) + ' — ' + vnd(it[2]) + ' (có phiếu)', 'info');
@@ -961,11 +995,13 @@
     var id = RUN;
     clearStage(); setStep(6);
     $('hd-title').textContent = (G.part === 'ca' ? '⭐ ' : '🧾 ') + 'Tình huống';
-    scene({ skin:'#eec39a', hair:'#1a1a1a', shirt:'#34495e', long:false, glasses:true, mood:'happy' }, 'Người quen của quán', 'Làm cho anh ly trà sữa nha em, khỏi tính tiền, anh quen chủ quán mà!');
-    await choose(6, 'Người quen xin uống miễn phí. Em làm gì?', [
-      { t:'Vẫn tạo bill trên POS; muốn miễn phí phải được quản lý duyệt trên hệ thống', ok:true },
-      { t:'Làm luôn, không cần bill', why:'Mỗi đơn = 1 bill; không nhập = không làm — kể cả người quen.' },
-      { t:'Nhập bill rồi xóa đi sau khi làm', why:'Cấm bỏ bill / xóa bill để né doanh thu.' } ]); live(id);
+    var fv = pick([['Người quen của quán', 'Làm cho anh ly trà dâu tằm hạt đác nha em, khỏi tính tiền, anh quen chủ quán mà!'],
+                   ['Bạn phục vụ ca trước', 'Chị ơi cho em 1 chè bưởi mang về, em làm ở đây mà, khỏi bill nha!']]);
+    scene({ skin:'#eec39a', hair:'#1a1a1a', shirt:'#34495e', long:false, glasses:true, mood:'happy' }, fv[0], fv[1]);
+    await choose(6, 'Có người xin món miễn phí, không cần bill. Em làm gì?', [
+      { t:'Vẫn tạo bill; miễn phí thì phải được quản lý duyệt', ok:true },
+      { t:'Làm luôn, người quen nên không cần bill', why:'Mỗi đơn = 1 bill; không nhập = không làm — kể cả người quen, nhân viên.' },
+      { t:'Nhập bill cho đúng quy trình rồi xóa bill sau khi làm xong', why:'Cấm bỏ bill / xóa bill để né doanh thu.' } ]); live(id);
     await wait(400); live(id);
   }
 
@@ -988,13 +1024,13 @@
   async function stepNoti(L){
     var id = RUN;
     setStep(16.5); clearStage();
-    var shift = G.shift || (G.shift = pick(['Ca sáng', 'Ca chiều', 'Ca tối'])), day = dayStr(0), mism = L.transfer > 60000 && Math.random() < 0.25;
+    var shift = G.shift, day = dayStr(0), mism = G.part !== 'ca' && L.transfer > 60000 && Math.random() < 0.3; G.dbgDay = day;
     var real = mism ? L.transfer - pick([25000, 30000, 35000, 42000]) : L.transfer;
-    add('<h3>📲 Đối soát chuyển khoản</h3><b>' + shift + ' ' + day + '</b> — két đã chốt xong.<div class="kv"><span>Chuyển khoản trên iPOS (báo cáo ca)</span><b>' + vnd(L.transfer) + '</b></div>', 'info');
+    add('<h3>📲 Đối soát chuyển khoản</h3><b>' + shift + ' ' + day + '</b> — két đã chốt xong.<div class="kv"><span>Chuyển khoản trên iPOS</span><b>' + vnd(L.transfer) + '</b></div>', 'info');
     await choose(16.5, 'Chốt két xong rồi. Trước khi bàn giao, tiền chuyển khoản làm sao?', [
-      { t:'Mở app Store Noti, đăng nhập, chọn đúng ngày, so tiền chuyển khoản thực tế với iPOS', ok:true },
-      { t:'Xem tổng chuyển khoản trên iPOS là đủ', why:'iPOS chỉ là số ghi nhận — phải đối chiếu với tiền thực nhận trên Store Noti.' },
-      { t:'Bàn giao luôn, chuyển khoản ngân hàng tự lo', why:'Mỗi kết ca đều phải đối soát chuyển khoản trên Store Noti trước khi bàn giao.' } ]); live(id);
+      { t:'Mở Store Noti, chọn đúng ngày, so với chuyển khoản trên iPOS', ok:true },
+      { t:'Xem tổng chuyển khoản trên báo cáo iPOS rồi ghi vào file chốt ca là đủ', why:'iPOS chỉ là số ghi nhận — phải đối chiếu với tiền thực nhận trên Store Noti.' },
+      { t:'Mở app ngân hàng xem số dư tài khoản cuối ngày', why:'Đối soát bằng Store Noti (từng khoản tiền vào theo ngày), so với chuyển khoản trên iPOS.' } ]); live(id);
     var ph = add('<div class="mph"><div class="mscr"></div></div>', ''), scr = ph.querySelector('.mscr');
     scrollEnd();
     function tap(sel){ return new Promise(function(res){ [].forEach.call(scr.querySelectorAll(sel), function(b){ b.addEventListener('click', function(){ if (id === RUN) res(b); }); }); }); }
@@ -1017,7 +1053,7 @@
     await tap('[data-login]'); live(id);
     // chọn ngày
     var opts = [-2, -1, 0, 1].map(function(o){ return dayStr(o); });
-    scr.innerHTML = '<div class="ahd">🔔 Store Noti</div><div class="abody"><b>Chọn ngày cần xem</b><div class="days">' + opts.map(function(d){ return '<button type="button" data-d="' + d + '">' + d + '</button>'; }).join('') + '</div><div style="color:#889;font-size:12.5px">Đang kết: ' + shift + ' ' + day + '</div></div>';
+    scr.innerHTML = '<div class="ahd">🔔 Store Noti</div><div class="abody"><b>Chọn ngày cần xem</b><div class="days">' + opts.map(function(d){ return '<button type="button" data-d="' + d + '">' + d + '</button>'; }).join('') + '</div></div>';
     dock.innerHTML = '<div class="q">Chọn đúng ngày của ca đang kết (' + shift.toLowerCase() + ').</div>';
     var wrongDay = false;
     while (true){
@@ -1027,8 +1063,9 @@
       toast('Sai ngày rồi — ca này là ngày ' + day);
     }
     G.steps++; if (!wrongDay){ G.ok++; gain(10); }
-    var txs = splitAmount(real), hh = shift === 'Ca sáng' ? 8 : shift === 'Ca chiều' ? 13 : 17;
+    var txs = G.part === 'ca' && L.qr && L.qr.length ? L.qr.slice() : splitAmount(real), hh = shift === 'Ca sáng' ? 8 : shift === 'Ca chiều' ? 13 : 17;
     var times = txs.map(function(){ return rnd(hh, hh + 4) * 60 + rnd(0, 59); }).sort(function(a, b){ return a - b; });
+    if (G.part === 'ca'){ txs = txs.slice().reverse(); times = times.slice().reverse(); } // mới nhất ở trên
     scr.innerHTML = '<div class="ahd">🔔 Store Noti · ' + day + '</div><div class="abody">' +
       txs.slice(0, 5).map(function(a, k){ return '<div class="tx"><span>' + ('0' + Math.floor(times[k] / 60)).slice(-2) + ':' + ('0' + times[k] % 60).slice(-2) + ' · TK HAMICHEE nhận</span><b>+' + money(a) + '</b></div>'; }).join('') +
       (txs.length > 5 ? '<div style="text-align:center;color:#889;font-size:12px">… và ' + (txs.length - 5) + ' giao dịch khác</div>' : '') +
@@ -1040,7 +1077,7 @@
     if (mism){
       await choose(16.5, 'Chuyển khoản thực nhận ít hơn iPOS ' + vnd(L.transfer - real) + '. Em làm gì?', [
         { t:'Báo ngay lên cấp quản lý để xử lý (không nhắn "khớp")', ok:true },
-        { t:'Vẫn nhắn "khớp ạ" cho xong ca', why:'Không khớp thì báo lên cấp quản lý để xử lý — không được báo "khớp".' },
+        { t:'Vẫn nhắn "khớp ạ", mai kiểm tra lại', why:'Không khớp thì báo lên cấp quản lý để xử lý — không được báo "khớp".' },
         { t:'Sửa số chuyển khoản trong file cho bằng Store Noti', why:'Không tự sửa số — không khớp thì báo lên cấp quản lý để xử lý.' },
         { t:'Tự lấy tiền két bù phần lệch', why:'Không tự bù — không khớp thì báo lên cấp quản lý để xử lý.' } ]); live(id);
       add('📝 Đã báo cấp quản lý: chuyển khoản lệch ' + vnd(L.transfer - real) + ' (Store Noti ' + vnd(real) + ' / iPOS ' + vnd(L.transfer) + ').', 'info');
@@ -1069,7 +1106,7 @@
       { t:'"' + shift + ' khớp ạ"', ok:true },
       { t:'"Khớp ạ"', why:'Ghi rõ ca nào: "' + shift + ' khớp ạ" — nhóm có nhiều ca cùng báo.' },
       { t:'"' + other + ' khớp ạ"', why:'Đang kết ' + shift.toLowerCase() + ' — ghi đúng tên ca.' },
-      { t:'"Ok"', why:'Nhắn đúng mẫu: "' + shift + ' khớp ạ".' } ]); live(id);
+      { t:'"Đã đối soát chuyển khoản xong ạ"', why:'Nhắn đúng mẫu: "' + shift + ' khớp ạ".' } ]); live(id);
     scr.querySelector('.zchat').insertAdjacentHTML('beforeend', '<div class="zmsg">' + esc(shift) + ' khớp ạ ✓✓</div>');
     await wait(700); live(id);
   }
@@ -1079,11 +1116,12 @@
     else $('hd-title').textContent = '⭐ Kết ca';
     var L = G.led;
     // nguyên nhân lệch ẩn (để tập Bước 16)
-    var cause = pick(G.part === 'ca' ? ['none', 'chi', 'bill'] : ['none', 'thoi', 'chi', 'bill', 'thoi', 'chi']); // cả ca: không đổ lỗi thối sai mà người chơi không làm
+    var cause = pick(G.part === 'ca' ? ['none', 'chi', 'bill'] : ['none', 'thoi', 'chi', 'bill', 'thoi', 'mat']); // cả ca: không đổ lỗi thối sai mà người chơi không làm
     var expect = L.float0 + L.cash - chiSum(L), actual = expect, hidden = null;
-    if (cause === 'thoi' && L.cashBills.length){ var cb = pick(L.cashBills); hidden = { cb:cb, amt:10000 }; actual -= 10000; }
-    else if (cause === 'chi'){ hidden = { what:'túi nilon mang về', amount:30000 }; actual -= 30000; }
-    else if (cause === 'bill'){ hidden = { amount:pick([25000, 30000]) }; actual += hidden.amount; }
+    if (cause === 'thoi' && L.cashBills.length){ var cb = pick(L.cashBills.slice(-5)); hidden = { cb:cb, amt:pick([10000, 15000, 20000]) }; actual -= hidden.amt; }
+    else if (cause === 'chi'){ hidden = pick([{ what:'túi nilon mang về', amount:30000 }, { what:'ống hút lớn', amount:25000 }, { what:'đá viên', amount:35000 }, { what:'khăn giấy', amount:28000 }]); actual -= hidden.amount; }
+    else if (cause === 'bill'){ hidden = { amount:pick(MENU).price }; actual += hidden.amount; }
+    else if (cause === 'mat'){ hidden = { amount:pick([60000, 70000, 80000]) }; actual -= hidden.amount; } // thiếu không rõ nguyên nhân (> 50.000đ)
     else cause = 'none';
     var drawerC = G.part === 'ca' && cause === 'none' ? copyC(G.drawer) : compose(actual);
     if (G.part === 'ca' && cause !== 'none'){ drawerC = copyC(G.drawer); var dd = actual - sumOf(drawerC);
@@ -1097,9 +1135,9 @@
     scene({ skin:'#f6d2b8', hair:'#5a3a22', shirt:'#e85d75', long:true, glasses:false, mood:'happy' }, 'Khách mới', 'Còn bán không em? Cho chị 1 chè bưởi!');
     add('🕙 Đã tới giờ kết ca của em, CHT ca sau đã tới nhận ca.', 'info');
     await choose(11, 'Đến giờ kết ca thì có khách mới vào. Em làm gì?', [
-      { t:'Ngưng nhận đơn mới ở ca mình, chốt đơn cuối; mời khách để CHT ca sau nhận đơn', ok:true },
-      { t:'Nhận luôn vào ca mình cho vui, chốt sau', why:'Phải xác định thời điểm chốt rõ ràng: ngưng nhận đơn mới, chốt đơn cuối của ca (Bước 11).' },
-      { t:'Nhận tiền mặt để riêng, ca sau nhập', why:'Cấm nhận tiền mà không ghi vào hệ thống, giữ tiền ngoài két.' } ]); live(id);
+      { t:'Chốt đơn cuối của ca mình, khách mới để ca sau nhận', ok:true },
+      { t:'Nhận luôn đơn khách mới này vào ca của mình rồi mới chốt', why:'Phải xác định thời điểm chốt rõ ràng: ngưng nhận đơn mới, chốt đơn cuối của ca (Bước 11).' },
+      { t:'Nhận tiền mặt để riêng, ca sau nhập bill', why:'Cấm nhận tiền mà không ghi vào hệ thống, giữ tiền ngoài két.' } ]); live(id);
     // Bước 12
     setStep(12); clearStage();
     add('<h3>🖥️ POS — Báo cáo ca</h3>' +
@@ -1135,6 +1173,7 @@
     G.steps++;
     var typo = Object.keys(truth).filter(function(k){ return F[k] !== truth[k]; });
     if (!typo.length){ G.ok++; gain(20); }
+    else mistake(13, 'Nhập file sai: ' + typo.map(function(k){ return LBL[k]; }).join(', ') + ' — đối chiếu lại báo cáo POS và ghi chú ca.');
     // Bước 14
     setStep(14); clearStage();
     add('<h3>💰 Đếm két cuối ca</h3>Lấy toàn bộ tiền trong két, đếm <b>2 lần</b>. Bấm từng ngăn để đếm.', 'info');
@@ -1172,11 +1211,12 @@
       setStep(16); clearStage();
       add('<h3>🔍 Kiểm tra nguyên nhân lệch</h3>Kiểm tra <b>lần lượt cả 4 mục</b> — không bỏ qua mục nào.', 'info');
       var box = add('', ''); box.style.cssText = 'display:flex;flex-direction:column;gap:8px';
-      var done = {}, finds = [];
+      var done = {}, finds = [], thoiList = [];
       var CHECKS = [
         ['thoi', '💵 Tiền thối', function(){
           var list = L.cashBills.slice(-5); if (hidden && hidden.cb && list.indexOf(hidden.cb) < 0) list[0] = hidden.cb;
-          return list.map(function(b){ var wrong = hidden && hidden.cb === b; return 'Bill #' + b.no + ': ' + money(b.total) + ', khách đưa ' + money(b.paid) + ', thối ' + money(b.change + (wrong ? hidden.amt : 0)) + (wrong ? ' <b class="bad-t">← thối dư ' + money(hidden.amt) + '</b>' : ''); }).join('<br>');
+          thoiList = list;
+          return 'Bill tiền mặt cuối ca:<br>' + list.map(function(b){ return 'Bill #' + b.no + ': bill ' + money(b.total) + ', khách đưa ' + money(b.paid) + ', thối ' + money(b.change + (hidden && hidden.cb === b ? hidden.amt : 0)); }).join('<br>') + '<br><i>Tự tính lại từng bill nha.</i>';
         }],
         ['bill', '🧾 Bill thiếu', function(){ return cause === 'bill' ? '<b class="bad-t">Phục vụ báo:</b> 1 khách mua ' + money(hidden.amount) + ' trả tiền mặt, tiền đã cất két nhưng chưa nhập bill POS.' : 'Đối chiếu phiếu order với bill POS: không thiếu bill.'; }],
         ['chi', '🧾 Tiền chi', function(){ return cause === 'chi' ? '<b class="bad-t">Tìm thấy trong két:</b> phiếu chi mua ' + hidden.what + ' ' + money(hidden.amount) + ' — chưa có trong ghi chú/file.' : 'Phiếu chi trong két khớp ghi chú ca (' + vnd(chiSum(L)) + ').'; }],
@@ -1188,7 +1228,7 @@
           b.innerHTML = '<span class="bx"></span><span><b>' + ck[1] + '</b><br><small style="color:#7a6a55">bấm để kiểm tra</small></span>';
           b.addEventListener('click', function(){
             if (done[ck[0]]) return; done[ck[0]] = 1;
-            var res = ck[2](), bad = /bad-t/.test(res);
+            var res = ck[2](), bad = /bad-t/.test(res) || (ck[0] === 'thoi' && cause === 'thoi');
             b.classList.add(bad ? 'found' : 'on'); b.querySelector('.bx').textContent = bad ? '!' : '✓';
             b.lastChild.innerHTML = '<b>' + ck[1] + '</b><br><small style="color:#3a3020;line-height:1.45">' + res + '</small>';
             if (bad) finds.push(ck[0]);
@@ -1198,13 +1238,25 @@
         });
         dock.innerHTML = '<div class="q">Bấm kiểm tra đủ 4 mục: tiền thối, bill thiếu, tiền chi, lỗi nhập liệu.</div>';
       }); live(id);
-      G.steps++; G.ok++; gain(10);
       // xử lý từng phát hiện
+      if (cause === 'thoi'){
+        await choose(16, 'Tính lại các bill tiền mặt: bill nào thối sai?', thoiList.map(function(b){
+          var gave = b.change + (hidden.cb === b ? hidden.amt : 0);
+          return { t:'Bill #' + b.no + ': ' + money(b.paid) + ' − ' + money(b.total) + ', đã thối ' + money(gave), ok:hidden.cb === b,
+                   why:hidden.cb === b ? '' : 'Bill #' + b.no + ' thối đúng (' + money(b.paid) + ' − ' + money(b.total) + ' = ' + money(b.change) + '). Tính lại từng bill.' };
+        })); live(id);
+      }
+      if (cause === 'mat'){
+        await choose(16, 'Đã kiểm đủ 4 mục, không tìm ra nguyên nhân. Két thiếu ' + vnd(hidden.amount) + '. Xử lý theo quy định?', [
+          { t:'Ghi nhận lệch, báo quản lý — mức trừ tiền', ok:true, why:'Lệch > 50.000đ: trừ tiền; tái phạm nhiều lần xem xét cho nghỉ việc.' },
+          { t:'Ghi nhận lệch, báo quản lý — mức nhắc nhở', why:'Nhắc nhở chỉ áp dụng khi lệch ≤ 20.000đ. Lệch > 50.000đ: trừ tiền.' },
+          { t:'Bù đủ tiền thiếu rồi bàn giao, không ghi lệch', why:'Không tự bù rồi giấu lệch — phải ghi nhận và báo quản lý.' } ]); live(id);
+      }
       if (typo.length){
         await choose(16, 'File nhập sai ' + typo.map(function(k){ return LBL[k]; }).join(', ') + '. Xử lý?', [
           { t:'Sửa lại đúng số theo báo cáo POS / ghi chú ca', ok:true },
           { t:'Để vậy, lệch do máy', why:'Lỗi nhập liệu phải sửa đúng — không đổ cho máy.' },
-          { t:'Sửa tiền thực tế cho khớp', why:'Không sửa "tiền thực tế" — đó là số đếm két thật.' } ]); live(id);
+          { t:'Sửa số tiền thực tế trong file cho khớp với báo cáo POS', why:'Không sửa "tiền thực tế" — đó là số đếm két thật.' } ]); live(id);
         typo.forEach(function(k){ F[k] = truth[k]; });
       }
       if (cause === 'chi'){
@@ -1226,10 +1278,10 @@
       add(fileCard(r), 'info');
       if (cause === 'thoi' && r.diff){
         var a = Math.abs(r.diff);
-        await choose(16, 'Đã xác định: thối dư ' + money(a) + ' (Bill #' + hidden.cb.no + '). Theo quy định, mức xử lý?', [
-          { t:'Nhắc nhở (lệch ≤ 20.000đ) — ghi nhận lệch, báo quản lý', ok:true },
-          { t:'Trừ tiền', why:'Trừ tiền áp dụng khi lệch > 50.000đ. Lệch ≤ 20.000đ: nhắc nhở.' },
-          { t:'Không cần báo ai', why:'Mọi trường hợp lệch phải xử lý dứt điểm và ghi nhận trước khi bàn giao.' } ]); live(id);
+        await choose(16, 'Đã xác định: thối dư ' + money(a) + ' (Bill #' + hidden.cb.no + '). Mức xử lý theo quy định?', [
+          { t:'Ghi nhận lệch, báo quản lý — mức nhắc nhở', ok:true, why:'Lệch ≤ 20.000đ: nhắc nhở.' },
+          { t:'Ghi nhận lệch, báo quản lý — mức trừ tiền', why:'Trừ tiền áp dụng khi lệch > 50.000đ. Lệch ≤ 20.000đ: nhắc nhở.' },
+          { t:'Lệch nhỏ, bỏ qua không cần ghi nhận', why:'Mọi trường hợp lệch phải xử lý dứt điểm và ghi nhận trước khi bàn giao.' } ]); live(id);
       }
       finalDiff = r.diff;
       await button('Tiếp tục bàn giao ▶'); live(id);
@@ -1237,12 +1289,13 @@
     await stepNoti(L); live(id);
     // Bước 17
     setStep(17); clearStage();
-    var giao = FLOAT, nop = actual - giao;
-    add('<h3>🤝 Bàn giao ca</h3>Két chuẩn để lại cho ca sau: <b>' + vnd(FLOAT) + '</b>. Phần còn lại là doanh thu tiền mặt nộp lại.<br><small>Tiền thực tế trong két: ' + vnd(actual) + '</small>', 'info');
+    var giao = Math.min(FLOAT, actual), nop = actual - giao;
+    add('<h3>🤝 Bàn giao ca</h3>Két chuẩn để lại cho ca sau: <b>' + vnd(FLOAT) + '</b>. Phần còn lại là doanh thu tiền mặt nộp lại.<br><small>Tiền thực tế trong két: ' + vnd(actual) + '</small>' +
+      (actual < FLOAT ? '<div class="why" style="margin-top:6px">Két chỉ còn ' + vnd(actual) + ' (dưới 680.000đ): để lại toàn bộ cho ca sau, nộp 0đ và báo quản lý bổ sung tiền két.</div>' : ''), 'info');
     G.steps++;
     var e17 = 0;
-    await askNumber('Sổ bàn giao: <b>Tiền để lại két cho ca sau</b>', 'đ', function(n){ if (n === giao) return true; e17++; if (e17 === 1) mistake(17, 'Tiền bàn giao két cho ca sau phải là 680.000đ.'); return 'Két bàn giao chuẩn là 680.000đ.'; }); live(id);
-    await askNumber('Sổ bàn giao: <b>Tiền mặt nộp lại (doanh thu)</b>', 'đ', function(n){ if (n === nop) return true; e17++; if (e17 === 1) mistake(17, 'Tính sai tiền nộp: tiền thực tế − 680.000đ.'); return 'Tiền nộp = tiền thực tế (' + money(actual) + ') − 680.000.'; }); live(id);
+    await askNumber('Sổ bàn giao: <b>Tiền để lại két cho ca sau</b>', 'đ', function(n){ if (n === giao) return true; e17++; if (e17 === 1) mistake(17, 'Tiền để lại két cho ca sau phải là ' + vnd(giao) + '.'); return giao === FLOAT ? 'Két bàn giao chuẩn là 680.000đ.' : 'Két chỉ còn ' + money(giao) + ' — để lại toàn bộ.'; }); live(id);
+    await askNumber('Sổ bàn giao: <b>Tiền mặt nộp lại (doanh thu)</b>', 'đ', function(n){ if (n === nop) return true; e17++; if (e17 === 1) mistake(17, 'Tính sai tiền nộp: tiền thực tế − tiền để lại két.'); return 'Tiền nộp = tiền thực tế (' + money(actual) + ') − tiền để lại (' + money(giao) + ').'; }); live(id);
     if (!e17){ G.ok++; gain(20); }
     var sg = add('<div class="grid2"><div><small>CHT/CHP ca này</small><div class="sig" data-s="1">bấm để ký</div></div><div><small>CHT/CHP ca sau</small><div class="sig" data-s="2">bấm để ký</div></div></div>', 'info');
     scrollEnd();
@@ -1258,24 +1311,27 @@
 
   // ---------------- Ôn luật ----------------
   var LAW = [
-    ['Tiền két chuẩn đầu ca của HAMICHEE là?', '680.000đ', ['500.000đ', '700.000đ', 'Tùy ca trước để lại']],
-    ['Mỗi đơn hàng cần bao nhiêu bill?', '1 bill', ['Gộp nhiều đơn 1 bill cho nhanh', 'Khách quen thì không cần', 'Cuối ca nhập bù']],
-    ['Thu tiền lúc nào?', 'Trước khi làm / giao món', ['Sau khi khách ăn xong', 'Lúc nào cũng được', 'Cuối ca thu một lần']],
-    ['Khách đưa ảnh "chuyển khoản thành công" thì?', 'Chưa xác nhận, đợi thông báo ngân hàng', ['Xác nhận luôn', 'Chụp lại ảnh là đủ', 'Cho làm món trước']],
-    ['Lệch quỹ ≤ 20.000đ bị xử lý thế nào?', 'Nhắc nhở', ['Trừ tiền', 'Cho nghỉ việc', 'Không sao cả']],
-    ['Lệch quỹ > 50.000đ bị xử lý thế nào?', 'Trừ tiền', ['Nhắc nhở', 'Bỏ qua', 'Chia đều cả ca']],
-    ['Lệch quỹ nhiều lần (tái phạm)?', 'Xem xét cho nghỉ việc', ['Nhắc nhở', 'Không ảnh hưởng', 'Chỉ trừ 10.000đ']],
-    ['Cuối ca đếm két mấy lần?', '2 lần', ['1 lần', 'Không cần đếm, xem POS', '3 lần nếu rảnh']],
-    ['Tiền phải có cuối ca = ?', 'Tiền đầu ca + tiền mặt − tiền chi', ['Doanh thu POS', 'Tiền mặt + chuyển khoản', 'Tiền đầu ca + doanh thu']],
-    ['Khách xin bớt 5.000đ?', 'Không tự giảm, chỉ áp chương trình có trên POS', ['Bớt cho vui', 'Bớt rồi bù tiền túi', 'Giảm tay trên POS']],
-    ['Không nhập bill thì sao?', 'Không làm món', ['Làm trước nhập sau', 'Ghi giấy là được', 'Khách quen thì được']],
-    ['File chốt ca báo LỆCH, kiểm tra những gì?', 'Tiền thối, bill thiếu, tiền chi, lỗi nhập liệu', ['Chỉ đếm lại tiền', 'Hỏi khách', 'Sửa tiền thực tế cho khớp']],
-    ['Bàn giao ca cần gì?', 'Ghi sổ doanh thu + tiền bàn giao, 2 CHT/CHP ký xác nhận', ['Nói miệng là được', 'Chỉ cần ca sau ký', 'Gửi tin nhắn Zalo']],
-    ['Tiền khách vừa đưa phải cất ở đâu?', 'Cất ngay vào két', ['Túi tạp dề', 'Để trên quầy', 'Ngăn tủ bếp']],
-    ['Câu chào khách chuẩn là?', '"Hamichee xin chào ạ, anh/chị dùng tại đây hay mang về ạ?"', ['"Uống gì ạ?"', '"Xem menu đi ạ"', '"Order ở đây nha"']],
-    ['Ai đứng thu ngân ở HAMICHEE?', 'CHT/CHP của ca', ['Nhân viên pha chế', 'Phục vụ', 'Ai rảnh thì đứng']],
-    ['Khi thối tiền, em nói gì?', '"Em gửi lại 55.000 ạ" — nói rõ số tiền', ['"Đây ạ"', 'Không cần nói', '"Tiền thối nè"']],
-    ['Đầu ca két thiếu so với sổ giao ca thì?', 'Ghi đúng số đếm được, báo ngay ca trước + quản lý', ['Ghi 680.000 cho khớp', 'Bù tiền túi', 'Im lặng']]
+    ['Tiền két chuẩn đầu ca của HAMICHEE là?', '680.000đ', ['600.000đ', '650.000đ', '700.000đ']],
+    ['Mỗi đơn hàng cần bao nhiêu bill?', 'Mỗi đơn 1 bill riêng', ['Cuối ca nhập gộp các đơn nhỏ', 'Khách quen thì không cần bill', 'Đơn dưới 20.000đ khỏi bill']],
+    ['Thu tiền lúc nào?', 'Trước khi làm / giao món', ['Sau khi giao món cho khách', 'Khi khách ăn xong ra về', 'Lúc nào khách tiện là được']],
+    ['Khách đưa ảnh "chuyển khoản thành công" thì?', 'Đợi thông báo ngân hàng rồi mới xác nhận', ['Xác nhận vì ảnh đã báo thành công', 'Chụp lại ảnh để làm bằng chứng', 'Cho làm món trước, cuối ca mở Store Noti kiểm tra sau']],
+    ['Lệch quỹ ≤ 20.000đ bị xử lý thế nào?', 'Nhắc nhở', ['Trừ tiền', 'Xem xét cho nghỉ việc', 'Không xử lý']],
+    ['Lệch quỹ > 50.000đ bị xử lý thế nào?', 'Trừ tiền', ['Nhắc nhở', 'Xem xét cho nghỉ việc', 'Không xử lý']],
+    ['Lệch quỹ nhiều lần (tái phạm)?', 'Xem xét cho nghỉ việc', ['Nhắc nhở', 'Trừ tiền', 'Không xử lý']],
+    ['Cuối ca đếm két mấy lần?', '2 lần', ['1 lần', '3 lần', 'Xem POS, không cần đếm']],
+    ['Tiền phải có cuối ca = ?', 'Tiền đầu ca + tiền mặt − tiền chi', ['Tiền đầu ca + doanh thu POS', 'Tiền mặt + chuyển khoản', 'Tiền mặt − tiền chi']],
+    ['Khách xin bớt 5.000đ?', 'Không tự giảm, chỉ áp chương trình trên POS', ['Giảm tay 5.000đ trên POS cho khách', 'Bớt cho khách rồi cuối ca báo lại với quản lý sau', 'Bớt rồi tự bù 5.000đ vào két']],
+    ['Không nhập bill thì sao?', 'Không làm món', ['Làm trước, nhập bill sau', 'Ghi giấy, cuối ca nhập', 'Khách quen thì vẫn làm']],
+    ['File chốt ca báo LỆCH, kiểm tra những gì?', 'Tiền thối, bill thiếu, tiền chi, lỗi nhập liệu', ['Chỉ đếm lại tiền trong két', 'Tiền thối và tiền chi là đủ', 'Đếm lại tiền két rồi sửa tiền thực tế cho khớp file']],
+    ['Bàn giao ca cần gì?', 'Ghi sổ doanh thu + tiền bàn giao, 2 bên ký', ['Ghi sổ doanh thu, ca sau ký nhận', 'Nhắn Zalo số tiền cho ca sau', 'Đếm két cùng ca sau là đủ, không cần ghi sổ hay ký']],
+    ['Tiền khách vừa đưa phải cất ở đâu?', 'Cất ngay vào két', ['Để trên quầy tới hết khách', 'Kẹp dưới máy POS', 'Túi tạp dề, cuối ca cất']],
+    ['Câu chào khách chuẩn là?', '"Hamichee xin chào ạ, anh/chị dùng tại đây hay mang về ạ?"', ['"Dạ chào anh/chị, mời mình xem menu rồi gọi món nha ạ?"', '"Dạ chào anh/chị, mình dùng tại đây hay mang về ạ?"', '"Hamichee xin chào ạ, anh/chị muốn dùng món gì hôm nay ạ?"']],
+    ['Ai đứng thu ngân ở HAMICHEE?', 'CHT/CHP của ca', ['Nhân viên pha chế của ca', 'Nhân viên phục vụ của ca', 'Ai đến sớm nhất ca']],
+    ['Khi thối tiền, em nói gì?', '"Em gửi lại 55.000 ạ"', ['"Dạ tiền thối của mình ạ"', '"Dạ em cảm ơn ạ"', '"Mình kiểm lại giúp em ạ"']],
+    ['Đầu ca két thiếu so với sổ giao ca thì?', 'Ghi đúng số đếm, báo ca trước và quản lý', ['Ghi 680.000đ cho khớp sổ giao ca', 'Bù phần thiếu bằng tiền của mình', 'Đếm lại, thiếu ít thì bỏ qua']],
+    ['Cuối ca đối soát chuyển khoản bằng app nào?', 'Store Noti', ['iPOS', 'Zalo', 'App ngân hàng']],
+    ['Chuyển khoản khớp thì gửi ảnh vào đâu?', 'Nhóm Zalo "Báo cáo hằng ngày"', ['Nhóm Zalo nhân viên', 'Nhắn riêng cho quản lý', 'Không cần gửi']],
+    ['Chuyển khoản Store Noti không khớp iPOS thì?', 'Báo lên cấp quản lý để xử lý', ['Sửa số trên file cho khớp', 'Lấy tiền két bù phần lệch', 'Vẫn báo khớp, mai kiểm tra lại với ngân hàng']]
   ];
   async function phaseLuat(){
     var id = RUN;
@@ -1298,8 +1354,10 @@
     if (name.length < 2){ $('home-msg').textContent = 'Chọn / nhập tên của em trước nha.'; return; }
     $('home-msg').textContent = '';
     RUN++; var id = RUN;
-    G = { part:part, name:name, score:0, mist:[], steps:0, ok:0, step:0, from:1, to:3, float0:FLOAT, drawer:STD_FLOAT(), led:null, diff:null, t0:Date.now() };
+    G = { part:part, name:name, score:0, mist:[], steps:0, ok:0, step:0, from:1, to:3, float0:FLOAT, drawer:STD_FLOAT(), led:null, diff:null, t0:Date.now(),
+          shift:pick(['Ca sáng', 'Ca chiều', 'Ca tối']), cashN:0, shotSeen:false };
     setScore(); dock.innerHTML = ''; clearStage(); show('s-play');
+    try { if (!history.state || !history.state.ca) history.pushState({ ca:1 }, ''); } catch(e){}
     try {
       if (part === 'mo' || part === 'ca') await phaseMo();
       if (part === 'ca'){ clearStage(); add('<div style="text-align:center;font-size:40px">🌅➡️🧾</div><div style="text-align:center"><b>Mở ca xong!</b><br>Bắt đầu đón khách nha.</div>', 'info'); await button('Đón khách ▶'); live(id); }
@@ -1336,7 +1394,13 @@
   }
   $('res-again').addEventListener('click', function(){ start(G ? G.part : 'mo'); });
   $('res-home').addEventListener('click', function(){ RUN++; G = null; show('s-home'); });
-  $('quit').addEventListener('click', function(){ if (!confirm('Thoát ca này? Kết quả sẽ không được tính.')) return; RUN++; G = null; dock.innerHTML = ''; $('kp').classList.remove('on'); $('sop').classList.remove('on'); show('s-home'); });
+  function quitRun(){ RUN++; G = null; KP = null; dock.innerHTML = ''; $('kp').classList.remove('on'); $('kp-back').classList.add('hidden'); $('sop').classList.remove('on'); show('s-home'); }
+  $('quit').addEventListener('click', function(){ if (!confirm('Thoát ca này? Kết quả sẽ không được tính.')) return; quitRun(); });
+  window.addEventListener('popstate', function(){ // nút Back của điện thoại khi đang chơi
+    if (!G || !$('s-play').classList.contains('active')) return;
+    if (confirm('Thoát ca này? Kết quả sẽ không được tính.')) quitRun();
+    else { try { history.pushState({ ca:1 }, ''); } catch(e){} }
+  });
   [].forEach.call(document.querySelectorAll('.mode'), function(b){ b.addEventListener('click', function(){ start(b.dataset.part); }); });
 
   // ---------------- server ----------------
