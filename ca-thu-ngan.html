@@ -131,6 +131,29 @@
   .bank b{ font-size:17px; }
   .dev{ display:flex; flex-direction:column; align-items:center; gap:4px; background:#fff; border:2px solid var(--line); border-radius:16px; padding:12px 6px; font-size:13.5px; text-align:center; }
   .dev .e{ font-size:30px; } .dev.ok{ border-color:var(--green); background:#e9f5ee; } .dev.bad{ border-color:var(--red); background:#fdecec; }
+  .mph{ width:min(300px, 100%); margin:0 auto; background:#151515; border-radius:30px; padding:12px 10px 16px; box-shadow:0 6px 16px rgba(0,0,0,.25); position:relative; }
+  .mph:before{ content:''; display:block; width:70px; height:6px; border-radius:3px; background:#333; margin:0 auto 8px; }
+  .mscr{ background:#f4f6f8; border-radius:20px; min-height:330px; overflow:hidden; display:flex; flex-direction:column; position:relative; }
+  .mscr.flash:after{ content:''; position:absolute; inset:0; background:#fff; animation:flash .45s ease-out forwards; }
+  @keyframes flash{ from{ opacity:1; } to{ opacity:0; } }
+  .apps{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px 6px; padding:22px 10px; background:linear-gradient(160deg, #6a8dd8, #9b7ad6); flex:1; }
+  .app{ border:none; background:none; color:#fff; font-size:11.5px; display:flex; flex-direction:column; align-items:center; gap:5px; text-shadow:0 1px 2px rgba(0,0,0,.4); }
+  .app i{ font-style:normal; width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:27px; box-shadow:0 3px 6px rgba(0,0,0,.25); }
+  .ahd{ background:#0b6bcb; color:#fff; padding:12px; font-weight:bold; font-size:15px; display:flex; gap:8px; align-items:center; }
+  .ahd.zl{ background:#0068ff; }
+  .abody{ padding:10px; display:flex; flex-direction:column; gap:8px; flex:1; font-size:13.5px; }
+  .afield{ background:#fff; border:1px solid #d5dee6; border-radius:10px; padding:9px 10px; color:#556; }
+  .abtn{ border:none; border-radius:10px; background:#0b6bcb; color:#fff; font-weight:bold; padding:11px; font-size:14px; }
+  .days{ display:flex; gap:6px; } .days button{ flex:1; border:1px solid #c9d4de; background:#fff; border-radius:10px; padding:8px 2px; font-size:13px; font-weight:bold; }
+  .days button.on{ background:#0b6bcb; color:#fff; border-color:#0b6bcb; }
+  .tx{ background:#fff; border-radius:10px; padding:7px 9px; display:flex; justify-content:space-between; gap:6px; font-size:12.5px; border-left:4px solid #1aa260; }
+  .tx b{ color:#1a8a50; white-space:nowrap; }
+  .atot{ background:#e8f4ff; border-radius:10px; padding:9px 10px; font-size:14px; display:flex; justify-content:space-between; }
+  .zgroups button{ text-align:left; border:none; background:#fff; border-bottom:1px solid #e3e8ee; padding:11px 10px; font-size:14px; width:100%; display:flex; gap:9px; align-items:center; }
+  .zgroups button i{ font-style:normal; width:34px; height:34px; border-radius:50%; background:#dbe8ff; display:flex; align-items:center; justify-content:center; }
+  .zchat{ background:#e2e9f1; padding:10px; display:flex; flex-direction:column; gap:6px; align-items:flex-end; flex:1; }
+  .zmsg{ background:#d4e7ff; border-radius:12px 12px 2px 12px; padding:7px 10px; font-size:13.5px; max-width:85%; }
+  .zimg{ width:150px; background:#fff; border-radius:10px; padding:6px; font-size:11px; color:#335; box-shadow:0 1px 2px rgba(0,0,0,.15); }
   .sig{ height:64px; border:2px dashed #cdbfa9; border-radius:12px; background:#fffdf9; display:flex; align-items:center; justify-content:center; color:#a08c70; font-size:14px; }
   .sig.done{ border-style:solid; border-color:var(--green); color:#0b3d8a; font-family:'Segoe Script', 'Brush Script MT', cursive; font-size:24px; }
   .chk{ display:flex; align-items:center; gap:10px; border:2px solid var(--line); background:#fffdf9; border-radius:14px; padding:11px; font-size:14.5px; text-align:left; width:100%; }
@@ -182,7 +205,7 @@
           <button type="button" class="mode big" data-part="ca"><span class="e">⭐</span><span><b>Cả ca làm việc</b><br><small>Bước 1 → 17: mở ca, đón 6 khách, kết ca & bàn giao. Tiền thật chạy xuyên suốt ca.</small><br><span class="st" data-best="ca"></span></span></button>
           <button type="button" class="mode" data-part="mo"><span class="e">🌅</span><b>Mở ca</b><small>Bước 1–3: sổ giao ca, đếm két 680k, kiểm thiết bị</small><span class="st" data-best="mo"></span></button>
           <button type="button" class="mode" data-part="trong"><span class="e">🧾</span><b>Trong ca</b><small>Bước 4–10: chào khách, nhập bill, thu tiền, thối tiền</small><span class="st" data-best="trong"></span></button>
-          <button type="button" class="mode" data-part="ket"><span class="e">🌙</span><b>Kết ca</b><small>Bước 11–17: chốt file, đếm két 2 lần, xử lý lệch, bàn giao</small><span class="st" data-best="ket"></span></button>
+          <button type="button" class="mode" data-part="ket"><span class="e">🌙</span><b>Kết ca</b><small>Bước 11–17: chốt file, đếm két 2 lần, xử lý lệch, đối soát CK Store Noti, bàn giao</small><span class="st" data-best="ket"></span></button>
           <button type="button" class="mode" data-part="luat"><span class="e">📘</span><b>Ôn luật két</b><small>10 câu nhanh về quy định kiểm soát tiền</small><span class="st" data-best="luat"></span></button>
         </div>
         <div class="card" style="font-size:14px;line-height:1.5">
@@ -289,8 +312,10 @@
     14:['Đếm két', 'Lấy toàn bộ tiền trong két, đếm 2 lần; nhập "Tiền thực tế" vào file.'],
     15:['File tự đối chiếu', 'File so sánh: tiền phải có = tiền đầu ca + tiền mặt − tiền chi → OK hoặc LỆCH.'],
     16:['Xử lý lệch', 'Kiểm tra lần lượt: tiền thối, bill thiếu, tiền chi, lỗi nhập liệu. Không bỏ qua trường hợp nào.'],
-    17:['Bàn giao ca', 'Ghi sổ doanh thu và tiền bàn giao; ký xác nhận giữa CHT/CHP ca này và ca sau.']
+    17:['Bàn giao ca', 'Ghi sổ doanh thu và tiền bàn giao; ký xác nhận giữa CHT/CHP ca này và ca sau.'],
+    16.5:['Đối soát chuyển khoản', 'Chốt két xong: mở app Store Noti → đăng nhập → chọn đúng ngày cần xem → so tiền chuyển khoản thực tế với tiền chuyển khoản trên iPOS. Khớp thì chụp màn hình gửi vào nhóm Zalo "Báo cáo hằng ngày" và nhắn "Ca ... khớp ạ".']
   };
+  function stepName(n){ return n === 16.5 ? 'Sau chốt két · ' + SOP[n][0] : 'Bước ' + n + ' · ' + SOP[n][0]; }
   var RULES = ['<b>Cấm:</b> không nhập bill khi có giao dịch · giữ tiền ngoài két · tự ý giảm giá · nhận tiền không ghi vào hệ thống.',
                '<b>Bắt buộc:</b> mỗi đơn = 1 bill · thu tiền trước khi làm/giao món · cuối ca tiền thực tế khớp file.',
                '<b>Lệch quỹ:</b> ≤ 20.000đ nhắc nhở · > 50.000đ trừ tiền · tái phạm nhiều lần xem xét cho nghỉ việc.'];
@@ -298,7 +323,10 @@
     var h = '';
     [['🌅 Mở ca', 1, 3], ['🧾 Trong ca', 4, 10], ['🌙 Kết ca', 11, 17]].forEach(function(g){
       h += '<div style="font-weight:bold;padding-top:8px">' + g[0] + '</div>';
-      for (var i = g[1]; i <= g[2]; i++) h += '<div' + (i === now ? ' class="now"' : '') + '><b>Bước ' + i + ' · ' + SOP[i][0] + ':</b> ' + esc(SOP[i][1]) + '</div>';
+      for (var i = g[1]; i <= g[2]; i++){
+        h += '<div' + (i === now ? ' class="now"' : '') + '><b>' + stepName(i) + ':</b> ' + esc(SOP[i][1]) + '</div>';
+        if (i === 16) h += '<div' + (now === 16.5 ? ' class="now"' : '') + '><b>' + stepName(16.5) + ':</b> ' + esc(SOP[16.5][1]) + '</div>';
+      }
     });
     h += '<div style="font-weight:bold;padding-top:8px">📌 Quy định kiểm soát tiền (HMC.QD.A3.01)</div>' + RULES.map(function(r){ return '<div>' + r + '</div>'; }).join('');
     $('sop-list').innerHTML = h; $('sop').classList.add('on');
@@ -309,36 +337,55 @@
   $('hd-sop').addEventListener('click', function(){ openSop(G && G.step); });
 
   // ---------------- menu & prices ----------------
+  // Menu HAMICHEE (giá đã gồm VAT) — bản dự phòng khi chưa tải được tab "Bảng giá"
   var DEFAULT_MENU = [
-    ['Chè hiện đại','HMC-HĐ-01','Chè Thái sầu riêng Hami',35],['Chè hiện đại','HMC-HĐ-02','Chè hạt đác Hami full topping sầu riêng',45],['Chè hiện đại','HMC-HĐ-03','Chè dừa non Hami',30],
-    ['Chè hiện đại','HMC-HĐ-04','Chè khoai dẻo Hami',30],['Chè hiện đại','HMC-HĐ-05','Chè hạt đác củ năng hạt sen',30],['Chè hiện đại','HMC-HĐ-05B','Chè khúc bạch cầu vồng',30],
-    ['Chè hiện đại','HMC-HĐ-06','Chè bánh lọt củ năng sầu riêng',35],['Chè hiện đại','HMC-HĐ-07','Chè sương sáo hạt đác cốt dừa',25],['Chè hiện đại','HMC-HĐ-08','Chè đậu đen hạt đác cốt dừa',25],
-    ['Chè truyền thống','HMC-TT-01','Chè bưởi',20],['Chè truyền thống','HMC-TT-02','Chè nhà Hami',25],['Chè truyền thống','HMC-TT-03','Chè sắn mochi dừa non',25],['Chè truyền thống','HMC-TT-04','Chè khoai tím cốt dừa',20],
-    ['Chè truyền thống','HMC-TT-05','Chè bắp',20],['Chè truyền thống','HMC-TT-06','Chè bất ngờ',25],['Chè truyền thống','HMC-TT-07','Chè thập cẩm',25],['Chè truyền thống','HMC-TT-08','Chè mâm vị nhà',69],
-    ['Trà trái cây','HMC-TCC-01','Trà xoài chanh dây hạt đác',30],['Trà trái cây','HMC-TCC-02','Trà dâu tằm hạt đác',30],['Trà trái cây','HMC-TCC-03','Trà trái cây nhiệt đới',30],['Trà trái cây','HMC-TCC-04','Trà mãng cầu hạt đác',30],
-    ['Trà trái cây','HMC-TCC-05','Trà me hạt đác',30],['Trà trái cây','HMC-TCC-06','Nước sâm full topping',25],['Trà trái cây','HMC-TCC-07','Nước dừa tắc trái cây',25],
-    ['Sữa chua – Flan – Sữa vị nhà','HMC-SC-01','Sữa chua hạt đác mix',30],['Sữa chua – Flan – Sữa vị nhà','HMC-SC-02','Sữa chua hạt đác trái cây',30],['Sữa chua – Flan – Sữa vị nhà','HMC-FLAN-01','Flan truyền thống',15],
-    ['Sữa chua – Flan – Sữa vị nhà','HMC-FLAN-02','Flan hạt đác Hằng Minh',25],['Sữa chua – Flan – Sữa vị nhà','HMC-AV-01','Milo đá bào flan',30],['Sữa chua – Flan – Sữa vị nhà','HMC-SUA-01','Trà sữa truyền thống (size M)',25],
-    ['Sữa chua – Flan – Sữa vị nhà','HMC-SUA-02','Trà sữa truyền thống (size L)',30],['Sữa chua – Flan – Sữa vị nhà','HMC-SUA-03','Trà sữa socola (size M)',28],['Sữa chua – Flan – Sữa vị nhà','HMC-SUA-04','Trà sữa socola (size L)',33],
-    ['Sữa chua – Flan – Sữa vị nhà','HMC-SUA-FT','Trà sữa full topping (size L)',40],['Sữa chua – Flan – Sữa vị nhà','HMC-SUA-05','Sữa tươi trân châu đường đen',30]
+    ["Chè Quốc Dân","HMC-TT-01","Chè bưởi",22],
+    ["Chè Quốc Dân","HMC-TT-02","Chè \"Thương\" Hami",28],
+    ["Chè Quốc Dân","HMC-TT-03","Chè sắn mochi dừa non",28],
+    ["Chè Quốc Dân","HMC-TT-08","Chè mâm Hami",89],
+    ["Chè Quốc Dân","HMC-HĐ-02","Chè hạt đác sầu riêng Hami",48],
+    ["Chè Quốc Dân","HMC-HĐ-05","Chè hạt đác củ năng hạt sen",42],
+    ["Chè Quốc Dân","HMC-HĐ-01","Chè Thái sầu riêng Hami",42],
+    ["Chè Quốc Dân","HMC-HĐ-04","Chè khoai dẻo Hami",42],
+    ["Chè Quốc Dân","HMC-HĐ-05B","Chè khúc bạch Hami",42],
+    ["Chè Quốc Dân","HMC-HĐ-03","Chè dừa non hạt đác",30],
+    ["Chè Truyền Thống","HMC-TT-04","Chè khoai tím cốt dừa",18],
+    ["Chè Truyền Thống","HMC-TT-05","Chè bắp",18],
+    ["Chè Truyền Thống","HMC-TT-06","Chè \"Bất ngờ\"",22],
+    ["Chè Truyền Thống","HMC-TT-07","Chè thập cẩm",30],
+    ["Chè Ly","HMC-HĐ-06","Chè bánh lọt củ năng sầu riêng",42],
+    ["Chè Ly","HMC-HĐ-07","Chè sương sáo hạt đác cốt dừa",30],
+    ["Chè Ly","HMC-HĐ-08","Chè đậu đen hạt đác cốt dừa",30],
+    ["Sữa Chua","HMC-SC-01","Sữa chua hạt đác Hamichee",40],
+    ["Sữa Chua","HMC-SC-02","Sữa chua hạt đác trái cây",42],
+    ["Tươi Mát","HMC-TCC-03","Trà trái cây nhiệt đới",40],
+    ["Tươi Mát","HMC-TCC-02","Trà dâu tằm hạt đác",35],
+    ["Tươi Mát","HMC-TCC-05","Trà đá me hạt đác",35],
+    ["Tươi Mát","HMC-TCC-04","Trà mãng cầu",35],
+    ["Tươi Mát","HMC-TCC-06","Nước sâm full topping",25],
+    ["Tươi Mát","HMC-TCC-07","Nước dừa tắc trái cây",25],
+    ["Tươi Mát","HMC-TLN-01","Trà long nhãn hạt sen",35],
+    ["Trứng Nhà","HMC-FLAN-01","Flan truyền thống (2 bánh)",20],
+    ["Trứng Nhà","HMC-FLAN-02","Flan hạt đác Hami",30],
+    ["Trứng Nhà","HMC-AV-01","Milo đá bào flan",35]
   ];
   var MENU = [], BYCODE = {}, GROUPS = [], PRICE_FROM_SHEET = false;
   function buildMenu(){
-    var rows = loadJSON(K.rows, null), prices = loadJSON(K.prices, []), pm = {}, list = [];
-    (prices || []).slice(1).forEach(function(r){ var v = Number(String(r[2] || '').replace(/[^\d]/g, '')); if (v > 0 && v < 1000) v *= 1000; if (r[0] && v > 0) pm[String(r[0]).trim()] = v; /* "35" hay "35.000" đều là 35.000đ */ });
-    PRICE_FROM_SHEET = Object.keys(pm).length > 0;
-    var def = {}; DEFAULT_MENU.forEach(function(m){ def[m[1]] = m; });
-    if (Array.isArray(rows) && rows.length > 1){
-      var seen = {};
-      rows.slice(1).forEach(function(r){ var c = String(r[1] || '').trim(); if (!c || seen[c]) return; seen[c] = 1;
-        var p = pm[c] || (def[c] ? def[c][3] * 1000 : 0); if (p) list.push({ group:String(r[0] || '').trim() || 'Khác', code:c, name:String(r[2] || c).trim(), price:p }); });
-    }
-    if (list.length < 8) list = DEFAULT_MENU.map(function(m){ return { group:m[0], code:m[1], name:m[2], price:pm[m[1]] || m[3] * 1000 }; });
+    var rows = loadJSON(K.rows, null), prices = loadJSON(K.prices, []), pm = {}, list = [], recG = {};
+    (Array.isArray(rows) ? rows.slice(1) : []).forEach(function(r){ if (r[1]) recG[String(r[1]).trim()] = String(r[0] || '').trim(); });
+    // tab "Bảng giá" = menu trên máy POS: Mã món, Tên món (theo menu), Giá, Nhóm (theo menu)
+    var pl = [];
+    (prices || []).slice(1).forEach(function(r){
+      var v = Number(String(r[2] || '').replace(/[^\d]/g, '')); if (v > 0 && v < 1000) v *= 1000;
+      var c = String(r[0] || '').trim(); if (c && v > 0 && String(r[1] || '').trim()) pl.push({ group:String(r[3] || '').trim() || recG[c] || 'Khác', code:c, name:String(r[1]).trim(), price:v });
+    });
+    if (pl.length >= 8){ list = pl; PRICE_FROM_SHEET = true; }
+    else { PRICE_FROM_SHEET = false; list = DEFAULT_MENU.map(function(m){ return { group:m[0], code:m[1], name:m[2], price:m[3] * 1000 }; }); }
     MENU = list; BYCODE = {}; GROUPS = [];
     MENU.forEach(function(m){ BYCODE[m.code] = m; if (GROUPS.indexOf(m.group) < 0) GROUPS.push(m.group); });
-    $('price-note').textContent = PRICE_FROM_SHEET ? 'Giá món lấy từ tab "Bảng giá" trong Sheet đào tạo.' : 'Giá món đang là giá tạm — quản lý sửa ở tab "Bảng giá" của Sheet đào tạo.';
+    $('price-note').textContent = PRICE_FROM_SHEET ? 'Menu & giá lấy từ tab "Bảng giá" trong Sheet đào tạo (giá đã gồm VAT).' : 'Menu & giá theo menu HAMICHEE (giá đã gồm VAT).';
   }
-  function spoken(m){ return m.name.replace(/\s*Hami\b/g, '').replace(/\(size (\w)\)/i, 'size $1').replace(/^(\S)/, function(c){ return c.toLowerCase(); }).replace(/\s+/g, ' ').trim(); }
+  function spoken(m){ return m.name.replace(/\s*\(\d+ bánh\)/i, '').replace(/["“”]/g, '').replace(/\s*Hami(chee)?\b/g, '').replace(/\(size (\w)\)/i, 'size $1').replace(/^(\S)/, function(c){ return c.toLowerCase(); }).replace(/\s+/g, ' ').trim(); }
   var AMB = [ { say:'trà sữa', codes:['HMC-SUA-01','HMC-SUA-02','HMC-SUA-03','HMC-SUA-04'], ask:'trà sữa vị gì, size nào' },
               { say:'chè sầu riêng', codes:['HMC-HĐ-01','HMC-HĐ-02','HMC-HĐ-06'], ask:'chè sầu riêng loại nào' },
               { say:'flan', codes:['HMC-FLAN-01','HMC-FLAN-02'], ask:'flan truyền thống hay flan hạt đác' },
@@ -411,7 +458,7 @@
   function setScore(){ $('hd-score').textContent = '⭐ ' + G.score; }
   function setStep(n){
     G.step = n;
-    $('hd-sub').textContent = 'Bước ' + n + ' · ' + SOP[n][0];
+    $('hd-sub').textContent = stepName(n);
     var l = $('stepline'); l.innerHTML = '';
     for (var i = G.from; i <= G.to; i++){ var x = document.createElement('i'); if (i < n) x.className = 'done'; else if (i === n) x.className = 'now'; l.appendChild(x); }
   }
@@ -749,7 +796,7 @@
       said(esc(c.say));
       function disc(){ var sub = cartTotal(cart); return promo === 'G' && sub >= 40000 ? Math.min(10000, Math.floor(sub * 0.1 / 1000) * 1000) : 0; }
       function draw(){
-        tabs.innerHTML = GROUPS.map(function(g){ return '<button type="button" class="' + (g === tab ? 'on' : '') + '">' + esc(g.replace('Sữa chua – Flan – Sữa vị nhà', 'Sữa chua · Flan · Sữa')) + '</button>'; }).join('');
+        tabs.innerHTML = GROUPS.map(function(g){ return '<button type="button" class="' + (g === tab ? 'on' : '') + '">' + esc(g) + '</button>'; }).join('');
         [].forEach.call(tabs.children, function(b, i){ b.addEventListener('click', function(){ tab = GROUPS[i]; draw(); }); });
         its.innerHTML = '';
         MENU.filter(function(m){ return m.group === tab; }).forEach(function(m){
@@ -933,6 +980,99 @@
     return L;
   }
   function chiSum(L){ return L.chi.reduce(function(a, x){ return a + x.amount; }, 0); }
+  function dayStr(off){ var d = new Date(Date.now() + (off || 0) * 864e5); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2); }
+  function splitAmount(total){ // tách tổng chuyển khoản thành các giao dịch nhỏ như thông báo thật
+    var out = [], left = total;
+    while (left > 0){ var a = left <= 60000 ? left : Math.min(left, pick([25000, 30000, 35000, 40000, 42000, 48000, 60000, 70000, 84000, 89000, 120000])); out.push(a); left -= a; }
+    return shuffle(out);
+  }
+  async function stepNoti(L){
+    var id = RUN;
+    setStep(16.5); clearStage();
+    var shift = G.shift || (G.shift = pick(['Ca sáng', 'Ca chiều', 'Ca tối'])), day = dayStr(0), mism = L.transfer > 60000 && Math.random() < 0.25;
+    var real = mism ? L.transfer - pick([25000, 30000, 35000, 42000]) : L.transfer;
+    add('<h3>📲 Đối soát chuyển khoản</h3><b>' + shift + ' ' + day + '</b> — két đã chốt xong.<div class="kv"><span>Chuyển khoản trên iPOS (báo cáo ca)</span><b>' + vnd(L.transfer) + '</b></div>', 'info');
+    await choose(16.5, 'Chốt két xong rồi. Trước khi bàn giao, tiền chuyển khoản làm sao?', [
+      { t:'Mở app Store Noti, đăng nhập, chọn đúng ngày, so tiền chuyển khoản thực tế với iPOS', ok:true },
+      { t:'Xem tổng chuyển khoản trên iPOS là đủ', why:'iPOS chỉ là số ghi nhận — phải đối chiếu với tiền thực nhận trên Store Noti.' },
+      { t:'Bàn giao luôn, chuyển khoản ngân hàng tự lo', why:'Mỗi kết ca đều phải đối soát chuyển khoản trên Store Noti trước khi bàn giao.' } ]); live(id);
+    var ph = add('<div class="mph"><div class="mscr"></div></div>', ''), scr = ph.querySelector('.mscr');
+    scrollEnd();
+    function tap(sel){ return new Promise(function(res){ [].forEach.call(scr.querySelectorAll(sel), function(b){ b.addEventListener('click', function(){ if (id === RUN) res(b); }); }); }); }
+    // màn hình chính điện thoại
+    var APPS = [['🔔', 'Store Noti', '#0b6bcb'], ['💬', 'Zalo', '#0068ff'], ['🧾', 'iPOS', '#e8532f'], ['📷', 'Camera', '#555'], ['🏦', 'Ngân hàng', '#1aa260'], ['🖼️', 'Ảnh', '#f2a541']];
+    scr.innerHTML = '<div class="apps">' + shuffle(APPS.slice()).map(function(a){ return '<button type="button" class="app" data-a="' + a[1] + '"><i style="background:' + a[2] + '">' + a[0] + '</i>' + a[1] + '</button>'; }).join('') + '</div>';
+    dock.innerHTML = '<div class="q">Mở app để xem tiền chuyển khoản thực tế.</div>';
+    var wrongApp = false;
+    while (true){
+      var b = await tap('.app'); live(id);
+      if (b.dataset.a === 'Store Noti') break;
+      if (!wrongApp){ wrongApp = true; mistake(16.5, 'Mở đúng app Store Noti để xem tiền chuyển khoản thực tế (không phải ' + b.dataset.a + ').'); }
+      toast(b.dataset.a === 'iPOS' ? 'iPOS là số ghi nhận — cần số thực nhận trên Store Noti' : 'Chưa đúng app — tìm Store Noti nha');
+    }
+    G.steps++; if (!wrongApp){ G.ok++; gain(10); }
+    // đăng nhập
+    scr.innerHTML = '<div class="ahd">🔔 Store Noti</div><div class="abody"><div style="text-align:center;font-size:34px;padding-top:8px">🔔</div>' +
+      '<div class="afield">Tài khoản: hamichee.cuahang</div><div class="afield">Mật khẩu: ••••••••</div><button type="button" class="abtn" data-login>Đăng nhập</button></div>';
+    dock.innerHTML = '<div class="q">Đăng nhập Store Noti bằng tài khoản cửa hàng.</div>';
+    await tap('[data-login]'); live(id);
+    // chọn ngày
+    var opts = [-2, -1, 0, 1].map(function(o){ return dayStr(o); });
+    scr.innerHTML = '<div class="ahd">🔔 Store Noti</div><div class="abody"><b>Chọn ngày cần xem</b><div class="days">' + opts.map(function(d){ return '<button type="button" data-d="' + d + '">' + d + '</button>'; }).join('') + '</div><div style="color:#889;font-size:12.5px">Đang kết: ' + shift + ' ' + day + '</div></div>';
+    dock.innerHTML = '<div class="q">Chọn đúng ngày của ca đang kết (' + shift.toLowerCase() + ').</div>';
+    var wrongDay = false;
+    while (true){
+      var db = await tap('[data-d]'); live(id);
+      if (db.dataset.d === day) break;
+      if (!wrongDay){ wrongDay = true; mistake(16.5, 'Chọn sai ngày trên Store Noti (' + db.dataset.d + ') — phải chọn đúng ngày của ca: ' + day + '.'); }
+      toast('Sai ngày rồi — ca này là ngày ' + day);
+    }
+    G.steps++; if (!wrongDay){ G.ok++; gain(10); }
+    var txs = splitAmount(real), hh = shift === 'Ca sáng' ? 8 : shift === 'Ca chiều' ? 13 : 17;
+    var times = txs.map(function(){ return rnd(hh, hh + 4) * 60 + rnd(0, 59); }).sort(function(a, b){ return a - b; });
+    scr.innerHTML = '<div class="ahd">🔔 Store Noti · ' + day + '</div><div class="abody">' +
+      txs.slice(0, 5).map(function(a, k){ return '<div class="tx"><span>' + ('0' + Math.floor(times[k] / 60)).slice(-2) + ':' + ('0' + times[k] % 60).slice(-2) + ' · TK HAMICHEE nhận</span><b>+' + money(a) + '</b></div>'; }).join('') +
+      (txs.length > 5 ? '<div style="text-align:center;color:#889;font-size:12px">… và ' + (txs.length - 5) + ' giao dịch khác</div>' : '') +
+      '<div class="atot"><span>Tổng tiền vào ' + day + '</span><b>' + vnd(real) + '</b></div></div>';
+    scrollEnd();
+    await choose(16.5, 'Store Noti: <b>' + vnd(real) + '</b> · iPOS: <b>' + vnd(L.transfer) + '</b>. Kết quả đối soát?', [
+      { t:'✅ Khớp', ok:!mism, why:mism ? 'Lệch ' + money(L.transfer - real) + ': Store Noti ' + money(real) + ' khác iPOS ' + money(L.transfer) + '.' : '' },
+      { t:'⚠️ Không khớp', ok:mism, why:mism ? '' : 'Hai số bằng nhau (' + money(real) + ') — là khớp.' } ]); live(id);
+    if (mism){
+      await choose(16.5, 'Chuyển khoản thực nhận ít hơn iPOS ' + vnd(L.transfer - real) + '. Em làm gì?', [
+        { t:'Không báo "khớp"; dò lại từng giao dịch Store Noti với bill chuyển khoản trên iPOS và báo quản lý ngay', ok:true },
+        { t:'Vẫn nhắn "khớp ạ" cho xong ca', why:'Chỉ báo "khớp" khi số thực nhận bằng iPOS — báo sai là che lệch quỹ.' },
+        { t:'Sửa số chuyển khoản trong file cho bằng Store Noti', why:'Không sửa số cho khớp — phải tìm ra bill nào chưa nhận được tiền.' } ]); live(id);
+      add('📝 Đã báo quản lý: chuyển khoản lệch ' + vnd(L.transfer - real) + ', đang dò từng giao dịch.', 'info');
+      G.ckDiff = real - L.transfer;
+      return;
+    }
+    // chụp màn hình → Zalo
+    dock.innerHTML = '';
+    await button('📸 Chụp màn hình Store Noti'); live(id);
+    scr.classList.remove('flash'); void scr.offsetWidth; scr.classList.add('flash'); beep(true);
+    var GROUPS_Z = [['📊', 'Báo cáo hằng ngày'], ['👥', 'HAMICHEE — Nhân viên'], ['🍧', 'Bếp HAMICHEE'], ['🏠', 'Gia đình']];
+    await wait(500); live(id);
+    scr.innerHTML = '<div class="ahd zl">💬 Zalo — Gửi ảnh đến</div><div class="zgroups">' + shuffle(GROUPS_Z.slice()).map(function(g){ return '<button type="button" data-g="' + g[1] + '"><i>' + g[0] + '</i>' + g[1] + '</button>'; }).join('') + '</div>';
+    dock.innerHTML = '<div class="q">Gửi ảnh chụp màn hình vào nhóm Zalo nào?</div>';
+    var wrongG = false;
+    while (true){
+      var gb = await tap('[data-g]'); live(id);
+      if (gb.dataset.g === 'Báo cáo hằng ngày') break;
+      if (!wrongG){ wrongG = true; mistake(16.5, 'Gửi nhầm nhóm "' + gb.dataset.g + '" — ảnh đối soát gửi vào nhóm Zalo "Báo cáo hằng ngày".'); }
+      toast('Nhầm nhóm rồi — gửi vào "Báo cáo hằng ngày"');
+    }
+    G.steps++; if (!wrongG){ G.ok++; gain(10); }
+    var other = shift === 'Ca sáng' ? 'Ca tối' : 'Ca sáng';
+    scr.innerHTML = '<div class="ahd zl">📊 Báo cáo hằng ngày</div><div class="zchat"><div class="zimg">🖼️ Ảnh Store Noti ' + day + '<br><b>Tổng ' + vnd(real) + '</b></div></div>';
+    var msg = await choose(16.5, 'Nhắn kèm ảnh:', [
+      { t:'"' + shift + ' khớp ạ"', ok:true },
+      { t:'"Khớp ạ"', why:'Ghi rõ ca nào: "' + shift + ' khớp ạ" — nhóm có nhiều ca cùng báo.' },
+      { t:'"' + other + ' khớp ạ"', why:'Đang kết ' + shift.toLowerCase() + ' — ghi đúng tên ca.' },
+      { t:'"Ok"', why:'Nhắn đúng mẫu: "' + shift + ' khớp ạ".' } ]); live(id);
+    scr.querySelector('.zchat').insertAdjacentHTML('beforeend', '<div class="zmsg">' + esc(shift) + ' khớp ạ ✓✓</div>');
+    await wait(700); live(id);
+  }
   async function phaseKet(){
     var id = RUN;
     if (G.part !== 'ca'){ G.from = 11; G.to = 17; $('hd-title').textContent = '🌙 Kết ca'; G.led = fakeShift(); }
@@ -1094,6 +1234,7 @@
       finalDiff = r.diff;
       await button('Tiếp tục bàn giao ▶'); live(id);
     }
+    await stepNoti(L); live(id);
     // Bước 17
     setStep(17); clearStage();
     var giao = FLOAT, nop = actual - giao;
@@ -1179,15 +1320,16 @@
     var sum = '<div class="kv"><span>Điểm</span><b>' + g.score + '</b></div><div class="kv"><span>Bước làm đúng ngay lần đầu</span><b>' + g.ok + '/' + g.steps + ' (' + acc + '%)</b></div>';
     if (g.led && (g.part === 'trong' || g.part === 'ca')) sum += '<div class="kv"><span>Bill trong ca</span><b>' + g.led.bills + ' · ' + vnd(g.led.pos) + '</b></div>';
     if (g.diff != null) sum += '<div class="kv"><span>Lệch cuối ca (sau xử lý)</span><b class="' + (g.diff ? 'bad-t' : 'ok-t') + '">' + vnd(g.diff) + '</b></div>';
+    if (g.ckDiff) sum += '<div class="kv"><span>Chuyển khoản lệch (đã báo quản lý)</span><b class="bad-t">' + vnd(g.ckDiff) + '</b></div>';
     $('res-sum').innerHTML = sum;
     var l = $('res-list'); l.innerHTML = '';
     if (!n) l.innerHTML = '<div class="mist" style="border-left-color:var(--green)">🎯 Không sai bước nào — đúng quy trình thu ngân HAMICHEE!</div>';
-    g.mist.forEach(function(m){ var d = document.createElement('div'); d.className = 'mist'; d.innerHTML = '<b>' + (typeof m.step === 'number' ? 'Bước ' + m.step + ' · ' + esc(SOP[m.step][0]) : esc(m.step)) + '</b><br>' + esc(m.text); l.appendChild(d); });
+    g.mist.forEach(function(m){ var d = document.createElement('div'); d.className = 'mist'; d.innerHTML = '<b>' + (typeof m.step === 'number' ? esc(stepName(m.step)) : esc(m.step)) + '</b><br>' + esc(m.text); l.appendChild(d); });
     var best = loadJSON(K.best, {}), key = g.name + '|' + g.part;
     if (!best[key] || stars > best[key]){ best[key] = stars; saveJSON(K.best, best); }
     show('s-res'); beep(stars >= 2);
     var payload = { action:'cashier', name:g.name, part:PART[g.part], score:g.score, stars:stars, ok:g.ok, steps:g.steps, diff:g.diff == null ? '' : g.diff,
-                    mistakes:g.mist.map(function(m){ return (typeof m.step === 'number' ? 'B' + m.step + ': ' : '') + m.text; }).join(' | ').slice(0, 900),
+                    mistakes:g.mist.map(function(m){ return (typeof m.step === 'number' ? (m.step === 16.5 ? 'Đối soát CK: ' : 'B' + m.step + ': ') : '') + m.text; }).join(' | ').slice(0, 900),
                     app:appName(), id:'ca' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), at:Date.now() };
     outboxAdd(payload); saveNote = payload.id; $('res-save').textContent = 'Đang gửi kết quả cho quản lý…'; flushOutbox();
     renderBest();
