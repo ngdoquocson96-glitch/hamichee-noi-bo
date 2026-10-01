@@ -320,7 +320,7 @@
   function stepName(n){ return n === 16.5 ? 'Sau chốt két · ' + SOP[n][0] : 'Bước ' + n + ' · ' + SOP[n][0]; }
   var RULES = ['<b>Cấm:</b> không nhập bill khi có giao dịch · giữ tiền ngoài két · tự ý giảm giá · nhận tiền không ghi vào hệ thống.',
                '<b>Bắt buộc:</b> mỗi đơn = 1 bill · thu tiền trước khi làm/giao món · cuối ca tiền thực tế khớp file.',
-               '<b>Lệch quỹ:</b> ≤ 20.000đ nhắc nhở · > 50.000đ trừ tiền · tái phạm nhiều lần xem xét cho nghỉ việc.'];
+               '<b>Lệch quỹ:</b> ≤ 20.000đ nhắc nhở · trên 20.000đ đến 50.000đ phạt biên bản · > 50.000đ trừ tiền · tái phạm nhiều lần xem xét cho nghỉ việc.'];
   function openSop(now){
     var h = '';
     [['🌅 Mở ca', 1, 3], ['🧾 Trong ca', 4, 10], ['🌙 Kết ca', 11, 17]].forEach(function(g){
@@ -1174,6 +1174,12 @@
     scr.querySelector('.zchat').insertAdjacentHTML('beforeend', '<div class="zmsg">' + esc(shift) + ' khớp ạ ✓✓</div>');
     await wait(700); live(id);
   }
+  // Mức xử lý lệch quỹ (HMC.QD.A3.01 + chủ quán 01/10): ≤20k nhắc nhở · >20k–50k phạt biên bản · >50k trừ tiền
+  function penaltyOf(a){ return a <= 20000 ? 'nhắc nhở' : a <= 50000 ? 'phạt biên bản' : 'trừ tiền'; }
+  function penaltyOpts(a, extra){
+    var lv = penaltyOf(a), rule = 'Lệch ≤ 20.000đ: nhắc nhở · trên 20.000đ đến 50.000đ: phạt biên bản · trên 50.000đ: trừ tiền.';
+    return ['nhắc nhở', 'phạt biên bản', 'trừ tiền'].map(function(x){ return { t:'Ghi nhận lệch, báo quản lý — ' + x, ok:x === lv, why:x === lv ? 'Lệch ' + money(a) + ': ' + lv + '.' : rule }; }).concat([extra]);
+  }
   async function phaseKet(){
     var id = RUN;
     if (G.part !== 'ca'){ G.from = 11; G.to = 17; $('hd-title').textContent = '🌙 Kết ca'; G.led = fakeShift(); }
@@ -1183,10 +1189,10 @@
     var cause = G.part === 'ca' ? (G.caPending ? G.caPending.cause : 'none') : pick(['none', 'thoi', 'chi', 'bill', 'thoi', 'mat']); // cả ca: chỉ lệch khi em bỏ sót việc đã thấy trong ca
     var expect = L.float0 + L.cash - chiSum(L), actual = expect, hidden = null;
     if (G.part === 'ca'){ hidden = G.caPending ? G.caPending.hidden : null; actual = sumOf(G.drawer); }
-    else if (cause === 'thoi' && L.cashBills.length){ var cb = pick(L.cashBills.slice(-5)); hidden = { cb:cb, amt:pick([10000, 15000, 20000]) }; actual -= hidden.amt; }
+    else if (cause === 'thoi' && L.cashBills.length){ var cb = pick(L.cashBills.slice(-5)); hidden = { cb:cb, amt:pick([10000, 15000, 20000, 30000, 40000]) }; actual -= hidden.amt; }
     else if (cause === 'chi'){ hidden = pick([{ what:'túi nilon mang về', amount:30000 }, { what:'ống hút lớn', amount:25000 }, { what:'đá viên', amount:35000 }, { what:'khăn giấy', amount:28000 }]); actual -= hidden.amount; }
     else if (cause === 'bill'){ hidden = { amount:pick(MENU).price }; actual += hidden.amount; }
-    else if (cause === 'mat'){ hidden = { amount:pick([60000, 70000, 80000]) }; actual -= hidden.amount; } // thiếu không rõ nguyên nhân (> 50.000đ)
+    else if (cause === 'mat'){ hidden = { amount:pick([30000, 40000, 45000, 60000, 70000, 80000]) }; actual -= hidden.amount; } // thiếu không rõ nguyên nhân
     else cause = 'none';
     var drawerC = G.part === 'ca' ? copyC(G.drawer) : compose(actual); // cả ca: két thật sau ca
     actual = sumOf(drawerC);
@@ -1327,10 +1333,8 @@
         })); live(id);
       }
       if (cause === 'mat'){
-        await choose(16, 'Đã kiểm đủ 4 mục, không tìm ra nguyên nhân. Két thiếu ' + vnd(hidden.amount) + '. Xử lý theo quy định?', [
-          { t:'Ghi nhận lệch, báo quản lý — mức trừ tiền', ok:true, why:'Lệch > 50.000đ: trừ tiền; tái phạm nhiều lần xem xét cho nghỉ việc.' },
-          { t:'Ghi nhận lệch, báo quản lý — mức nhắc nhở', why:'Nhắc nhở chỉ áp dụng khi lệch ≤ 20.000đ. Lệch > 50.000đ: trừ tiền.' },
-          { t:'Bù đủ tiền thiếu rồi bàn giao, không ghi lệch', why:'Không tự bù rồi giấu lệch — phải ghi nhận và báo quản lý.' } ]); live(id);
+        await choose(16, 'Đã kiểm đủ 4 mục, không tìm ra nguyên nhân. Két thiếu ' + vnd(hidden.amount) + '. Xử lý theo quy định?',
+          penaltyOpts(hidden.amount, { t:'Bù đủ tiền thiếu rồi bàn giao, không ghi lệch', why:'Không tự bù rồi giấu lệch — phải ghi nhận và báo quản lý.' })); live(id);
       }
       if (typo.length){
         await choose(16, 'File nhập sai ' + typo.map(function(k){ return LBL[k]; }).join(', ') + '. Xử lý?', [
@@ -1358,10 +1362,8 @@
       add(fileCard(r), 'info');
       if (cause === 'thoi' && r.diff){
         var a = Math.abs(r.diff);
-        await choose(16, 'Đã xác định: thối dư ' + money(a) + ' (Bill #' + hidden.cb.no + '). Mức xử lý theo quy định?', [
-          { t:'Ghi nhận lệch, báo quản lý — mức nhắc nhở', ok:true, why:'Lệch ≤ 20.000đ: nhắc nhở.' },
-          { t:'Ghi nhận lệch, báo quản lý — mức trừ tiền', why:'Trừ tiền áp dụng khi lệch > 50.000đ. Lệch ≤ 20.000đ: nhắc nhở.' },
-          { t:'Lệch nhỏ, bỏ qua không cần ghi nhận', why:'Mọi trường hợp lệch phải xử lý dứt điểm và ghi nhận trước khi bàn giao.' } ]); live(id);
+        await choose(16, 'Đã xác định: thối dư ' + money(a) + ' (Bill #' + hidden.cb.no + '). Mức xử lý theo quy định?',
+          penaltyOpts(a, { t:'Lệch nhỏ, bỏ qua không cần ghi nhận', why:'Mọi trường hợp lệch phải xử lý dứt điểm và ghi nhận trước khi bàn giao.' })); live(id);
       }
       finalDiff = r.diff;
       await button('Tiếp tục bàn giao ▶'); live(id);
@@ -1395,9 +1397,11 @@
     ['Mỗi đơn hàng cần bao nhiêu bill?', 'Mỗi đơn 1 bill riêng', ['Cuối ca nhập gộp các đơn nhỏ', 'Khách quen thì không cần bill', 'Đơn dưới 20.000đ khỏi bill']],
     ['Thu tiền lúc nào?', 'Trước khi làm / giao món', ['Sau khi giao món cho khách', 'Khi khách ăn xong ra về', 'Lúc nào khách tiện là được']],
     ['Khách đưa ảnh "chuyển khoản thành công" thì?', 'Đợi thông báo ngân hàng rồi mới xác nhận', ['Xác nhận vì ảnh đã báo thành công', 'Chụp lại ảnh để làm bằng chứng', 'Cho làm món trước, cuối ca mở Store Noti kiểm tra sau']],
-    ['Lệch quỹ ≤ 20.000đ bị xử lý thế nào?', 'Nhắc nhở', ['Trừ tiền', 'Xem xét cho nghỉ việc', 'Không xử lý']],
-    ['Lệch quỹ > 50.000đ bị xử lý thế nào?', 'Trừ tiền', ['Nhắc nhở', 'Xem xét cho nghỉ việc', 'Không xử lý']],
-    ['Lệch quỹ nhiều lần (tái phạm)?', 'Xem xét cho nghỉ việc', ['Nhắc nhở', 'Trừ tiền', 'Không xử lý']],
+    ['Lệch quỹ ≤ 20.000đ bị xử lý thế nào?', 'Nhắc nhở', ['Phạt biên bản', 'Trừ tiền', 'Xem xét cho nghỉ việc']],
+    ['Lệch quỹ 35.000đ bị xử lý thế nào?', 'Phạt biên bản', ['Nhắc nhở', 'Trừ tiền', 'Xem xét cho nghỉ việc']],
+    ['Lệch quỹ trên 20.000đ đến 50.000đ bị xử lý thế nào?', 'Phạt biên bản', ['Nhắc nhở', 'Trừ tiền', 'Xem xét cho nghỉ việc']],
+    ['Lệch quỹ > 50.000đ bị xử lý thế nào?', 'Trừ tiền', ['Nhắc nhở', 'Phạt biên bản', 'Xem xét cho nghỉ việc']],
+    ['Lệch quỹ nhiều lần (tái phạm)?', 'Xem xét cho nghỉ việc', ['Nhắc nhở', 'Phạt biên bản', 'Trừ tiền']],
     ['Cuối ca đếm két mấy lần?', '2 lần', ['1 lần', '3 lần', 'Xem POS, không cần đếm']],
     ['Tiền phải có cuối ca = ?', 'Tiền đầu ca + tiền mặt − tiền chi', ['Tiền đầu ca + doanh thu POS', 'Tiền mặt + chuyển khoản', 'Tiền mặt − tiền chi']],
     ['Khách xin bớt 5.000đ?', 'Không tự giảm, chỉ áp chương trình trên POS', ['Giảm tay 5.000đ trên POS cho khách', 'Bớt cho khách rồi cuối ca báo lại với quản lý sau', 'Bớt rồi tự bù 5.000đ vào két']],
