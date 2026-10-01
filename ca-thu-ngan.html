@@ -313,7 +313,7 @@
     15:['File tự đối chiếu', 'File so sánh: tiền phải có = tiền đầu ca + tiền mặt − tiền chi → OK hoặc LỆCH.'],
     16:['Xử lý lệch', 'Kiểm tra lần lượt: tiền thối, bill thiếu, tiền chi, lỗi nhập liệu. Không bỏ qua trường hợp nào.'],
     17:['Bàn giao ca', 'Ghi sổ doanh thu và tiền bàn giao; ký xác nhận giữa CHT/CHP ca này và ca sau.'],
-    16.5:['Đối soát chuyển khoản', 'Chốt két xong: mở app Store Noti → đăng nhập → chọn đúng ngày cần xem → so tiền chuyển khoản thực tế với tiền chuyển khoản trên iPOS. Khớp thì chụp màn hình gửi vào nhóm Zalo "Báo cáo hằng ngày" và nhắn "Ca ... khớp ạ".']
+    16.5:['Đối soát chuyển khoản', 'Chốt két xong: mở app Store Noti → đăng nhập → chọn đúng ngày cần xem → so tiền chuyển khoản thực tế với tiền chuyển khoản trên iPOS. Khớp thì chụp màn hình gửi vào nhóm Zalo "Báo cáo hằng ngày" và nhắn "Ca ... khớp ạ". Không khớp thì báo lên cấp quản lý để xử lý.']
   };
   function stepName(n){ return n === 16.5 ? 'Sau chốt két · ' + SOP[n][0] : 'Bước ' + n + ' · ' + SOP[n][0]; }
   var RULES = ['<b>Cấm:</b> không nhập bill khi có giao dịch · giữ tiền ngoài két · tự ý giảm giá · nhận tiền không ghi vào hệ thống.',
@@ -364,7 +364,6 @@
     ["Tươi Mát","HMC-TCC-04","Trà mãng cầu",35],
     ["Tươi Mát","HMC-TCC-06","Nước sâm full topping",25],
     ["Tươi Mát","HMC-TCC-07","Nước dừa tắc trái cây",25],
-    ["Tươi Mát","HMC-TLN-01","Trà long nhãn hạt sen",35],
     ["Trứng Nhà","HMC-FLAN-01","Flan truyền thống (2 bánh)",20],
     ["Trứng Nhà","HMC-FLAN-02","Flan hạt đác Hami",30],
     ["Trứng Nhà","HMC-AV-01","Milo đá bào flan",35]
@@ -1040,10 +1039,11 @@
       { t:'⚠️ Không khớp', ok:mism, why:mism ? '' : 'Hai số bằng nhau (' + money(real) + ') — là khớp.' } ]); live(id);
     if (mism){
       await choose(16.5, 'Chuyển khoản thực nhận ít hơn iPOS ' + vnd(L.transfer - real) + '. Em làm gì?', [
-        { t:'Không báo "khớp"; dò lại từng giao dịch Store Noti với bill chuyển khoản trên iPOS và báo quản lý ngay', ok:true },
-        { t:'Vẫn nhắn "khớp ạ" cho xong ca', why:'Chỉ báo "khớp" khi số thực nhận bằng iPOS — báo sai là che lệch quỹ.' },
-        { t:'Sửa số chuyển khoản trong file cho bằng Store Noti', why:'Không sửa số cho khớp — phải tìm ra bill nào chưa nhận được tiền.' } ]); live(id);
-      add('📝 Đã báo quản lý: chuyển khoản lệch ' + vnd(L.transfer - real) + ', đang dò từng giao dịch.', 'info');
+        { t:'Báo ngay lên cấp quản lý để xử lý (không nhắn "khớp")', ok:true },
+        { t:'Vẫn nhắn "khớp ạ" cho xong ca', why:'Không khớp thì báo lên cấp quản lý để xử lý — không được báo "khớp".' },
+        { t:'Sửa số chuyển khoản trong file cho bằng Store Noti', why:'Không tự sửa số — không khớp thì báo lên cấp quản lý để xử lý.' },
+        { t:'Tự lấy tiền két bù phần lệch', why:'Không tự bù — không khớp thì báo lên cấp quản lý để xử lý.' } ]); live(id);
+      add('📝 Đã báo cấp quản lý: chuyển khoản lệch ' + vnd(L.transfer - real) + ' (Store Noti ' + vnd(real) + ' / iPOS ' + vnd(L.transfer) + ').', 'info');
       G.ckDiff = real - L.transfer;
       return;
     }
