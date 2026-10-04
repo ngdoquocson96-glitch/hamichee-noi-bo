@@ -106,27 +106,40 @@
   .hand{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 
   /* POS */
-  .pos{ background:#1f2a33; border-radius:18px; padding:8px; color:#fff; display:flex; flex-direction:column; gap:6px; box-shadow:0 4px 0 #0e151b; }
-  .pos .scr{ background:#f7f9fb; color:#1f2a33; border-radius:12px; padding:8px; display:flex; flex-direction:column; gap:6px; }
+  .pos{ background:#fff; border-radius:16px; color:#2b2b2b; display:flex; flex-direction:column; gap:0; box-shadow:0 2px 0 #e7dccb, 0 6px 16px rgba(0,0,0,.08); overflow:hidden; border:1px solid #f0e2cf; }
+  .pos .hd{ display:flex; justify-content:space-between; align-items:center; background:linear-gradient(90deg, #f26b21, #f7941d); color:#fff; font-size:12.5px; padding:7px 10px; }
+  .pos .hd .brand{ font-weight:900; letter-spacing:.5px; font-size:13.5px; }
+  .pos .scr{ background:#f6f7f9; padding:8px; display:flex; flex-direction:column; gap:6px; }
+  .pos .mode{ display:grid; grid-template-columns:1fr 1fr; background:#fff; border:1px solid #e3e6ea; border-radius:10px; overflow:hidden; }
+  .pos .mode button{ border:none; background:#fff; padding:8px 4px; font-weight:bold; font-size:13px; color:#555; }
+  .pos .mode button.on{ background:#f26b21; color:#fff; }
+  .pos .seat{ background:#fff; border:1px solid #e3e6ea; border-radius:10px; padding:6px; }
+  .pos .seat:empty{ display:none; }
+  .pos .tbls{ display:grid; grid-template-columns:repeat(6, 1fr); gap:4px; }
+  .pos .tbls button{ border:1px solid #cfd6dd; background:#fff; border-radius:8px; padding:6px 0; font-size:12px; font-weight:bold; color:#333; }
+  .pos .tbls button.busy{ background:#eceff2; color:#a3abb3; border-style:dashed; }
+  .pos .tbls button.on{ background:#f26b21; border-color:#f26b21; color:#fff; }
+  .pos .mv{ font-size:13px; text-align:center; } .pos .mv b{ color:#f26b21; font-size:16px; }
   .pos .tabs{ display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; } .pos .tabs::-webkit-scrollbar{ display:none; }
-  .pos .tabs button{ flex:none; border:none; border-radius:9px; padding:6px 10px; font-size:12.5px; font-weight:bold; background:#e3e9ef; color:#34495e; }
-  .pos .tabs button.on{ background:#00783E; color:#fff; }
+  .pos .tabs button{ flex:none; border:1px solid #e3e6ea; border-radius:18px; padding:5px 11px; font-size:12.5px; font-weight:bold; background:#fff; color:#555; }
+  .pos .tabs button.on{ background:#fff1e8; border-color:#f26b21; color:#d4570f; }
   .pos .items{ display:grid; grid-template-columns:repeat(2, 1fr); gap:5px; max-height:176px; overflow-y:auto; }
-  .pos .items button{ border:1px solid #d5dee6; background:#fff; border-radius:9px; padding:6px 7px; text-align:left; font-size:12.5px; line-height:1.25; min-height:44px; }
-  .pos .items button i{ font-style:normal; color:#00783E; font-weight:bold; display:block; }
-  .pos .items button:active{ background:#e9f5ee; }
-  .pos .cart{ background:#fff; border:1px solid #d5dee6; border-radius:9px; padding:4px 8px; font-size:13.5px; min-height:38px; }
-  .pos .ln{ display:flex; align-items:center; gap:6px; padding:3px 0; border-bottom:1px dashed #e3e9ef; } .pos .ln:last-child{ border-bottom:none; }
+  .pos .items button{ border:1px solid #e3e6ea; background:#fff; border-radius:10px; padding:6px 8px; text-align:left; font-size:12.5px; line-height:1.25; min-height:46px; }
+  .pos .items button i{ font-style:normal; color:#f26b21; font-weight:bold; display:block; }
+  .pos .items button:active{ background:#fff1e8; }
+  .pos .cart{ background:#fff; border:1px solid #e3e6ea; border-radius:10px; padding:4px 8px; font-size:13.5px; min-height:38px; }
+  .pos .ln{ display:flex; align-items:center; gap:6px; padding:3px 0; border-bottom:1px dashed #e8ebee; } .pos .ln:last-child{ border-bottom:none; }
   .pos .ln span{ flex:1; min-width:0; } .pos .ln b{ white-space:nowrap; }
-  .pos .ln button{ width:28px; height:28px; border-radius:8px; border:none; background:#e3e9ef; font-weight:bold; font-size:16px; padding:0; flex:none; }
-  .pos .tot{ display:flex; justify-content:space-between; font-size:16px; font-weight:bold; padding:2px 2px 0; }
-  .pos .acts{ display:grid; grid-template-columns:1fr 1fr 1.2fr; gap:5px; }
-  .pos .acts button{ border:none; border-radius:10px; padding:9px 4px; font-weight:bold; font-size:13px; }
-  .pos .acts .ask{ background:#fff3d6; color:#6b4a00; } .pos .acts .promo{ background:#fde7f0; color:#8a1d4f; } .pos .acts .save{ background:#00a35a; color:#fff; }
+  .pos .ln button{ width:28px; height:28px; border-radius:50%; border:1px solid #f26b21; background:#fff; color:#f26b21; font-weight:bold; font-size:16px; padding:0; flex:none; }
+  .pos .tot{ display:flex; justify-content:space-between; font-size:16px; font-weight:bold; padding:2px 2px 0; } .pos .tot .tv{ color:#d4570f; }
+  .pos .acts{ display:grid; grid-template-columns:1fr 1fr 1.3fr; gap:5px; padding:6px 8px 4px; background:#fff; }
+  .pos .acts button{ border:none; border-radius:10px; padding:10px 4px; font-weight:bold; font-size:13px; }
+  .pos .acts .ask{ background:#f1f3f5; color:#444; } .pos .acts .promo{ background:#fff1e8; color:#d4570f; } .pos .acts .save{ background:#f26b21; color:#fff; }
   .pos .said{ background:#fff8e1; color:#5a4300; border-radius:9px; padding:6px 8px; font-size:13.5px; line-height:1.35; }
-  .pos .qstrip{ background:#fffbe9; color:#5a4300; border-radius:9px; padding:5px 8px; font-size:11.5px; line-height:1.5; }
+  .pos .qstrip{ background:#fffbe9; color:#5a4300; padding:5px 8px 7px; font-size:11.5px; line-height:1.5; }
   .pos .qstrip span{ white-space:nowrap; } .pos .qstrip span.on{ background:#FAA627; color:#3b2600; border-radius:6px; padding:0 4px; font-weight:bold; }
-  .pos .hd{ display:flex; justify-content:space-between; font-size:12px; color:#9fb1c1; padding:0 4px; }
+  .rcpt{ background:#fff; margin:0 auto; width:min(290px, 100%); padding:12px 14px; font-family:'Courier New', monospace; font-size:13px; box-shadow:0 3px 10px rgba(0,0,0,.12); border-top:4px solid #f26b21; }
+  .rcpt .c{ text-align:center; } .rcpt .kv{ border-bottom:1px dashed #ccc; font-size:13px; } .rcpt .big{ font-size:16px; font-weight:bold; text-align:center; padding:4px 0; }
   .phone{ width:150px; margin:0 auto; background:#111; border-radius:22px; padding:10px 8px; color:#fff; text-align:center; }
   .phone .scr2{ background:#fff; color:#222; border-radius:14px; padding:12px 8px; font-size:13px; }
   .bank{ background:#0f5132; color:#fff; border-radius:14px; padding:10px 12px; display:flex; gap:10px; align-items:center; font-size:14px; }
@@ -306,11 +319,11 @@
     Q1:['Chào khách', 'Cười thật tươi: "HAMICHEE xin chào!"'],
     Q2:['Ở đây hay mang về', '"Dạ anh/chị mình dùng ở đây hay mang về ạ?"'],
     Q3:['Tư vấn & nhận order', 'Tư vấn nếu khách chưa biết chọn món nào. Kiểm tra tên món, số lượng — chưa rõ thì hỏi lại.'],
-    Q4:['Nhắc đơn & báo tiền', 'Nhập bill vào POS (không nhập = không làm), nhắc lại đơn cho khách và thông báo số tiền.'],
+    Q4:['Nhắc đơn & báo tiền', 'Nhập bill vào POS — chọn Tại bàn (bàn trống) hoặc Mang về (số mang về riêng); không nhập = không làm. Nhắc lại đơn cho khách và thông báo số tiền.'],
     Q5:['Thẻ thành viên', '"Dạ anh/chị ơi mình có thẻ thành viên bên em chưa ạ?" Có → nhập và giảm giá. Chưa → xin thông tin liền: "Dạ bên em đang làm thẻ thành viên miễn phí, được giảm giá 5% từ lần 2 ghé quán… cho em xin ngày sinh nhật vì ngày sinh nhật được giảm 15% ạ ❤️". Cười tươi và 100% xin thông tin khách làm thẻ. Mã quà / khuyến mãi chỉ áp đúng chương trình trên POS.'],
     Q6:['Hỏi thanh toán', '"Dạ anh/chị thanh toán tiền mặt hay chuyển khoản ạ?"'],
     Q7:['Nhận tiền', 'Tiền mặt: nói rõ "Em nhận …", thối và nói rõ "Em gửi lại …", cất két. Chuyển khoản: chờ thông báo ngân hàng (không nhận ảnh chụp), rồi báo "Dạ bên em đã nhận đủ … ạ".'],
-    Q8:['Gửi bill & cảm ơn', 'Gửi bill thanh toán kèm số bàn và "HAMICHEE xin cảm ơn!"'],
+    Q8:['Gửi bill & cảm ơn', 'Gửi bill thanh toán kèm số bàn (khách mang về: số mang về riêng trên bill) và "HAMICHEE xin cảm ơn!"'],
     11:['Chốt đơn', 'Ngưng nhận đơn mới, chốt đơn cuối cùng trong ca.'],
     12:['Tổng hợp số liệu', 'Tổng hợp số liệu từ POS và ghi chú trong ca (tiền chi, điều chỉnh...).'],
     13:['Nhập file chốt ca', 'Nhập đủ: tiền mặt, chuyển khoản, tiền chi, số bill, doanh thu POS.'],
@@ -702,8 +715,9 @@
     return types.map(function(t, i){
       var r = Math.random(), mem = t === 'voucher' || t === 'discount' ? 'new' : r < 0.32 ? 'member' : r < 0.5 ? 'bday' : 'new', bd, r2 = Math.random();
       do { bd = dmStr(rnd(1, 28), rnd(1, 12)); } while (bd === todayDM());
+      if (mem === 'new' && r2 >= 0.42 && r2 < 0.55) bd = todayDM(); // khách mới làm thẻ đúng sinh nhật
       return { type:t, no:i + 1, look:newLook(names[i]), name:names[i], where:Math.random() < 0.55 ? 'in' : 'out', member:mem, phone:phoneNo(), bday:bd, visits:rnd(2, 15),
-               newKind:r2 < 0.18 ? 'decline' : r2 < 0.45 ? 'ask' : 'ok' }; // khách mới: từ chối làm thẻ / hỏi "có giảm luôn không" / đồng ý
+               newKind:r2 < 0.18 ? 'decline' : r2 < 0.42 ? 'ask' : r2 < 0.55 ? 'bdayToday' : 'ok' }; // khách mới: từ chối / hỏi "có giảm luôn không" / sinh nhật hôm nay / đồng ý
     });
   }
   async function phaseTrong(){
@@ -861,7 +875,14 @@
     L.bills++; L.pos += total; L.disc += bill.disc + md; if (pay === 'cash') L.cash += total; else L.transfer += total;
     // B8 — gửi bill kèm số bàn + HAMICHEE xin cảm ơn
     setStep('Q8'); resetWork();
-    var tb = rnd(1, 15), so = c.where === 'in' ? 'số bàn ' + tb : 'số thứ tự ' + tb; // mang về: số thứ tự chờ món
+    var so = c.seat && c.seat.indexOf('Bàn') === 0 ? 'số bàn ' + c.seat.slice(4) : 'số mang về ' + c.seat; // mang về: số riêng trên POS
+    var rl = Object.keys(bill.items).map(function(x){ return '<div class="kv"><span>' + bill.items[x] + ' ' + esc(BYCODE[x].name) + '</span><b>' + money(BYCODE[x].price * bill.items[x]) + '</b></div>'; }).join('');
+    add('<div class="rcpt"><div class="c"><b>HAMICHEE</b><br><small>HÓA ĐƠN THANH TOÁN · Bill #' + L.bills + '</small></div>' +
+        '<div class="big">' + (c.where === 'in' ? c.seat.toUpperCase() : 'MANG VỀ · ' + c.seat) + '</div>' + rl +
+        (bill.disc ? '<div class="kv"><span>Khuyến mãi</span><b>−' + money(bill.disc) + '</b></div>' : '') + (md ? '<div class="kv"><span>Thẻ thành viên</span><b>−' + money(md) + '</b></div>' : '') +
+        '<div class="kv"><span><b>TỔNG THANH TOÁN</b></span><b>' + money(total) + '</b></div><div class="kv"><span>Hình thức</span><b>' + (pay === 'cash' ? 'Tiền mặt' : 'Chuyển khoản') + '</b></div>' +
+        '<div class="c" style="padding-top:6px">HAMICHEE xin cảm ơn!</div></div>', '');
+    scrollEnd();
     if (k === 1 || k === G.ask10) await choose('Q8', 'Xong thanh toán. Em làm gì cuối cùng?', [
       { t:'Gửi bill kèm ' + so + ': "HAMICHEE xin cảm ơn ạ!"', ok:true },
       { t:'Gửi bill kèm ' + so + ': "Dạ mình đợi món chút nha!"', why:'B8: gửi bill kèm số bàn và nói "HAMICHEE xin cảm ơn!"' },
@@ -944,6 +965,13 @@
     }
     scene(null, 'Em', 'Dạ cho em xin số điện thoại với ngày sinh nhật của mình ạ.'); await wait(700); live(id);
     await readPhone(c, true); live(id);
+    if (c.newKind === 'bdayToday'){
+      scene(null, c.name, 'Hôm nay sinh nhật ' + me + ' luôn đó em!');
+      await choose('Q5', 'Khách làm thẻ mới đúng hôm sinh nhật. Em nói gì?', [
+        { t:'"Chúc mừng sinh nhật ' + you + ' ❤️ Thẻ mới tạo hôm nay chưa giảm ngay ạ, lần sau ghé mình được giảm 5% nha."', ok:true },
+        { t:'"Chúc mừng sinh nhật ' + you + ' ❤️ Hôm nay đúng sinh nhật nên em giảm 15% luôn cho mình nha."', why:'Thẻ mới tạo hôm nay chưa giảm ngay — kể cả đúng ngày sinh nhật.' },
+        { t:'"Chúc mừng sinh nhật ' + you + ' ❤️ Thẻ mới tạo hôm nay em giảm 5% luôn cho mình nha."', why:'Thẻ mới chưa giảm ngay: giảm 5% từ lần 2 ghé quán.' } ]); live(id);
+    }
     var form = document.createElement('div'); form.className = 'info';
     form.innerHTML = '<h3>💳 POS — Tạo thẻ thành viên mới</h3><div class="kv"><span>Tên</span><b>' + esc(c.name) + '</b></div><div class="kv"><span>SĐT · sinh nhật</span><b>' + c.phone + ' · ' + c.bday + '</b></div>';
     w.appendChild(form);
@@ -955,15 +983,26 @@
   function posEntry(c){
     var id = RUN;
     return new Promise(function(resolve){
-      var w = resetWork(), cart = {}, promo = null, asked = false, tab = GROUPS[0], firstSave = true;
+      var w = resetWork(), cart = {}, promo = null, asked = false, tab = GROUPS[0], firstSave = true, mode = null, table = null;
+      var busy = shuffle(Array.from({ length:12 }, function(_, i){ return i + 1; })).slice(0, rnd(3, 5)); // bàn đang có khách
       var pos = document.createElement('div'); pos.className = 'pos';
-      pos.innerHTML = '<div class="hd"><span>🖥️ POS HAMICHEE</span><span>Bill #' + (G.led.bills + 1) + '</span></div>' +
-        '<div class="scr"><div class="said"></div><div class="tabs"></div><div class="items"></div><div class="cart"></div><div class="tot"><span>Tổng</span><span class="tv">0đ</span></div></div>' +
+      pos.innerHTML = '<div class="hd"><span class="brand">FABi POS</span><span>HAMICHEE · Bill #' + (G.led.bills + 1) + '</span></div>' +
+        '<div class="scr"><div class="said"></div><div class="mode"><button type="button" data-m="in">🪑 Tại bàn</button><button type="button" data-m="out">🛍️ Mang về</button></div><div class="seat"></div><div class="tabs"></div><div class="items"></div><div class="cart"></div><div class="tot"><span>Tổng</span><span class="tv">0đ</span></div></div>' +
         '<div class="acts"><button type="button" class="ask">❓ Hỏi lại</button><button type="button" class="promo">🎁 K.mãi</button><button type="button" class="save">🧾 Lưu bill</button></div>' +
         '<div class="qstrip">📋 ' + ['B1 Chào 😊', 'B2 Ở đây/mang về', 'B3 Tư vấn', 'B4 Báo tiền', 'B5 Thẻ TV', 'B6 Hỏi TT', 'B7 Nhận tiền', 'B8 Bill + cảm ơn'].map(function(x, i){ return '<span' + (i === 3 ? ' class="on"' : '') + '>' + x + '</span>'; }).join(' · ') + '</div>';
       w.appendChild(pos);
       var tabs = pos.querySelector('.tabs'), its = pos.querySelector('.items'), cartEl = pos.querySelector('.cart');
       function said(t){ pos.querySelector('.said').innerHTML = '💬 <b>' + esc(c.name) + ':</b> ' + t; }
+      var seatEl = pos.querySelector('.seat'), mvLabel = 'MV-' + ('0' + G.mvNo).slice(-2);
+      function drawSeat(){
+        [].forEach.call(pos.querySelectorAll('.mode button'), function(b){ b.classList.toggle('on', b.dataset.m === mode); });
+        if (mode === 'in'){
+          seatEl.innerHTML = '<div class="tbls">' + Array.from({ length:12 }, function(_, i){ var n = i + 1; return '<button type="button" data-t="' + n + '" class="' + (busy.indexOf(n) >= 0 ? 'busy' : '') + (table === n ? ' on' : '') + '">B' + n + '</button>'; }).join('') + '</div>';
+          [].forEach.call(seatEl.querySelectorAll('[data-t]'), function(b){ b.addEventListener('click', function(){ var n = +b.dataset.t; if (busy.indexOf(n) >= 0){ toast('Bàn ' + n + ' đang có khách — chọn bàn trống'); return; } table = n; drawSeat(); }); });
+        } else if (mode === 'out') seatEl.innerHTML = '<div class="mv">Đơn mang về — số riêng <b>' + mvLabel + '</b></div>';
+        else seatEl.innerHTML = '';
+      }
+      [].forEach.call(pos.querySelectorAll('.mode button'), function(b){ b.addEventListener('click', function(){ if (id !== RUN) return; mode = b.dataset.m; if (mode !== 'in') table = null; drawSeat(); }); });
       said(esc(c.say));
       function disc(){ var sub = cartTotal(cart); return promo === 'G' && sub >= 40000 ? Math.min(10000, Math.floor(sub * 0.1 / 1000) * 1000) : 0; }
       function draw(){
@@ -1013,7 +1052,11 @@
         if (id !== RUN) return;
         dock.innerHTML = '';
         if (!Object.keys(cart).length){ toast('Chưa nhập món nào'); return; }
+        if (!mode){ toast('Chọn Tại bàn hay Mang về trên POS trước'); return; }
+        if (mode === 'in' && !table){ toast('Chọn bàn trống cho khách'); return; }
         var problems = [];
+        if (mode !== c.where){ problems.push(['Q2', 'Khách ' + (c.where === 'in' ? 'dùng ở đây' : 'mang về') + ' — trên POS phải chọn ' + (c.where === 'in' ? 'Tại bàn' : 'Mang về') + '.']);
+          var t5 = c.where === 'in' ? 'Ủa ' + selfP(c.name) + ' ngồi đây mà em!' : cap(selfP(c.name)) + ' mang về mà em!'; scene(null, c.name, esc(t5)); said(esc(t5)); }
         if (c.amb && !asked){ problems.push(['Q3', 'Khách gọi "' + c.amb.say + '" chưa rõ (' + c.amb.ask + ') — phải hỏi lại trước khi nhập.']); asked = true;
           var t3 = 'Ủa, ' + selfP(c.name) + ' gọi ' + spoken(BYCODE[c.amb.code]) + ' mà em!'; scene(null, c.name, esc(t3)); said(esc(c.say) + '<br>→ ' + esc(t3)); }
         else if (!sameCart(cart, c.items)){ problems.push(['Q4', 'Bill nhập sai món/số lượng so với order.']); var t4 = 'Không phải em ơi: ' + orderText(c.items, null) + '.'; scene(null, c.name, esc(t4)); said(esc(t4)); }
@@ -1026,9 +1069,10 @@
         pos.querySelector('.scr').style.pointerEvents = 'none';
         setTimeout(function(){ pos.scrollIntoView({ block:'start', behavior:'smooth' }); }, 60);
         var d = disc(); pos.querySelector('.acts').innerHTML = '<div style="grid-column:1/-1;text-align:center;font-weight:bold;color:#7be3a9">✅ Đã lưu bill · ' + vnd(cartTotal(cart) - d) + '</div>';
-        resolve({ total:cartTotal(cart) - d, disc:d });
+        c.seat = mode === 'in' ? 'Bàn ' + table : mvLabel; if (mode === 'out') G.mvNo++;
+        resolve({ total:cartTotal(cart) - d, disc:d, items:JSON.parse(JSON.stringify(cart)), promo:promo });
       });
-      dock.innerHTML = '<div class="q">Nhập order vào POS rồi bấm <b>🧾 Lưu bill</b>.<small>Món chưa rõ thì bấm ❓ Hỏi lại khách. Khuyến mãi chỉ áp chương trình có trên máy.</small></div>';
+      dock.innerHTML = '<div class="q">Chọn <b>Tại bàn / Mang về</b>, nhập order rồi bấm <b>🧾 Lưu bill</b>.<small>Tại bàn: chọn bàn trống. Mang về: đơn có số mang về riêng. Món chưa rõ thì bấm ❓ Hỏi lại.</small></div>';
       scrollEnd();
     });
   }
@@ -1550,6 +1594,8 @@
     ['Khách chưa biết chọn món (B3) thì?', 'Hỏi khẩu vị, gợi ý món nổi bật (★ trên menu)', ['Mời khách tự xem menu rồi chọn', 'Gợi ý món đắt nhất cho chắc', 'Chọn giúp món làm nhanh nhất']],
     ['Thẻ thành viên HAMICHEE ưu đãi thế nào?', 'Miễn phí, giảm 5% từ lần 2 ghé, sinh nhật giảm 15%', ['Miễn phí, giảm 5% ngay hôm nay, sinh nhật giảm 15%', 'Miễn phí, giảm 5% từ lần 2 ghé, sinh nhật tặng chè', 'Miễn phí, giảm 15% từ lần 2 ghé, sinh nhật giảm 5%']],
     ['Khách làm thẻ hôm nay có được giảm luôn không?', 'Chưa, giảm 5% từ lần 2 ghé quán', ['Có, giảm 5% ngay hôm nay', 'Có, giảm 15% ngay hôm nay', 'Chưa, giảm 5% từ lần 5 ghé quán']],
+    ['Khách làm thẻ mới đúng ngày sinh nhật thì sao?', 'Chưa giảm ngay, lần sau ghé mới được giảm', ['Giảm 15% sinh nhật ngay hôm nay', 'Giảm 5% thẻ mới ngay hôm nay', 'Giảm 20% vì vừa làm thẻ vừa sinh nhật']],
+    ['Khách mang về, trên POS em chọn gì?', 'Mang về — đơn có số mang về riêng', ['Chọn đại 1 bàn trống cho nhanh', 'Bàn số 1 cho mọi đơn mang về', 'Không chọn gì, lưu bill luôn']],
     ['Khách từ chối làm thẻ thì em làm gì?', 'Vui vẻ: "Dạ không sao ạ, lần sau em làm thẻ cho mình nha"', ['Mời thêm 2–3 lần cho khách đồng ý', 'Im lặng, chuyển qua thanh toán luôn', 'Ghi đại số điện thoại để tạo thẻ']],
     ['Bao nhiêu khách cần được hỏi thẻ thành viên (B5)?', '100% khách', ['Chỉ khách quen', 'Khách có bill từ 100.000đ', 'Khi khách hỏi']],
     ['Kết thúc mỗi khách (B8) em làm gì?', 'Gửi bill kèm số bàn, "HAMICHEE xin cảm ơn!"', ['Đưa số bàn, bill để lại quầy cho gọn', 'Gửi bill, "Dạ xong rồi ạ"', 'Mời khách tự lấy bill ở máy in']],
@@ -1582,7 +1628,7 @@
     $('home-msg').textContent = '';
     RUN++; var id = RUN;
     G = { part:part, name:name, score:0, mist:[], steps:0, ok:0, step:0, from:1, to:3, float0:FLOAT, drawer:STD_FLOAT(), led:null, diff:null, t0:Date.now(),
-          shift:pick(['Ca sáng', 'Ca chiều', 'Ca tối']), cashN:0, shotSeen:false, qrN:0, newCardN:0, phoneChecked:false };
+          shift:pick(['Ca sáng', 'Ca chiều', 'Ca tối']), cashN:0, shotSeen:false, qrN:0, newCardN:0, phoneChecked:false, mvNo:rnd(1, 30) };
     setScore(); dock.innerHTML = ''; clearStage(); show('s-play');
     try { if (!history.state || !history.state.ca) history.pushState({ ca:1 }, ''); } catch(e){}
     try {
