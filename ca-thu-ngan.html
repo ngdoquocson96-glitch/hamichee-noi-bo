@@ -124,6 +124,7 @@
   .pos .acts button{ border:none; border-radius:10px; padding:9px 4px; font-weight:bold; font-size:13px; }
   .pos .acts .ask{ background:#fff3d6; color:#6b4a00; } .pos .acts .promo{ background:#fde7f0; color:#8a1d4f; } .pos .acts .save{ background:#00a35a; color:#fff; }
   .pos .said{ background:#fff8e1; color:#5a4300; border-radius:9px; padding:6px 8px; font-size:13.5px; line-height:1.35; }
+  .pos .qstrip{ background:#fffbe9; color:#5a4300; border-radius:9px; padding:5px 8px; font-size:11.5px; line-height:1.4; }
   .pos .hd{ display:flex; justify-content:space-between; font-size:12px; color:#9fb1c1; padding:0 4px; }
   .phone{ width:150px; margin:0 auto; background:#111; border-radius:22px; padding:10px 8px; color:#fff; text-align:center; }
   .phone .scr2{ background:#fff; color:#222; border-radius:14px; padding:12px 8px; font-size:13px; }
@@ -204,7 +205,7 @@
         <div class="modes">
           <button type="button" class="mode big" data-part="ca"><span class="e">⭐</span><span><b>Cả ca làm việc</b><br><small>Bước 1 → 17: mở ca, đón 5 khách, kết ca & bàn giao. Tiền thật chạy xuyên suốt ca.</small><br><span class="st" data-best="ca"></span></span></button>
           <button type="button" class="mode" data-part="mo"><span class="e">🌅</span><b>Mở ca</b><small>Bước 1–3: sổ giao ca, đếm két 680k, kiểm thiết bị</small><span class="st" data-best="mo"></span></button>
-          <button type="button" class="mode" data-part="trong"><span class="e">🧾</span><b>Trong ca</b><small>Bước 4–10: chào khách, nhập bill, thu tiền, thối tiền</small><span class="st" data-best="trong"></span></button>
+          <button type="button" class="mode" data-part="trong"><span class="e">🧾</span><b>Trong ca</b><small>B1–B8 tại quầy: chào, tư vấn, báo tiền, thẻ thành viên, thu tiền, gửi bill</small><span class="st" data-best="trong"></span></button>
           <button type="button" class="mode" data-part="ket"><span class="e">🌙</span><b>Kết ca</b><small>Bước 11–17: chốt file, đếm két 2 lần, xử lý lệch, đối soát CK Store Noti, bàn giao</small><span class="st" data-best="ket"></span></button>
           <button type="button" class="mode" data-part="luat"><span class="e">📘</span><b>Ôn luật két</b><small>10 câu nhanh về quy định kiểm soát tiền</small><span class="st" data-best="luat"></span></button>
         </div>
@@ -301,13 +302,14 @@
     1:['Nhận ca', 'Kiểm tra sổ giao ca: ca trước có lỗi gì không; nhận thông tin bàn giao từ ca trước.'],
     2:['Kiểm tra tiền', 'Đếm tiền đầu ca (két chuẩn 680.000đ); đảm bảo đủ tiền lẻ; ghi vào sổ: Ngày / Ca / Tiền đầu ca.'],
     3:['Kiểm tra thiết bị', 'Máy POS hoạt động; máy in bill còn giấy; mã QR chuyển khoản hoạt động.'],
-    4:['Chào khách', '"Hamichee xin chào ạ, anh/chị dùng tại đây hay mang về ạ?"'],
-    5:['Nhận order', 'Kiểm tra tên món, số lượng. Thiếu thông tin → yêu cầu bổ sung ngay.'],
-    6:['Nhập bill vào POS', 'Nhập đầy đủ vào POS. Không nhập = không làm.'],
-    7:['Xác nhận với khách', 'Nhắc lại món cho khách; báo rõ tổng tiền. Vd: "Dạ tổng 45.000 ạ".'],
-    8:['Thu tiền', 'Tiền mặt: nói rõ "Em nhận 100.000", đặt tiền trên quầy, thối và nói rõ "Em gửi lại 55.000", cất vào két. Chuyển khoản: chỉ xác nhận khi có thông báo ngân hàng — KHÔNG nhận ảnh chụp màn hình.'],
-    9:['Giảm giá / khuyến mãi', 'Nhập đúng chương trình trên POS, không tự ý áp dụng ngoài hệ thống.'],
-    10:['Hướng dẫn khách', 'Mang về: mời khách qua quầy chờ món. Tại chỗ: gửi thẻ bàn + bill, cảm ơn khách.'],
+    Q1:['Chào khách', 'Cười thật tươi: "HAMICHEE xin chào!"'],
+    Q2:['Ở đây hay mang về', '"Dạ anh/chị mình dùng ở đây hay mang về ạ?"'],
+    Q3:['Tư vấn & nhận order', 'Tư vấn nếu khách chưa biết chọn món nào. Kiểm tra tên món, số lượng — chưa rõ thì hỏi lại.'],
+    Q4:['Nhắc lại đơn & báo tiền', 'Nhập bill vào POS (không nhập = không làm), nhắc lại đơn cho khách và thông báo số tiền.'],
+    Q5:['Thẻ thành viên', '"Dạ anh/chị ơi mình có thẻ thành viên bên em chưa ạ?" Có → nhập và giảm giá. Chưa → xin thông tin liền: "Dạ bên em đang làm thẻ thành viên miễn phí, được giảm giá 5% từ lần 2 ghé quán… cho em xin ngày sinh nhật vì ngày sinh nhật được giảm 15% ạ ❤️". Cười tươi và 100% xin thông tin khách làm thẻ. Mã quà / khuyến mãi chỉ áp đúng chương trình trên POS.'],
+    Q6:['Hỏi thanh toán', '"Dạ anh/chị thanh toán tiền mặt hay chuyển khoản ạ?"'],
+    Q7:['Nhận tiền', 'Tiền mặt: nói rõ "Em nhận …", thối và nói rõ "Em gửi lại …", cất két. Chuyển khoản: chờ thông báo ngân hàng (không nhận ảnh chụp), rồi báo "Dạ bên em đã nhận đủ … ạ".'],
+    Q8:['Gửi bill & cảm ơn', 'Gửi bill thanh toán kèm số bàn và "HAMICHEE xin cảm ơn!"'],
     11:['Chốt đơn', 'Ngưng nhận đơn mới, chốt đơn cuối cùng trong ca.'],
     12:['Tổng hợp số liệu', 'Tổng hợp số liệu từ POS và ghi chú trong ca (tiền chi, điều chỉnh...).'],
     13:['Nhập file chốt ca', 'Nhập đủ: tiền mặt, chuyển khoản, tiền chi, số bill, doanh thu POS.'],
@@ -317,18 +319,16 @@
     17:['Bàn giao ca', 'Ghi sổ doanh thu và tiền bàn giao; ký xác nhận giữa CHT/CHP ca này và ca sau.'],
     16.5:['Đối soát chuyển khoản', 'Chốt két xong: mở app Store Noti → đăng nhập → chọn đúng ngày cần xem → so tiền chuyển khoản thực tế với tiền chuyển khoản trên iPOS. Khớp thì chụp màn hình gửi vào nhóm Zalo "Báo cáo hằng ngày" và nhắn "Ca ... khớp ạ". Không khớp thì báo lên cấp quản lý để xử lý.']
   };
-  function stepName(n){ return n === 16.5 ? 'Sau chốt két · ' + SOP[n][0] : 'Bước ' + n + ' · ' + SOP[n][0]; }
+  var SEQ = { mo:[1, 2, 3], trong:['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8'], ket:[11, 12, 13, 14, 15, 16, 16.5, 17] };
+  function stepName(n){ return typeof n === 'string' ? 'Tại quầy B' + n.slice(1) + ' · ' + SOP[n][0] : n === 16.5 ? 'Sau chốt két · ' + SOP[n][0] : 'Bước ' + n + ' · ' + SOP[n][0]; }
   var RULES = ['<b>Cấm:</b> không nhập bill khi có giao dịch · giữ tiền ngoài két · tự ý giảm giá · nhận tiền không ghi vào hệ thống.',
                '<b>Bắt buộc:</b> mỗi đơn = 1 bill · thu tiền trước khi làm/giao món · cuối ca tiền thực tế khớp file.',
                '<b>Lệch quỹ:</b> ≤ 20.000đ nhắc nhở · trên 20.000đ đến 50.000đ phạt biên bản · > 50.000đ trừ tiền · tái phạm nhiều lần xem xét cho nghỉ việc.'];
   function openSop(now){
     var h = '';
-    [['🌅 Mở ca', 1, 3], ['🧾 Trong ca', 4, 10], ['🌙 Kết ca', 11, 17]].forEach(function(g){
+    [['🌅 Mở ca', SEQ.mo], ['🧾 Trong ca — quy trình thu ngân dán ở quầy POS', SEQ.trong], ['🌙 Kết ca', SEQ.ket]].forEach(function(g){
       h += '<div style="font-weight:bold;padding-top:8px">' + g[0] + '</div>';
-      for (var i = g[1]; i <= g[2]; i++){
-        h += '<div' + (i === now ? ' class="now"' : '') + '><b>' + stepName(i) + ':</b> ' + esc(SOP[i][1]) + '</div>';
-        if (i === 16) h += '<div' + (now === 16.5 ? ' class="now"' : '') + '><b>' + stepName(16.5) + ':</b> ' + esc(SOP[16.5][1]) + '</div>';
-      }
+      g[1].forEach(function(i){ h += '<div' + (i === now ? ' class="now"' : '') + '><b>' + stepName(i) + ':</b> ' + esc(SOP[i][1]) + '</div>'; });
     });
     h += '<div style="font-weight:bold;padding-top:8px">📌 Quy định kiểm soát tiền (HMC.QD.A3.01)</div>' + RULES.map(function(r){ return '<div>' + r + '</div>'; }).join('');
     $('sop-list').innerHTML = h; $('sop').classList.add('on');
@@ -469,8 +469,9 @@
   function setStep(n){
     G.step = n;
     $('hd-sub').textContent = stepName(n);
+    var seq = G.part === 'ca' ? SEQ.mo.concat(SEQ.trong, SEQ.ket) : (SEQ[G.part] || []), at = seq.indexOf(n);
     var l = $('stepline'); l.innerHTML = '';
-    for (var i = G.from; i <= G.to; i++){ var x = document.createElement('i'); if (i < n) x.className = 'done'; else if (i === n) x.className = 'now'; l.appendChild(x); }
+    seq.forEach(function(x0, i){ var x = document.createElement('i'); if (at >= 0 && i < at) x.className = 'done'; else if (i === at) x.className = 'now'; l.appendChild(x); });
   }
   function mistake(step, text){
     G.mist.push({ step:step, text:text });
@@ -693,14 +694,18 @@
   function makeCustomers(n){
     // luôn có: 1 khách gọi chưa rõ, 1 khách chuyển khoản, 1 khách tiền mặt; còn lại ngẫu nhiên
     var types = ['amb', pick(['qrOk', 'qrShort', 'qrLate']), pick(['cashBig', 'cashExact'])];
-    types = types.concat(shuffle(['cashBig', 'qrOk', 'voucher', 'qrShort', 'cashExact', 'discount', 'pressure', 'qrLate'].filter(function(t){ return types.indexOf(t) < 0; })).slice(0, n - 3));
+    types = types.concat(shuffle(['cashBig', 'qrOk', 'voucher', 'qrShort', 'cashExact', 'discount', 'pressure', 'qrLate', 'consult', 'consult'].filter(function(t){ return types.indexOf(t) < 0; })).slice(0, n - 3));
     types = shuffle(types); // loại bắt buộc (gọi chưa rõ, chuyển khoản, tiền mặt) không luôn rơi vào 3 khách đầu
     var names = shuffle(NAMES.slice());
-    return types.map(function(t, i){ return { type:t, no:i + 1, look:newLook(names[i]), name:names[i], where:Math.random() < 0.55 ? 'in' : 'out' }; });
+    return types.map(function(t, i){
+      var r = Math.random(), mem = t === 'voucher' ? 'new' : r < 0.35 ? 'member' : r < 0.47 ? 'bday' : 'new', bd;
+      do { bd = dmStr(rnd(1, 28), rnd(1, 12)); } while (bd === todayDM());
+      return { type:t, no:i + 1, look:newLook(names[i]), name:names[i], where:Math.random() < 0.55 ? 'in' : 'out', member:mem, phone:phoneNo(), bday:bd, visits:rnd(2, 15) };
+    });
   }
   async function phaseTrong(){
     var id = RUN;
-    if (G.part !== 'ca'){ G.from = 4; G.to = 10; $('hd-title').textContent = '🧾 Trong ca'; G.float0 = FLOAT; G.drawer = STD_FLOAT(); }
+    if (G.part !== 'ca'){ $('hd-title').textContent = '🧾 Trong ca'; G.float0 = FLOAT; G.drawer = STD_FLOAT(); }
     G.led = newLedger();
     var custs = makeCustomers(5), evAt = rnd(1, custs.length - 1), ev2At = custs.length > 4 ? rnd(2, custs.length - 1) : -1;
     if (ev2At === evAt) ev2At = -1;
@@ -714,26 +719,55 @@
       await serve(custs[i], i + 1, custs.length); live(id);
     }
   }
+  var STARS = ['HMC-TT-01', 'HMC-TT-02', 'HMC-TT-03', 'HMC-TT-08', 'HMC-HĐ-05', 'HMC-HĐ-01', 'HMC-HĐ-04', 'HMC-HĐ-03', 'HMC-TT-04', 'HMC-TCC-03', 'HMC-TCC-02', 'HMC-TCC-06', 'HMC-TCC-07', 'HMC-SC-02', 'HMC-AV-01']; // món ★ trên menu
+  function dmStr(d, m){ return ('0' + d).slice(-2) + '/' + ('0' + m).slice(-2); }
+  function todayDM(){ var t = new Date(); return dmStr(t.getDate(), t.getMonth() + 1); }
+  function phoneNo(){ return '09' + rnd(0, 9) + rnd(0, 9) + ' ' + rnd(100, 999) + ' ' + rnd(100, 999); }
+  function nearPhone(p){ // số nghe nhầm: đảo 2 số kề nhau hoặc sai 1 số
+    var d = p.replace(/\s/g, '').split(''), i = rnd(3, 8);
+    if (d[i] !== d[i + 1] && Math.random() < 0.6){ var t = d[i]; d[i] = d[i + 1]; d[i + 1] = t; } else d[i] = String((+d[i] + rnd(1, 8)) % 10);
+    var x = d.join(''); return x.slice(0, 4) + ' ' + x.slice(4, 7) + ' ' + x.slice(7);
+  }
+  function memberDisc(total, kind){ return Math.round(total * (kind === 'bday' ? 0.15 : 0.05) / 1000) * 1000; } // POS làm tròn nghìn
   async function serve(c, k, n){
-    var id = RUN, L = G.led;
+    var id = RUN, L = G.led, me = selfP(c.name), you = callP(c.name);
     G.cur = c;
     clearStage(); dock.innerHTML = '';
     $('hd-title').textContent = (G.part === 'ca' ? '⭐ ' : '🧾 ') + 'Khách ' + k + '/' + n;
-    // Bước 4
-    setStep(4);
+    // B1 — cười thật tươi, HAMICHEE xin chào
+    setStep('Q1');
     c.look.mood = 'happy';
     scene(c.look, c.name, '<i>(bước tới quầy)</i>', null);
     await wait(400); live(id);
-    if (k <= 2) await choose(4, 'Khách vừa tới quầy. Em nói gì?', [
-      { t:'"Hamichee xin chào ạ, anh/chị dùng tại đây hay mang về ạ?"', ok:true },
-      { t:'"Hamichee xin chào ạ, anh/chị muốn dùng món gì hôm nay ạ?"', why:'Câu chào chuẩn phải hỏi rõ dùng tại đây hay mang về ngay từ đầu (Bước 4).' },
-      { t:'"Dạ chào anh/chị, mình dùng tại đây hay mang về ạ?"', why:'Thiếu lời chào thương hiệu "Hamichee xin chào ạ" (Bước 4).' } ]);
-    else { scene(null, 'Em', 'Hamichee xin chào ạ, ' + selfP(c.name) + ' dùng tại đây hay mang về ạ?'); await wait(900); }
+    if (k <= 2) await choose('Q1', 'Khách vừa tới quầy. Em làm gì?', [
+      { t:'😊 Cười thật tươi, nhìn khách: "HAMICHEE xin chào ạ!"', ok:true },
+      { t:'😐 Mắt vẫn nhìn máy POS: "HAMICHEE xin chào ạ!"', why:'B1: chào "HAMICHEE xin chào" và cười thật tươi, nhìn khách.' },
+      { t:'😊 Cười tươi, nhìn khách: "Dạ chào ' + you + ', mình gọi gì ạ?"', why:'B1: câu chào chuẩn là "HAMICHEE xin chào!" — chưa hỏi món ngay.' } ]);
+    else { scene(null, 'Em', '😊 HAMICHEE xin chào ạ!'); await wait(800); }
     live(id);
-    scene(null, c.name, c.where === 'in' ? 'Ngồi đây nha em.' : 'Mang về nha em.', c.where === 'in' ? '🪑 Tại chỗ' : '🛍️ Mang về');
+    // B2 — ở đây hay mang về
+    setStep('Q2');
+    if (k <= 2) await choose('Q2', 'Tiếp theo em hỏi khách gì?', [
+      { t:'"Dạ ' + you + ' mình dùng ở đây hay mang về ạ?"', ok:true },
+      { t:'"Dạ ' + you + ' mình dùng món gì hôm nay ạ?"', why:'B2: hỏi dùng ở đây hay mang về trước, để chuẩn bị đúng ly/tô và chỗ ngồi.' },
+      { t:'"Dạ ' + you + ' ngồi đâu cũng được, em mang món ra sau ạ."', why:'B2: phải hỏi rõ dùng ở đây hay mang về.' } ]);
+    else { scene(null, 'Em', 'Dạ ' + you + ' mình dùng ở đây hay mang về ạ?'); await wait(800); }
+    live(id);
+    scene(null, c.name, c.where === 'in' ? 'Ngồi đây nha em.' : 'Mang về nha em.', c.where === 'in' ? '🪑 Ở đây' : '🛍️ Mang về');
     await wait(650); live(id);
-    // Bước 5–6 (+9)
+    // B3 — tư vấn nếu khách chưa biết chọn, nhận order
+    setStep('Q3');
     var items = orderOf(), amb = null;
+    if (c.type === 'consult'){
+      scene(null, c.name, cap(me) + ' chưa biết chọn món nào, em tư vấn giúp ' + me + ' với.');
+      var sg = BYCODE[pick(STARS.filter(function(x){ return BYCODE[x]; }))] || pick(MENU), dear = MENU.slice().sort(function(a, b){ return b.price - a.price; })[0];
+      await choose('Q3', 'Khách chưa biết chọn món. Em tư vấn thế nào?', [
+        { t:'"Dạ ' + you + ' thích vị nào ạ? Khách chọn nhiều nhất bên em là ' + spoken(sg) + ' ạ."', ok:true },
+        { t:'"Dạ món nào bên em cũng ngon hết ạ, ' + you + ' cứ xem menu rồi chọn nha."', why:'B3: khách chưa biết chọn thì tư vấn — hỏi khẩu vị và gợi ý món nổi bật (★ trên menu).' },
+        { t:'"Dạ ' + you + ' lấy ' + spoken(dear) + ' đi ạ, món đắt nhất là ngon nhất."', why:'B3: tư vấn theo khẩu vị khách và món nổi bật, không ép món đắt.' } ]); live(id);
+      items = {}; items[sg.code] = 1;
+      if (Math.random() < 0.5){ var ex2 = pick(MENU.filter(function(m){ return m.code !== sg.code; })); items[ex2.code] = 1; }
+    }
     if (c.type === 'amb'){
       var groups = AMB.filter(function(a){ return a.codes.filter(function(x){ return BYCODE[x]; }).length >= 2; });
       if (groups.length){
@@ -744,29 +778,27 @@
     }
     if (c.type === 'voucher') while (cartTotal(items) < 40000){ var top = pick(MENU.filter(function(m){ return m.price >= 25000; })); items[top.code] = (items[top.code] || 0) + 1; }
     c.items = items; c.amb = amb;
-    var me = selfP(c.name), say = pick(['Cho ' + me + ' ', 'Lấy cho ' + me + ' ', cap(me) + ' lấy ']) + orderText(items, amb) + '.';
+    var say = (c.type === 'consult' ? 'Ok, vậy ' : '') + pick(['Cho ' + me + ' ', 'Lấy cho ' + me + ' ', cap(me) + ' lấy ']) + orderText(items, amb) + '.';
     c.say = say;
     if (c.type === 'voucher'){ c.vcode = 'G' + ('0' + new Date().getDate()).slice(-2) + ('0' + (new Date().getMonth() + 1)).slice(-2) + '-' + rnd(100, 999); c.vexpired = Math.random() < 0.35; say += ' Có mã quà game nè: <b>' + c.vcode + '</b>'; c.say += ' Có mã quà game nè: ' + c.vcode; }
-    setStep(5);
     scene(null, c.name, say);
-    if (c.type === 'voucher' || c.type === 'discount') setStep(9);
     if (c.type === 'pressure'){
       await wait(500); live(id);
       add('<b>👩‍🍳 Bạn pha chế:</b> "Khách quen đó chị, em làm trước luôn nha, nhập bill sau cũng được!"', 'info');
-      await choose(6, 'Bạn pha chế muốn làm món trước khi có bill. Em trả lời?', [
+      await choose('Q4', 'Bạn pha chế muốn làm món trước khi có bill. Em trả lời?', [
         { t:'"Đợi chị nhập bill xong đã nha — không nhập là không làm."', ok:true },
-        { t:'"Ừ khách quen thì em làm trước đi, lát nữa chị nhập bill sau."', why:'RULE Bước 6: không nhập = không làm. Làm trước dễ sót bill → lệch quỹ.' },
+        { t:'"Ừ khách quen thì em làm trước đi, lát nữa chị nhập bill sau."', why:'Không nhập bill = không làm. Làm trước dễ sót bill → lệch quỹ.' },
         { t:'"Khách quen thì khỏi nhập bill."', why:'Cấm: không nhập bill khi phát sinh giao dịch. Mỗi đơn = 1 bill.' } ]); live(id);
       stage.lastChild.remove();
     }
     if (c.type === 'voucher'){
-      await choose(9, 'Khách đưa mã quà game <b>' + c.vcode + '</b>. Em làm gì trước?', [
+      await choose('Q5', 'Khách đưa mã quà game <b>' + c.vcode + '</b>. Em làm gì trước?', [
         { t:'Kiểm tra mã trên trang Thu ngân, còn hạn mới áp trên POS', ok:true },
         { t:'Áp luôn chương trình giảm 10% trên POS vì khách đã có mã quà', why:'Phải kiểm tra mã (còn hạn, chưa dùng) trên trang Thu ngân trước khi áp.' },
-        { t:'Giảm tay 10.000đ trên POS cho nhanh, cuối ca báo lại quản lý', why:'Cấm tự ý giảm giá ngoài hệ thống — chỉ áp đúng chương trình trên POS (Bước 9).' } ]); live(id);
+        { t:'Giảm tay 10.000đ trên POS cho nhanh, cuối ca báo lại quản lý', why:'Cấm tự ý giảm giá ngoài hệ thống — chỉ áp đúng chương trình trên POS.' } ]); live(id);
       add(c.vexpired ? '<h3>🔎 Trang Thu ngân</h3><span class="bad-t">❌ Mã ' + c.vcode + ' đã hết hạn</span>' : '<h3>🔎 Trang Thu ngân</h3><span class="ok-t">✅ Mã ' + c.vcode + ' hợp lệ</span> · Giảm 10% hóa đơn (tối đa 10.000đ, hóa đơn từ 40.000đ)', 'info');
       if (c.vexpired){
-        await choose(9, 'Mã đã hết hạn. Em nói với khách?', [
+        await choose('Q5', 'Mã đã hết hạn. Em nói với khách?', [
           { t:'"Dạ mã này hết hạn rồi ạ, em xin lỗi vì không áp dụng được cho mình ạ."', ok:true },
           { t:'"Dạ mã hết hạn rồi, nhưng em vẫn giảm 10% cho mình luôn nha."', why:'Mã hết hạn không được áp — tự giảm là giảm giá không được phê duyệt.' },
           { t:'"Dạ mã này hết hạn rồi, em nhập tạm một mã khác cho mình nha."', why:'Không dùng mã/chương trình khác để giảm — chỉ áp đúng chương trình hợp lệ.' } ]); live(id);
@@ -774,47 +806,122 @@
     }
     if (c.type === 'discount'){
       scene(null, c.name, say + ' Bớt cho ' + me + ' 5 nghìn nha em!');
-      await choose(9, 'Khách xin bớt 5.000đ. Em trả lời?', [
-        { t:'"Dạ em không tự giảm được, quán chỉ áp chương trình trên máy ạ."', ok:true },
-        { t:'"Dạ được ạ, em bớt 5 nghìn cho mình, lần sau ủng hộ quán nha."', why:'Cấm tự ý giảm giá không qua hệ thống, không được phê duyệt (Bước 9).' },
+      await choose('Q5', 'Khách xin bớt 5.000đ. Em trả lời?', [
+        { t:'"Dạ em không tự giảm được ạ, mình làm thẻ thành viên thì có ưu đãi nha."', ok:true },
+        { t:'"Dạ được ạ, em bớt 5 nghìn cho mình, lần sau ủng hộ quán nha."', why:'Cấm tự ý giảm giá không qua hệ thống — giới thiệu thẻ thành viên để khách được ưu đãi đúng chương trình.' },
         { t:'"Dạ em bớt 5 nghìn cho mình, phần thiếu đó em tự bù vào két sau ạ."', why:'Không bù tiền túi, không giảm ngoài hệ thống — tiền phải khớp bill.' } ]); live(id);
     }
-    setStep(6); scene(null, null, null, '');
+    // B4 — nhập bill, nhắc lại đơn và thông báo số tiền
+    setStep('Q4'); scene(null, null, null, '');
     var bill = await posEntry(c); live(id);
-    // Bước 7
-    setStep(7);
     var total = bill.total, line = itemsLine(items);
     var dtxt = bill.disc ? ', giảm ' + money(bill.disc) : '';
     var opts7 = [ { t:'"Dạ của mình ' + esc(line) + dtxt + ' — tổng ' + money(total) + ' ạ."', ok:true } ];
     var wrongT = bill.disc ? total + bill.disc : total + pick([5000, 10000, -5000].filter(function(x){ return total + x > 0; }));
     opts7.push({ t:'"Dạ của mình ' + esc(line) + (bill.disc ? '' : dtxt) + ' — tổng ' + money(wrongT) + ' ạ."', why:'Báo đúng số trên bill POS (đã trừ khuyến mãi nếu có): ' + money(total) + '.' });
-    // món gần giống (cùng nhóm, khác giá) — sai món thì tổng cũng khác: phải đọc bill, không đoán được
     var ks = Object.keys(items), sw = pick(ks), alts = MENU.filter(function(m){ return m.code !== sw && !items[m.code] && m.price !== BYCODE[sw].price; });
-    var alt = pick(alts.filter(function(m){ return m.group === BYCODE[sw].group; }).concat(alts.length ? [] : [])) || pick(alts);
+    var alt = pick(alts.filter(function(m){ return m.group === BYCODE[sw].group; })) || pick(alts);
     if (alt){ var it2 = {}; ks.forEach(function(x){ it2[x === sw ? alt.code : x] = items[x]; }); var t2 = cartTotal(it2) - bill.disc;
       if (t2 !== total && t2 !== wrongT && t2 > 0) opts7.push({ t:'"Dạ của mình ' + esc(itemsLine(it2)) + dtxt + ' — tổng ' + money(t2) + ' ạ."', why:'Nhắc lại đúng món trên bill: ' + BYCODE[sw].name + ', không phải ' + alt.name + '.' }); }
-    if (opts7.length < 3) opts7.push({ t:'"Dạ tổng của mình là ' + money(total + 10000) + ' ạ."', why:'Phải nhắc lại món rồi báo đúng tổng trên bill (Bước 7).' });
-    if (k <= 2 || k === G.ask7) await choose(7, 'Bill đã lưu. Em xác nhận với khách thế nào?', opts7);
+    if (opts7.length < 3) opts7.push({ t:'"Dạ tổng của mình là ' + money(total + 10000) + ' ạ."', why:'Phải nhắc lại đơn rồi báo đúng số tiền trên bill (B4).' });
+    if (k <= 2 || k === G.ask7) await choose('Q4', 'Bill đã lưu. Em nhắc lại đơn và báo tiền thế nào?', opts7);
     else { scene(null, 'Em', 'Dạ của mình ' + esc(line) + dtxt + ' — tổng ' + money(total) + ' ạ.'); await wait(1100); }
     live(id);
     scene(null, c.name, 'Đúng rồi em.');
-    // Bước 8
-    setStep(8);
+    // B5 — thẻ thành viên (100% khách)
+    setStep('Q5');
+    var md = await memberStep(c, k, total); live(id);
+    total -= md;
+    // B6 — tiền mặt hay chuyển khoản
+    setStep('Q6'); resetWork();
     var pay = /^qr/.test(c.type) ? 'qr' : /^cash/.test(c.type) ? 'cash' : (Math.random() < 0.5 ? 'cash' : 'qr');
-    if (pay === 'cash') await payCash(c, total, c.type === 'cashExact'); else await payQR(c, total, c.type); live(id);
-    L.bills++; L.pos += total; L.disc += bill.disc; if (pay === 'cash') L.cash += total; else L.transfer += total;
-    // Bước 10
-    setStep(10); resetWork();
-    scene(null, c.name, 'Rồi giờ ' + selfP(c.name) + ' chờ ở đâu em?');
-    var inO = { t:'Gửi thẻ bàn + bill cho khách, cảm ơn khách', why:'Khách ' + (c.where === 'in' ? 'dùng tại chỗ' : 'mang về') + ' — làm theo hình thức đã hỏi ở Bước 4.' };
-    var outO = { t:'Mời khách qua quầy chờ, phục vụ sẽ gửi món mang về', why:inO.why };
-    if (c.where === 'in') inO.ok = true; else outO.ok = true;
-    if (k === 1 || k === G.ask10) await choose(10, 'Đã thu đủ tiền. Hướng dẫn khách tiếp theo?', k === 1 ? [ inO, outO, { t:'Đưa bill, mời khách tự chọn chỗ ngồi chờ', why:'Phải hướng dẫn đúng nơi chờ/nhận món theo hình thức đã hỏi ở Bước 4.' } ] : [ inO, outO ]);
-    else { scene(null, 'Em', c.where === 'in' ? 'Dạ em gửi thẻ bàn và bill, mình ngồi chờ món nha, cảm ơn ' + callP(c.name) + ' ạ.' : 'Dạ mình qua quầy chờ món giúp em, phục vụ gửi món mang về liền ạ.'); await wait(1000); }
+    if (k <= 2) await choose('Q6', 'Tiếp theo em hỏi khách gì?', [
+      { t:'"Dạ ' + you + ' thanh toán tiền mặt hay chuyển khoản ạ?"', ok:true },
+      { t:'"Dạ ' + you + ' quét mã QR ở kia giúp em thanh toán nha."', why:'B6: hỏi khách thanh toán tiền mặt hay chuyển khoản — không quyết thay khách.' },
+      { t:'"Dạ của mình ' + money(total) + ' ạ." rồi đứng chờ khách trả', why:'B6: hỏi rõ "tiền mặt hay chuyển khoản".' } ]);
+    else { scene(null, 'Em', 'Dạ ' + you + ' thanh toán tiền mặt hay chuyển khoản ạ?'); await wait(800); }
+    live(id);
+    scene(null, c.name, pay === 'cash' ? 'Tiền mặt nha em.' : 'Chuyển khoản nha em.');
+    await wait(500); live(id);
+    // B7 — nói rõ nhận bao nhiêu / đã nhận đủ
+    setStep('Q7');
+    if (pay === 'cash') await payCash(c, total, c.type === 'cashExact');
+    else {
+      await payQR(c, total, c.type); live(id);
+      if (++G.qrN <= 1) await choose('Q7', 'Ngân hàng đã báo tiền về đủ. Em báo khách:', [
+        { t:'"Dạ bên em đã nhận đủ ' + money(total) + ' ạ."', ok:true },
+        { t:'"Dạ ok rồi ạ, ' + you + ' đợi món chút nha."', why:'B7: báo rõ "bên em đã nhận đủ" kèm số tiền.' },
+        { t:'"Dạ chắc đủ rồi ạ, em cảm ơn nha."', why:'B7: chỉ báo khi đã thấy thông báo ngân hàng — nói rõ "đã nhận đủ" + số tiền.' } ]);
+      else { scene(null, 'Em', 'Dạ bên em đã nhận đủ ' + money(total) + ' ạ.'); await wait(800); }
+    }
+    live(id);
+    L.bills++; L.pos += total; L.disc += bill.disc + md; if (pay === 'cash') L.cash += total; else L.transfer += total;
+    // B8 — gửi bill kèm số bàn + HAMICHEE xin cảm ơn
+    setStep('Q8'); resetWork();
+    var tb = rnd(1, 15);
+    if (k === 1 || k === G.ask10) await choose('Q8', 'Xong thanh toán. Em làm gì cuối cùng?', [
+      { t:'Gửi bill kèm số bàn ' + tb + ': "HAMICHEE xin cảm ơn ạ!"', ok:true },
+      { t:'Gửi bill: "Dạ xong rồi, ' + you + ' đợi chút nha."', why:'B8: gửi bill kèm số bàn và nói "HAMICHEE xin cảm ơn!"' },
+      { t:'Đưa số bàn ' + tb + ', bill để lại quầy cho gọn', why:'B8: gửi bill thanh toán cho khách, kèm số bàn.' } ]);
+    else { scene(null, 'Em', 'Dạ bill của mình, số bàn ' + tb + (c.where === 'out' ? ', mình chờ món ở quầy giúp em' : '') + '. HAMICHEE xin cảm ơn ạ!'); await wait(1000); }
     live(id);
     c.look.mood = 'wow'; scene(c.look, c.name, 'Cảm ơn em nha! 😊');
     gain(20);
     await wait(700); live(id);
+  }
+  // B5: hỏi thẻ thành viên 100% khách. Có thẻ → giảm 5% (sinh nhật 15%). Chưa → xin thông tin làm thẻ liền.
+  async function memberStep(c, k, total){
+    var id = RUN, you = callP(c.name), me = selfP(c.name);
+    if (k <= 2) await choose('Q5', 'Báo tiền xong. Tiếp theo em nói gì?', [
+      { t:'"Dạ ' + you + ' ơi mình có thẻ thành viên bên em chưa ạ?"', ok:true },
+      { t:'"Dạ ' + you + ' thanh toán tiền mặt hay chuyển khoản ạ?"', why:'B5 trước B6: 100% khách phải được hỏi thẻ thành viên trước khi hỏi thanh toán.' },
+      { t:'"Bên em có thẻ thành viên, khi nào cần thì ' + you + ' nói em nha."', why:'B5: chủ động hỏi và xin thông tin liền — không đợi khách tự đề nghị.' } ]);
+    else {
+      await choose('Q5', 'Báo tiền xong. Việc tiếp theo?', [
+        { t:'💳 Hỏi khách có thẻ thành viên chưa', ok:true },
+        { t:'💵 Bỏ qua thẻ, hỏi thanh toán luôn cho nhanh', why:'100% khách phải được hỏi thẻ thành viên (B5) — đông khách cũng không bỏ.' } ]); live(id);
+      scene(null, 'Em', 'Dạ ' + you + ' ơi mình có thẻ thành viên bên em chưa ạ?'); await wait(700);
+    }
+    live(id);
+    var w = resetWork();
+    if (c.member !== 'new'){
+      scene(null, c.name, 'Có nè em, số ' + c.phone + '.');
+      var bd = c.member === 'bday' ? todayDM() : c.bday, d5 = memberDisc(total, 'member'), d15 = memberDisc(total, 'bday');
+      var card = document.createElement('div'); card.className = 'info';
+      card.innerHTML = '<h3>💳 POS — Thẻ thành viên</h3><div class="kv"><span>Khách</span><b>' + esc(c.name) + '</b></div><div class="kv"><span>SĐT</span><b>' + c.phone + '</b></div>' +
+        '<div class="kv"><span>Sinh nhật</span><b>' + bd + '</b></div><div class="kv"><span>Hôm nay</span><b>' + todayDM() + '</b></div><div class="kv"><span>Đã ghé</span><b>' + c.visits + ' lần</b></div>';
+      w.appendChild(card); scrollEnd();
+      await choose('Q5', 'Khách có thẻ. Áp giảm giá nào trên POS?', [
+        { t:'Giảm 5% thành viên — còn ' + money(total - d5), ok:c.member === 'member', why:c.member === 'member' ? '' : 'Hôm nay đúng sinh nhật khách (' + bd + ') → giảm 15%.' },
+        { t:'Giảm 15% sinh nhật — còn ' + money(total - d15), ok:c.member === 'bday', why:c.member === 'bday' ? '' : 'Chỉ đúng ngày sinh nhật mới giảm 15% — hôm nay không phải sinh nhật khách (' + bd + ').' },
+        { t:'Không giảm, chỉ tích điểm — còn ' + money(total), why:'Khách đã có thẻ (đã ghé ' + c.visits + ' lần) → được giảm ' + (c.member === 'bday' ? '15% vì hôm nay sinh nhật.' : '5%.') } ]); live(id);
+      var md = c.member === 'bday' ? d15 : d5;
+      scene(null, 'Em', 'Dạ thẻ thành viên giảm ' + (c.member === 'bday' ? '15% sinh nhật' : '5%') + ', còn ' + money(total - md) + ' ạ' + (c.member === 'bday' ? '. Chúc mừng sinh nhật ' + you + ' ❤️' : '') + '.');
+      await wait(1100); live(id);
+      return md;
+    }
+    scene(null, c.name, 'Chưa em.');
+    await wait(500); live(id);
+    var pitch = 'Dạ bên em đang làm thẻ thành viên miễn phí, được giảm 5% từ lần 2 ghé quán. Cho em xin ngày sinh nhật vì ngày sinh nhật được giảm 15% ạ ❤️';
+    if (++G.newCardN <= 2) await choose('Q5', 'Khách chưa có thẻ. Em nói gì?', [
+      { t:'"' + pitch + '"', ok:true },
+      { t:'"Dạ vậy lần sau ' + you + ' ghé thì em làm thẻ cho mình nha, giờ mình thanh toán luôn ạ, em cảm ơn ạ."', why:'B5: chưa có thẻ thì xin thông tin LIỀN — cười tươi, 100% khách đều được mời làm thẻ.' },
+      { t:'"Dạ bên em đang làm thẻ thành viên, được giảm 15% ngay hôm nay. Cho em xin số điện thoại với ngày sinh nhật của mình ạ ❤️"', why:'Sai ưu đãi: thẻ miễn phí, giảm 5% từ lần 2 ghé quán; đúng ngày sinh nhật mới giảm 15%.' } ]);
+    else { scene(null, 'Em', '😊 ' + esc(pitch)); await wait(1300); }
+    live(id);
+    scene(null, c.name, 'Ok em, số ' + c.phone + ', sinh nhật ' + c.bday + ' nha.');
+    var form = document.createElement('div'); form.className = 'info';
+    form.innerHTML = '<h3>💳 POS — Tạo thẻ thành viên mới</h3><div class="kv"><span>Tên</span><b>' + esc(c.name) + '</b></div><div class="kv"><span>Khách đọc</span><b>' + c.phone + ' · ' + c.bday + '</b></div>';
+    w.appendChild(form); scrollEnd();
+    var pw = []; while (pw.length < 2){ var q = nearPhone(c.phone); if (q !== c.phone && pw.indexOf(q) < 0) pw.push(q); }
+    await choose('Q5', 'Nhập số điện thoại khách vừa đọc:', [ { t:c.phone, ok:true } ].concat(pw.map(function(x){ return { t:x, why:'Khách đọc: ' + c.phone + ' — nghe và nhập đúng từng số.' }; }))); live(id);
+    var dd = +c.bday.slice(0, 2), mm = +c.bday.slice(3), bw = [];
+    if (dd <= 12 && dd !== mm) bw.push(dmStr(mm, dd));
+    bw.push(dmStr(dd % 28 + 1, mm)); if (bw.length < 2) bw.push(dmStr(dd, mm % 12 + 1));
+    await choose('Q5', 'Nhập ngày sinh nhật:', [ { t:c.bday, ok:true } ].concat(bw.slice(0, 2).map(function(x){ return { t:x, why:'Khách nói sinh nhật ' + c.bday + ' (ngày/tháng).' }; }))); live(id);
+    add('✅ Đã tạo thẻ cho ' + esc(c.name) + ' — giảm 5% từ lần 2 ghé quán, sinh nhật giảm 15%.', 'info');
+    await wait(700); live(id);
+    return 0;
   }
   // POS: nhập món, khuyến mãi, lưu bill — kiểm tra khớp order
   function posEntry(c){
@@ -824,7 +931,8 @@
       var pos = document.createElement('div'); pos.className = 'pos';
       pos.innerHTML = '<div class="hd"><span>🖥️ POS HAMICHEE</span><span>Bill #' + (G.led.bills + 1) + '</span></div>' +
         '<div class="scr"><div class="said"></div><div class="tabs"></div><div class="items"></div><div class="cart"></div><div class="tot"><span>Tổng</span><span class="tv">0đ</span></div></div>' +
-        '<div class="acts"><button type="button" class="ask">❓ Hỏi lại</button><button type="button" class="promo">🎁 K.mãi</button><button type="button" class="save">🧾 Lưu bill</button></div>';
+        '<div class="acts"><button type="button" class="ask">❓ Hỏi lại</button><button type="button" class="promo">🎁 K.mãi</button><button type="button" class="save">🧾 Lưu bill</button></div>' +
+        '<div class="qstrip">📋 B1 Chào 😊 · B2 Ở đây/mang về · B3 Tư vấn · B4 Báo tiền · B5 Thẻ TV · B6 Hỏi TT · B7 Nhận tiền · B8 Bill + cảm ơn</div>';
       w.appendChild(pos);
       var tabs = pos.querySelector('.tabs'), its = pos.querySelector('.items'), cartEl = pos.querySelector('.cart');
       function said(t){ pos.querySelector('.said').innerHTML = '💬 <b>' + esc(c.name) + ':</b> ' + t; }
@@ -867,7 +975,7 @@
           var b = document.createElement('button'); b.type = 'button'; b.className = 'opt'; b.textContent = o[1];
           b.addEventListener('click', function(){
             dock.innerHTML = '';
-            if (o[0] === 'manual'){ mistake(9, 'Giảm tay ngoài chương trình là tự ý giảm giá — bị cấm.'); toast('Không được giảm tay ngoài chương trình!'); return; }
+            if (o[0] === 'manual'){ mistake('Q5', 'Giảm tay ngoài chương trình là tự ý giảm giá — bị cấm.'); toast('Không được giảm tay ngoài chương trình!'); return; }
             if (o[0]) { promo = o[0]; drawCart(); }
           });
           dock.appendChild(b);
@@ -878,12 +986,12 @@
         dock.innerHTML = '';
         if (!Object.keys(cart).length){ toast('Chưa nhập món nào'); return; }
         var problems = [];
-        if (c.amb && !asked){ problems.push([5, 'Khách gọi "' + c.amb.say + '" chưa rõ (' + c.amb.ask + ') — phải hỏi lại trước khi nhập.']); asked = true;
+        if (c.amb && !asked){ problems.push(['Q3', 'Khách gọi "' + c.amb.say + '" chưa rõ (' + c.amb.ask + ') — phải hỏi lại trước khi nhập.']); asked = true;
           var t3 = 'Ủa, ' + selfP(c.name) + ' gọi ' + spoken(BYCODE[c.amb.code]) + ' mà em!'; scene(null, c.name, esc(t3)); said(esc(c.say) + '<br>→ ' + esc(t3)); }
-        else if (!sameCart(cart, c.items)){ problems.push([6, 'Bill nhập sai món/số lượng so với order.']); var t4 = 'Không phải em ơi: ' + orderText(c.items, null) + '.'; scene(null, c.name, esc(t4)); said(esc(t4)); }
+        else if (!sameCart(cart, c.items)){ problems.push(['Q4', 'Bill nhập sai món/số lượng so với order.']); var t4 = 'Không phải em ơi: ' + orderText(c.items, null) + '.'; scene(null, c.name, esc(t4)); said(esc(t4)); }
         var needG = c.type === 'voucher' && !c.vexpired && cartTotal(c.items) >= 40000;
-        if (!problems.length && needG && promo !== 'G') problems.push([9, 'Khách có mã quà G hợp lệ — phải áp đúng chương trình trên POS.']);
-        if (!problems.length && promo && !(needG && promo === 'G')) problems.push([9, 'Áp khuyến mãi không đúng/không có căn cứ — chỉ áp chương trình khách có và hợp lệ.']);
+        if (!problems.length && needG && promo !== 'G') problems.push(['Q5', 'Khách có mã quà G hợp lệ — phải áp đúng chương trình trên POS.']);
+        if (!problems.length && promo && !(needG && promo === 'G')) problems.push(['Q5', 'Áp khuyến mãi không đúng/không có căn cứ — chỉ áp chương trình khách có và hợp lệ.']);
         if (problems.length){ G.steps += firstSave ? 1 : 0; problems.forEach(function(p){ if (firstSave) mistake(p[0], p[1]); toast('✗ ' + p[1]); }); firstSave = false; pos.classList.remove('shake'); void pos.offsetWidth; pos.classList.add('shake'); return; }
         if (firstSave){ G.steps++; G.ok++; gain(20); }
         beep(true);
@@ -913,8 +1021,8 @@
     var amounts = [paid].concat(shuffle(cand.filter(function(v){ return v > 0 && v !== paid; })).slice(0, 2));
     var opt8 = [ { t:'"Em nhận ' + money(paid) + ' ạ."', ok:true } ];
     amounts.slice(1).forEach(function(v){ opt8.push({ t:'"Em nhận ' + money(v) + ' ạ."', why:'Đếm đúng tiền khách đưa: ' + money(paid) + '. Nói rõ số tiền nhận để tránh nhầm lẫn.' }); });
-    opt8.push({ t:'"Dạ em cảm ơn ạ."', why:'Phải nói rõ số tiền nhận ("Em nhận …") để tránh nhầm lẫn (Bước 8).' });
-    await choose(8, 'Khách đưa tiền. Em đặt tiền trên quầy và nói:', opt8); live(id);
+    opt8.push({ t:'"Dạ em cảm ơn ạ."', why:'Phải nói rõ số tiền nhận ("Em nhận …") để tránh nhầm lẫn (B7 tại quầy).' });
+    await choose('Q7', 'Khách đưa tiền. Em đặt tiền trên quầy và nói:', opt8); live(id);
     if (change === 0) G.cashN++;
     if (change > 0){
       var tray = {}, trayEl = document.createElement('div'); trayEl.className = 'tray';
@@ -933,25 +1041,25 @@
         var s = sumOf(tray);
         if (s === change){ given = true; trayEl.style.opacity = '.6'; drw.style.opacity = '.6'; drw.style.pointerEvents = 'none'; break; }
         tries++;
-        if (tries === 1){ G.steps++; mistake(8, 'Thối sai tiền (đưa ' + vnd(s) + ', đúng phải là ' + vnd(change) + ').'); }
+        if (tries === 1){ G.steps++; mistake('Q7', 'Thối sai tiền (đưa ' + vnd(s) + ', đúng phải là ' + vnd(change) + ').'); }
         toast(s > change ? 'Thối dư rồi! Khách đưa ' + money(paid) + ' − bill ' + money(total) + ' = ?' : 'Thối thiếu rồi! Khách đưa ' + money(paid) + ' − bill ' + money(total) + ' = ?');
       }
       if (!tries){ G.steps++; G.ok++; gain(20); }
-      if (++G.cashN <= 2) await choose(8, 'Đưa tiền thối, em nói:', [
+      if (++G.cashN <= 2) await choose('Q7', 'Đưa tiền thối, em nói:', [
         { t:'"Em gửi lại ' + money(change) + ' ạ."', ok:true },
-        { t:'"Dạ tiền thối của mình ạ."', why:'Nói rõ số tiền thối để khách kiểm cùng — tránh tranh cãi (Bước 8).' },
+        { t:'"Dạ tiền thối của mình ạ."', why:'Nói rõ số tiền thối để khách kiểm cùng — tránh tranh cãi (B7 tại quầy).' },
         { t:'"Em gửi lại ' + money(change > 5000 && Math.random() < 0.5 ? change - 5000 : change + 5000) + ' ạ."', why:'Nói đúng số tiền thối: ' + money(change) + '.' } ]);
       else { scene(null, 'Em', 'Em gửi lại ' + money(change) + ' ạ.'); await wait(700); }
       live(id);
       L.cashBills.push({ no:L.bills + 1, total:total, paid:paid, change:change });
     } else L.cashBills.push({ no:L.bills + 1, total:total, paid:paid, change:0 });
-    if (G.cashN <= 2) await choose(8, 'Tiền khách đưa vẫn đang trên quầy. Làm gì?', [
+    if (G.cashN <= 2) await choose('Q7', 'Tiền khách đưa vẫn đang trên quầy. Làm gì?', [
       { t:'Cất ngay vào két rồi đóng két', ok:true },
-      { t:'Để tạm trên quầy, xong khách cất', why:'Cấm giữ tiền ngoài két — cất ngay sau khi thối (Bước 8).' },
+      { t:'Để tạm trên quầy, xong khách cất', why:'Cấm giữ tiền ngoài két — cất ngay sau khi thối (B7 tại quầy).' },
       { t:'Kẹp dưới máy POS, cuối giờ cất', why:'Cấm giữ tiền ngoài két: tiền ngoài két là nguyên nhân lệch quỹ hàng đầu.' } ]);
-    else await choose(8, 'Xong phần tiền. Bấm việc tiếp theo:', [
+    else await choose('Q7', 'Xong phần tiền. Bấm việc tiếp theo:', [
       { t:'🗄️ Cất tiền vào két', ok:true },
-      { t:'👉 Mời khách tiếp theo', why:'Tiền khách còn trên quầy — cấm giữ tiền ngoài két, cất ngay (Bước 8).' } ]);
+      { t:'👉 Mời khách tiếp theo', why:'Tiền khách còn trên quầy — cấm giữ tiền ngoài két, cất ngay (B7 tại quầy).' } ]);
     live(id);
     notes.forEach(function(x){ d[x] = (d[x] || 0) + 1; });
   }
@@ -967,15 +1075,15 @@
       G.shotSeen = true;
       var shot = document.createElement('div'); shot.className = 'phone pop'; shot.innerHTML = '<div class="scr2">✅ <b>Chuyển tiền thành công</b><br>' + vnd(total) + '<br><small>tới HAMICHEE</small></div>'; w.appendChild(shot); scrollEnd();
       scene(null, c.name, 'Chuyển rồi nè em, em xem nè!');
-      await choose(8, 'Khách đưa ảnh màn hình "chuyển thành công". Em làm gì?', [
+      await choose('Q7', 'Khách đưa ảnh màn hình "chuyển thành công". Em làm gì?', [
         { t:'Đợi máy báo ngân hàng nhận tiền rồi mới xác nhận', ok:true },
-        { t:'Ảnh đã báo thành công rồi, xác nhận cho khách luôn', why:'Chỉ xác nhận khi có thông báo từ ngân hàng — KHÔNG chấp nhận ảnh chụp màn hình (Bước 8).' },
+        { t:'Ảnh đã báo thành công rồi, xác nhận cho khách luôn', why:'Chỉ xác nhận khi có thông báo từ ngân hàng — KHÔNG chấp nhận ảnh chụp màn hình (B7 tại quầy).' },
         { t:'Chụp lại ảnh của khách rồi cho làm món', why:'Ảnh chụp không phải bằng chứng tiền đã về — phải chờ thông báo ngân hàng.' } ]); live(id);
     } else { scene(null, c.name, 'Chuyển rồi đó em.'); }
     if (type === 'qrLate'){
       await wait(1200); live(id);
       scene(null, c.name, 'Chuyển rồi mà em, làm món luôn đi cho nhanh!');
-      await choose(8, 'Chưa có thông báo ngân hàng, khách giục. Em làm gì?', [
+      await choose('Q7', 'Chưa có thông báo ngân hàng, khách giục. Em làm gì?', [
         { t:'Mời khách đợi chút, mở Store Noti kiểm tra tiền về chưa', ok:true },
         { t:'Cho làm món trước, lát tiền về sau cũng được', why:'Thu tiền trước khi thực hiện món — chưa có báo ngân hàng thì chưa xác nhận.' },
         { t:'Khách đã cho xem ảnh chuyển khoản thành công, xác nhận luôn', why:'KHÔNG chấp nhận ảnh chụp màn hình thay cho thông báo ngân hàng.' } ]); live(id);
@@ -985,7 +1093,7 @@
     await wait(900); live(id);
     var bk = document.createElement('div'); bk.className = 'bank pop'; bk.innerHTML = '🔔<div>Ngân hàng: TK HAMICHEE<br><b>+' + vnd(first) + '</b></div>'; w.appendChild(bk); scrollEnd(); beep(true);
     if (first < total){
-      await choose(8, 'Ngân hàng báo <b>+' + vnd(first) + '</b>, bill ' + vnd(total) + '. Em làm gì?', [
+      await choose('Q7', 'Ngân hàng báo <b>+' + vnd(first) + '</b>, bill ' + vnd(total) + '. Em làm gì?', [
         { t:'"Dạ em mới nhận được ' + money(first) + ', mình chuyển thêm giúp em ' + money(total - first) + ' nữa ạ."', ok:true },
         { t:'Xác nhận đã nhận đủ, chênh chút không sao, cuối ca báo quản lý', why:'Thu đúng, đủ tiền theo bill — thiếu là lệch doanh thu chuyển khoản.' },
         { t:'Lấy tiền mặt trong két bù phần còn thiếu cho đủ bill', why:'Không lấy tiền két bù — phải thu đủ của khách.' } ]); live(id);
@@ -1051,12 +1159,12 @@
   }
   async function eventFree(){
     var id = RUN;
-    clearStage(); setStep(6);
+    clearStage(); setStep('Q4');
     $('hd-title').textContent = (G.part === 'ca' ? '⭐ ' : '🧾 ') + 'Tình huống';
     var fv = pick([['Người quen của quán', 'Làm cho anh ly trà dâu tằm hạt đác nha em, khỏi tính tiền, anh quen chủ quán mà!'],
                    ['Bạn phục vụ ca trước', 'Chị ơi cho em 1 chè bưởi mang về, em làm ở đây mà, khỏi bill nha!']]);
     scene({ skin:'#eec39a', hair:'#1a1a1a', shirt:'#34495e', long:false, glasses:true, mood:'happy' }, fv[0], fv[1]);
-    await choose(6, 'Có người xin món miễn phí, không cần bill. Em làm gì?', [
+    await choose('Q4', 'Có người xin món miễn phí, không cần bill. Em làm gì?', [
       { t:'Vẫn tạo bill; miễn phí thì phải được quản lý duyệt', ok:true },
       { t:'Làm luôn, người quen nên không cần bill', why:'Mỗi đơn = 1 bill; không nhập = không làm — kể cả người quen, nhân viên.' },
       { t:'Nhập bill cho đúng quy trình rồi xóa bill sau khi làm xong', why:'Cấm bỏ bill / xóa bill để né doanh thu.' } ]); live(id);
@@ -1409,7 +1517,12 @@
     ['File chốt ca báo LỆCH, kiểm tra những gì?', 'Tiền thối, bill thiếu, tiền chi, lỗi nhập liệu', ['Chỉ đếm lại tiền trong két', 'Tiền thối và tiền chi là đủ', 'Đếm lại tiền két rồi sửa tiền thực tế cho khớp file']],
     ['Bàn giao ca cần gì?', 'Ghi sổ doanh thu + tiền bàn giao, 2 bên ký', ['Ghi sổ doanh thu, ca sau ký nhận', 'Nhắn Zalo số tiền cho ca sau', 'Đếm két cùng ca sau là đủ, không cần ghi sổ hay ký']],
     ['Tiền khách vừa đưa phải cất ở đâu?', 'Cất ngay vào két', ['Để trên quầy tới hết khách', 'Kẹp dưới máy POS', 'Túi tạp dề, cuối ca cất']],
-    ['Câu chào khách chuẩn là?', '"Hamichee xin chào ạ, anh/chị dùng tại đây hay mang về ạ?"', ['"Dạ chào anh/chị, mời mình xem menu rồi gọi món nha ạ?"', '"Dạ chào anh/chị, mình dùng tại đây hay mang về ạ?"', '"Hamichee xin chào ạ, anh/chị muốn dùng món gì hôm nay ạ?"']],
+    ['Câu chào khách chuẩn (B1) là?', 'Cười thật tươi: "HAMICHEE xin chào!"', ['Nhìn máy POS: "HAMICHEE xin chào!"', '"Dạ chào anh/chị, mình gọi gì ạ?"', '"Mời anh/chị xem menu ạ"']],
+    ['Sau câu chào, em hỏi khách gì (B2)?', '"Dạ mình dùng ở đây hay mang về ạ?"', ['"Dạ mình dùng món gì ạ?"', '"Dạ mình thanh toán sao ạ?"', '"Dạ mình có thẻ thành viên chưa ạ?"']],
+    ['Khách chưa biết chọn món (B3) thì?', 'Hỏi khẩu vị, gợi ý món nổi bật (★ trên menu)', ['Mời khách tự xem menu rồi chọn', 'Gợi ý món đắt nhất cho chắc', 'Chọn giúp món làm nhanh nhất']],
+    ['Thẻ thành viên HAMICHEE ưu đãi thế nào?', 'Miễn phí, giảm 5% từ lần 2 ghé quán, sinh nhật giảm 15%', ['Miễn phí, giảm 15% ngay lần đầu làm thẻ', 'Phí 20.000đ, giảm 10% mỗi lần ghé', 'Miễn phí, chỉ tích điểm đổi quà']],
+    ['Bao nhiêu khách cần được hỏi thẻ thành viên (B5)?', '100% khách', ['Chỉ khách quen', 'Khách có bill từ 100.000đ', 'Khi khách hỏi']],
+    ['Kết thúc mỗi khách (B8) em làm gì?', 'Gửi bill kèm số bàn, "HAMICHEE xin cảm ơn!"', ['Đưa số bàn, bill để lại quầy cho gọn', 'Gửi bill, "Dạ xong rồi ạ"', 'Mời khách tự lấy bill ở máy in']],
     ['Ai đứng thu ngân ở HAMICHEE?', 'CHT/CHP của ca', ['Nhân viên pha chế của ca', 'Nhân viên phục vụ của ca', 'Ai đến sớm nhất ca']],
     ['Bill 45.000, khách đưa 100.000. Khi thối em nói gì?', '"Em gửi lại 55.000 ạ"', ['"Dạ tiền thối của mình ạ"', '"Dạ em cảm ơn ạ"', '"Mình kiểm lại giúp em ạ"']],
     ['Đầu ca két thiếu so với sổ giao ca thì?', 'Ghi đúng số đếm, báo ca trước và quản lý', ['Ghi 680.000đ cho khớp sổ giao ca', 'Bù phần thiếu bằng tiền của mình', 'Đếm lại, thiếu ít thì bỏ qua']],
@@ -1439,7 +1552,7 @@
     $('home-msg').textContent = '';
     RUN++; var id = RUN;
     G = { part:part, name:name, score:0, mist:[], steps:0, ok:0, step:0, from:1, to:3, float0:FLOAT, drawer:STD_FLOAT(), led:null, diff:null, t0:Date.now(),
-          shift:pick(['Ca sáng', 'Ca chiều', 'Ca tối']), cashN:0, shotSeen:false };
+          shift:pick(['Ca sáng', 'Ca chiều', 'Ca tối']), cashN:0, shotSeen:false, qrN:0, newCardN:0 };
     setScore(); dock.innerHTML = ''; clearStage(); show('s-play');
     try { if (!history.state || !history.state.ca) history.pushState({ ca:1 }, ''); } catch(e){}
     try {
@@ -1466,12 +1579,12 @@
     $('res-sum').innerHTML = sum;
     var l = $('res-list'); l.innerHTML = '';
     if (!n) l.innerHTML = '<div class="mist" style="border-left-color:var(--green)">🎯 Không sai bước nào — đúng quy trình thu ngân HAMICHEE!</div>';
-    g.mist.forEach(function(m){ var d = document.createElement('div'); d.className = 'mist'; d.innerHTML = '<b>' + (typeof m.step === 'number' ? esc(stepName(m.step)) : esc(m.step)) + '</b><br>' + esc(m.text); l.appendChild(d); });
+    g.mist.forEach(function(m){ var d = document.createElement('div'); d.className = 'mist'; d.innerHTML = '<b>' + (SOP[m.step] ? esc(stepName(m.step)) : esc(m.step)) + '</b><br>' + esc(m.text); l.appendChild(d); });
     var best = loadJSON(K.best, {}), key = g.name + '|' + g.part;
     if (!best[key] || stars > best[key]){ best[key] = stars; saveJSON(K.best, best); }
     show('s-res'); beep(stars >= 2);
     var payload = { action:'cashier', name:g.name, part:PART[g.part], score:g.score, stars:stars, ok:g.ok, steps:g.steps, diff:g.diff == null ? '' : g.diff,
-                    mistakes:g.mist.map(function(m){ return (typeof m.step === 'number' ? (m.step === 16.5 ? 'Đối soát CK: ' : 'B' + m.step + ': ') : '') + m.text; }).join(' | ').slice(0, 900),
+                    mistakes:g.mist.map(function(m){ return (SOP[m.step] ? (m.step === 16.5 ? 'Đối soát CK: ' : (typeof m.step === 'string' ? 'Quầy B' + m.step.slice(1) : 'B' + m.step) + ': ') : '') + m.text; }).join(' | ').slice(0, 900),
                     app:appName(), id:'ca' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), at:Date.now() };
     outboxAdd(payload); saveNote = payload.id; $('res-save').textContent = 'Đang gửi kết quả cho quản lý…'; flushOutbox();
     renderBest();
