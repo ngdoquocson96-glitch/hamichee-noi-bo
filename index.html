@@ -2,6 +2,13 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<script>
+  // Máy rất cũ không đọc được ảnh WebP: tự quay về ảnh PNG cũ.
+  window.addEventListener('error', function(e){
+    var t = e.target;
+    if (t && t.tagName === 'IMG' && /\.webp\?v=3$/.test(t.getAttribute('src') || '')) t.src = t.getAttribute('src').replace('.webp?v=3', '.png?v=2');
+  }, true);
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>HAMICHEE — Tiệm Chè Hami (đào tạo pha chế)</title>
@@ -444,7 +451,7 @@
     <div class="brand">HAMICHEE · ĐÀO TẠO PHA CHẾ</div>
     <h1>Tiệm Chè Hami 🍧</h1>
     <div class="hello">
-      <img src="assets/vo-che-sprite.png?v=2" alt="Chị Chè">
+      <img src="assets/vo-che-sprite.webp?v=3" alt="Chị Chè">
       <div>
         <p><b>Chị Chè đây!</b> Khách gọi món nào, em bấm lấy đúng nguyên liệu, nhập đúng định lượng theo SOP rồi bấm <b>Ra món</b> nha.</p>
         <p style="font-size:12.5px;color:#666">Học trước cho quen (được xem công thức), đạt 2★ thì mở phần Thi của màn đó.</p>
@@ -545,7 +552,7 @@
   <!-- Level end -->
   <div class="screen pad" id="screen-end">
     <div id="confetti"></div>
-    <img id="end-img" src="assets/vo-che-sprite.png?v=2" alt="">
+    <img id="end-img" src="assets/vo-che-sprite.webp?v=3" alt="">
     <h1 id="end-title"></h1>
     <div class="stars" id="end-stars"><span>★</span><span>★</span><span>★</span></div>
     <div id="end-record" hidden>🏅 Kỷ lục mới!</div>
@@ -582,7 +589,7 @@
   <div class="modal" id="rv">
     <div class="sheet">
       <div id="rv-head">
-        <img src="assets/vo-che-sprite.png?v=2" alt="">
+        <img src="assets/vo-che-sprite.webp?v=3" alt="">
         <div><div id="rv-title"></div><div id="rv-sub"></div></div>
       </div>
       <img class="shot" id="rv-photo" alt="Món chuẩn" hidden>
@@ -654,7 +661,7 @@
   <!-- First-time guide: Chị Chè points at the next step -->
   <div id="guide" hidden>
     <div id="g-hand">👆</div>
-    <div id="g-tip"><img src="assets/vo-che-sprite.png?v=2" alt=""><span id="g-text"></span><button type="button" class="btn" id="g-next" hidden>Tiếp ▶</button></div>
+    <div id="g-tip"><img src="assets/vo-che-sprite.webp?v=3" alt=""><span id="g-text"></span><button type="button" class="btn" id="g-next" hidden>Tiếp ▶</button></div>
   </div>
 
   <div id="toast" role="status"></div>

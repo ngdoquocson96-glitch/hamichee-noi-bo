@@ -1,6 +1,6 @@
 // HAMICHEE nội bộ: luôn lấy bản mới trên mạng; mất mạng (hoặc mạng treo quá 6 giây) thì dùng bản đã lưu.
-var CACHE = 'hami-noibo-v2';
-var CORE = ['./', 'index.html', 'quan-ly.html', 'manifest.webmanifest', 'assets/vo-che-sprite.png?v=2', 'assets/icon-192.png'];
+var CACHE = 'hami-noibo-v3';
+var CORE = ['./', 'index.html', 'quan-ly.html', 'manifest.webmanifest', 'assets/vo-che-sprite.webp?v=3', 'assets/icon-192.png'];
 self.addEventListener('install', function (e) {
   self.skipWaiting();
   // lưu sẵn ngay lần đầu mở, để lần sau mất mạng vẫn vào được game
